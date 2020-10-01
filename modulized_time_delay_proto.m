@@ -3,7 +3,7 @@
 %% And copy everything above to main.m. 
 %% Just remember to comment the variables that were inputted to this file.
 
-function [x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time]=modulized_time_delay_proto(N,delta_t,dt,Obs_time_steps,v_0,T,magnify,control_animation_interval,movie_create,ghost,axis_choice,x_init,y_init)
+function [x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time]=modulized_time_delay_proto(N,delta_t,dt,Obs_time_steps,v_0,T,x_init,y_init)
 % clear;
 % close all
 %% Setup for Running the program

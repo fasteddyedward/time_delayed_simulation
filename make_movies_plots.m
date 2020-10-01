@@ -1,4 +1,4 @@
-function make_movies_plots
+function make_movies_plots(N,delta_t,v_0,dt,Obs_time_steps,x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace)
 
 %% Plotting figures
     %%% Plotting v_x
@@ -51,7 +51,11 @@ switch movie_create
 
 %     for k=1+delta_t/dt:animation_interval:Obs_time_steps+delta_t/dt % frames with k=1:delta_t/dt do not move
     for k=1:animation_interval:Obs_time_steps+delta_t/dt % frames with k=1:delta_t/dt only diffuses
-%         clf
+        switch leave_trace
+            case 'on'
+            case 'off'
+        clf
+        end
         grid on
         %% Calculating center of mass and the std deviation of the particles
         cm_x=mean(x(:,k),1);
@@ -128,3 +132,4 @@ xlabel('time (ms)')
 ylabel('v_\omega(rad/ms) /v_0 ')
 legend('1','2','3','\deltat')        
 end
+
