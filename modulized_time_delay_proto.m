@@ -21,8 +21,8 @@ D=k_B*T/gamma; % Diffusitivity
 % magnify=1 control_animation_interval=10^4 movie_create='on' ghost='off'
 % axis_choice='lab'; %'cm' or 'lab'
 %% Checking comparison of Driving force and diffusion
-% delta_x=F_x*dt+normrnd(0,sqrt(2*D*dt)) ~ v_0*dt+sqrt(2*D*dt)
-['The ratio v_0/(2D) is ',num2str(v_0*dt/(sqrt(2*D*dt)))]
+% delta_x=F_x*dt+normrnd(0,sqrt(4*D*dt)) ~ v_0*dt+sqrt(4*D*dt)
+['The ratio v_0*dt/sqrt(4*D*dt) is ',num2str(v_0*dt/(sqrt(4*D*dt)))]
 %% Warning for choosing time steps 
 %%% If the Obs_time is smaller than time delay delta_t, the F_x and F_y we
 %%% see will be flat, since the particle hasn't started to move yet.
@@ -44,8 +44,8 @@ delta_x(1:N,1:Obs_time_steps+delta_t/dt)=0;
 delta_y(1:N,1:Obs_time_steps+delta_t/dt)=0;
 for k=1:1+delta_t/dt
     for i=1:N
-            delta_x(i,k)=normrnd(0,sqrt(2*D*dt));
-            delta_y(i,k)=normrnd(0,sqrt(2*D*dt));
+            delta_x(i,k)=normrnd(0,sqrt(4*D*dt));
+            delta_y(i,k)=normrnd(0,sqrt(4*D*dt));
             x(i,k+1)=x(i,k)+delta_x(i,k);
             y(i,k+1)=y(i,k)+delta_y(i,k);
     end
@@ -85,8 +85,8 @@ for k=1:Obs_time_steps
         if e_x(i)^2+e_y(i)^2==0 && e_y(i)==0             
             F_y(i,k+delta_t/dt)=0;        end
         %% Storing the particle's displacement (including the fluctuation)
-        delta_x(i,k+delta_t/dt)=F_x(i,k+delta_t/dt)*dt+normrnd(0,sqrt(2*D*dt));
-        delta_y(i,k+delta_t/dt)=F_y(i,k+delta_t/dt)*dt+normrnd(0,sqrt(2*D*dt));
+        delta_x(i,k+delta_t/dt)=F_x(i,k+delta_t/dt)*dt+normrnd(0,sqrt(4*D*dt));
+        delta_y(i,k+delta_t/dt)=F_y(i,k+delta_t/dt)*dt+normrnd(0,sqrt(4*D*dt));
         %% Updating particle position with Particle Interaction and Diffusion
         x(i,1+k+delta_t/dt)=x(i,k+delta_t/dt)+delta_x(i,k+delta_t/dt);
         y(i,1+k+delta_t/dt)=y(i,k+delta_t/dt)+delta_y(i,k+delta_t/dt);
