@@ -1,4 +1,6 @@
 %% This file runs modulized_time_delay_proto
+%% 2020.10.6 This is a branch for testing deterministic motion of particles (T=0)
+%% Also note that the v_0 has been modified to 10^-6 mm/ms
 clear;
 close all
 %% Setup for Running the program
@@ -9,9 +11,9 @@ Obs_time_steps=10^5
 % Obs_time=Obs_time_steps*dt;
 
 %% Coefficients and parameters
-v_0= 10^-4; % mm/ms
+v_0= 10^-6; % mm/ms
 % gamma=6*pi*1.0016*10^-3*10^-6; % Stoke's drag, gamma=6*pi*eta*a
-T=300; % Kelvin 
+T=30; % Kelvin 
 % k_B=10^-23; % Boltzmann constant
 % D=k_B*T/gamma; % Diffusitivity
 
@@ -21,10 +23,10 @@ for i=1:N
     y_init(i)=0;
 end
 for i=1:N
-    x_init(i)=i*10^-4;
-    y_init(i)=i*10^-4;
+    x_init(i)=i*10^-6;
+    y_init(i)=i*10^-6;
 end
-y_init(3)=2*10^-4;
+y_init(3)=1*10^-6;
 %% Start calculating finite element numericals for the equation of motion
 [x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time]=modulized_time_delay_proto(N,delta_t,dt,Obs_time_steps,v_0,T,x_init,y_init);
 %% Parameters for making the movies
