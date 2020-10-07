@@ -1,5 +1,8 @@
-function make_movies_plots(N,delta_t,v_0,dt,Obs_time_steps,x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace)
-
+function [MovieVector,v_omega]=make_movies_plots(N,delta_t,v_0,dt,Obs_time_steps,x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace)
+switch movie_create
+    case 'off'
+    MovieVector=[];
+end
 %% Plotting figures
     %%% Plotting v_x
 figure
@@ -38,8 +41,8 @@ switch movie_create
     % time
 
     movie_frame_index=1; % For movie recording, increases 1 for each recorded frame
-    mean_x=mean(x(:,1+delta_t/dt:end),2); % We take the part of x and y after t=delta_t 
-    mean_y=mean(y(:,1+delta_t/dt:end),2);
+    mean_x=mean(x(:,1+2*delta_t/dt:end),2); % We take the part of x and y after t=delta_t 
+    mean_y=mean(y(:,1+2*delta_t/dt:end),2);
     std=0; % This is for setting the axis
     figure
     for i=1:N
@@ -54,7 +57,7 @@ switch movie_create
         switch leave_trace
             case 'on'
             case 'off'
-        clf
+                clf
         end
         grid on
         %% Calculating center of mass and the std deviation of the particles
@@ -99,13 +102,13 @@ switch movie_create
     end
 toc
 
-    %% Save video 
-    myWriter=VideoWriter('collection');
-    % myWriter=VideoWriter(['delta_t=',num2str(delta_t),', ',axis_choice,' frame, Obs_time_steps=',num2str(Obs_time_steps),', log(dt)=',num2str(log10(dt))] );
-    myWriter.FrameRate=20;
-    open(myWriter);
-    writeVideo(myWriter,MovieVector);
-    close(myWriter);
+%     %% Save video
+% %     myWriter=VideoWriter('collection');movie_name
+%     myWriter=VideoWriter(movie_name); %
+%     myWriter=VideoWriter(['delta_t=',num2str(delta_t),', ',axis_choice,'
+%     frame, Obs_time_steps=',num2str(Obs_time_steps),',
+%     log(dt)=',num2str(log10(dt))] ); myWriter.FrameRate=20;
+%     open(myWriter); writeVideo(myWriter,MovieVector); close(myWriter);
 end
 %% Analyzing the angular frequency
 v_omega(1:N,1:Obs_time_steps+delta_t/dt)=0;
