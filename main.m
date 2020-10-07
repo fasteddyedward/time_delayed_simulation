@@ -4,16 +4,19 @@
 clear;
 close all
 %% Here are the control parameters set to test dt in this file (the original values will be replaced with variable_name_test)
-dt_test=[10^0, 10^-1, 10^-2, 10^-3]
-Obs_time_test=10^3
+dt_test=[10^1, 10^0, 10^-1 ,10^-2 ,10^-3]
+Obs_time_test=10^5
+
+%%
 for nth_loop=1:length(dt_test)
+    tic
     %% Setup for Running the program
     N=3; % number of particles in the play
-    delta_t=50; % ms
+    delta_t=0; % ms
     %     dt=10^-2; % ms
     dt=dt_test(nth_loop)
     %     Obs_time_steps=10^5
-    Obs_time_steps=Obs_time_test./dt
+    Obs_time_steps=Obs_time_test/dt
     % Obs_time=Obs_time_steps*dt;
     
     %% Coefficients and parameters
@@ -50,26 +53,61 @@ for nth_loop=1:length(dt_test)
     % 1000 takes about 150 seconds.
     
     %% Start plotting the movies and plots
-    tic
+    %     tic
     [MovieVector,v_omega]=make_movies_plots(N,delta_t,v_0,dt,Obs_time_steps,x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace);
-    toc
+    %     toc
     %% Save movie
     switch movie_create
         case 'on'
             %             movie_name='collection';
-            movie_name=['2020.10.7_dt=',num2str(nth_loop),'.avi'];
+            movie_name=['2020.10.7_log(dt)=',num2str(log10(dt)),'.avi'];
             % movie_name=['delta_t=',num2str(delta_t),', ',axis_choice,' frame, Obs_time_steps=',num2str(Obs_time_steps),', log(dt)=',num2str(log10(dt))]
             frame_rate=10;
-%             cd videos_dt_test_T=0
+            %             cd videos_dt_test_T=0
             save_movie(MovieVector,movie_name,frame_rate);
-%             cd ..
+            %             cd ..
     end
     %% Saving work space
-    tic
+    %     tic
     cd videos_dt_test_T=0
     %     save('collection')
-    save(['2020.10.7_dt=',num2str(nth_loop),'.mat'])
+    save(['2020.10.7_log(dt)=',num2str(log10(dt)),'.mat'])
     cd ..
+    %     toc
+    'end of one nth_loop'
     toc
-    
 end
+
+
+%% Checking if the plots have small enough dt
+close all
+dt_test2=dt_test; % This line is to make sure that the loading of .mat file doesn't overwrite dt_test2
+% dt_test2=[10^-1 10^-2 10^-3]
+Legend=cell(length(dt_test2),1);
+for nth_loop=1:length(dt_test2)
+    dt=dt_test2(nth_loop)
+    cd videos_dt_test_T=0
+    %         cd Obs_time=10e5
+    cd Obs_time=10e2_delta_t=0
+    load(['2020.10.7_log(dt)=',num2str(log10(dt)),'.mat'])
+    cd ..
+    cd ..
+    
+    Legend{nth_loop}=num2str(dt);
+    figure(1)
+    hold on
+    plot(time,y(1,1:end-1))
+    
+    figure(2)
+    hold on
+    plot(time,y(2,1:end-1))
+    %     pause
+end
+figure(1)
+legend(Legend)
+xline(delta_t)
+figure(2)
+legend(Legend)
+xline(delta_t)
+%%
+
