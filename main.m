@@ -46,10 +46,13 @@ tic
 [MovieVector,v_omega]=make_movies_plots(N,delta_t,v_0,dt,Obs_time_steps,x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace);
 toc
 %% Save movie 
-movie_name='collection'
-% movie_name=['delta_t=',num2str(delta_t),', ',axis_choice,' frame, Obs_time_steps=',num2str(Obs_time_steps),', log(dt)=',num2str(log10(dt))]
-frame_rate=10
-save_movie(MovieVector,movie_name,frame_rate);
+switch movie_create
+case 'on'
+    movie_name='collection'
+    % movie_name=['delta_t=',num2str(delta_t),', ',axis_choice,' frame, Obs_time_steps=',num2str(Obs_time_steps),', log(dt)=',num2str(log10(dt))]
+    frame_rate=10
+    save_movie(MovieVector,movie_name,frame_rate);
+end
 %% Saving work space
 tic
 save('collection')
