@@ -4,7 +4,7 @@
 clear;
 close all
 %% Here are the control parameters set to test dt in this file (the original values will be replaced with variable_name_test)
-dt_test=[10^1, 10^0, 10^-1 ,10^-2 ,10^-3]
+dt_test=[10^1 10^0 10^-1 10^-2 10^-3]
 Obs_time_test=10^5
 
 %%
@@ -12,7 +12,7 @@ for nth_loop=1:length(dt_test)
     tic
     %% Setup for Running the program
     N=3; % number of particles in the play
-    delta_t=0; % ms
+    delta_t=50; % ms
     %     dt=10^-2; % ms
     dt=dt_test(nth_loop)
     %     Obs_time_steps=10^5
@@ -81,33 +81,84 @@ end
 
 %% Checking if the plots have small enough dt
 close all
-dt_test2=dt_test; % This line is to make sure that the loading of .mat file doesn't overwrite dt_test2
-% dt_test2=[10^-1 10^-2 10^-3]
+% dt_test2=dt_test; % This line is to make sure that the loading of .mat file doesn't overwrite dt_test2
+
+dt_test2=[ 10^-3 10^-2]
 Legend=cell(length(dt_test2),1);
-for nth_loop=1:length(dt_test2)
-    dt=dt_test2(nth_loop)
+for mth_loop=1:length(dt_test2)
+    dt=dt_test2(mth_loop)
     cd videos_dt_test_T=0
-    %         cd Obs_time=10e5
-    cd Obs_time=10e2_delta_t=0
+    cd Obs_time=10e5
+    %     cd Obs_time=10e2_delta_t=0
     load(['2020.10.7_log(dt)=',num2str(log10(dt)),'.mat'])
     cd ..
     cd ..
     
-    Legend{nth_loop}=num2str(dt);
+    Legend{mth_loop}=num2str(dt)
     figure(1)
     hold on
-    plot(time,y(1,1:end-1))
+    plot(time,x(1,1:end-1))
     
     figure(2)
     hold on
+    plot(time,y(1,1:end-1))
+    
+    figure(3)
+    hold on
+    plot(time,x(2,1:end-1))
+    
+    figure(4)
+    hold on
     plot(time,y(2,1:end-1))
+    
+    figure(5)
+    hold on
+    plot(time,x(3,1:end-1))
+    
+    figure(6)
+    hold on
+    plot(time,y(3,1:end-1))
     %     pause
 end
+
+cd videos_dt_test_T=0
 figure(1)
 legend(Legend)
 xline(delta_t)
+% saveas(gcf,'x-position of particle 1.pdf')
+print(gcf,'x-position of particle 1.png','-dpng','-r1000')
+
 figure(2)
 legend(Legend)
 xline(delta_t)
+% saveas(gcf,'y-position of particle 1.jpg')
+print(gcf,'y-position of particle 1.png','-dpng','-r1000')
+
+figure(3)
+legend(Legend)
+xline(delta_t)
+% saveas(gcf,'x-position of particle 2.png')
+print(gcf,'x-position of particle 2.png','-dpng','-r1000')
+
+figure(4)
+legend(Legend)
+xline(delta_t)
+% saveas(gcf,'y-position of particle 2.png')
+print(gcf,'y-position of particle 2.png','-dpng','-r1000')
+
+figure(5)
+legend(Legend)
+xline(delta_t)
+% saveas(gcf,'x-position of particle 3.png')
+print(gcf,'x-position of particle 3.png','-dpng','-r1000')
+
+figure(6)
+legend(Legend)
+xline(delta_t)
+print(gcf,'y-position of particle 3.png','-dpng','-r1000')
+cd ..
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+clear; % just to release memeory and easier to zoom in the plots
+close all
 %%
 
