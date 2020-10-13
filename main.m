@@ -3,13 +3,13 @@ clear;
 close all
 %% Setup for Running the program
 N=3; % number of particles in the play
-delta_t=5; % ms
-dt=10^-2; % ms 
-Obs_time_steps=10^5
+delta_t=50; % ms
+dt=10^-3; % ms 
+Obs_time_steps=10^6
 % Obs_time=Obs_time_steps*dt;
 
 %% Coefficients and parameters
-v_0= 10^-4; % mm/ms
+v_0= 10^-6; % mm/ms
 % gamma=6*pi*1.0016*10^-3*10^-6; % Stoke's drag, gamma=6*pi*eta*a
 T=300; % Kelvin 
 % k_B=10^-23; % Boltzmann constant
@@ -29,7 +29,7 @@ y_init(3)=2*10^-4;
 [x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time]=modulized_time_delay_proto(N,delta_t,dt,Obs_time_steps,v_0,T,x_init,y_init);
 %% Parameters for making the movies
 magnify=1000
-control_animation_interval=10^2 % Record one frame in every ____ frame
+control_animation_interval=10^4 % Record one frame in every ____ frame
 movie_create='on'
 ghost='on'
 axis_choice='lab'; %'cm' or 'lab'
@@ -48,12 +48,14 @@ toc
 %% Save movie 
 switch movie_create
 case 'on'
-    movie_name='collection'
+    movie_name='2020.10.12,dt=10e-3'
+%     movie_name='collection'
     % movie_name=['delta_t=',num2str(delta_t),', ',axis_choice,' frame, Obs_time_steps=',num2str(Obs_time_steps),', log(dt)=',num2str(log10(dt))]
-    frame_rate=10
-    save_movie(MovieVector,movie_name,frame_rate);
+    frame_rate=100
+    save_movie(MovieVector(2:end),movie_name,frame_rate);
 end
 %% Saving work space
 tic
-save('collection')
+% save('collection')
+save([movie_name,'.mat'])
 toc
