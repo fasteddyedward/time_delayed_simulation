@@ -1,11 +1,14 @@
 %% This file runs modulized_time_delay_proto
-clear;
+%% 2020.10.14 to make the videos with several tries
+for nth_take=7
+clearvars -except nth_take
 close all
+
 %% Setup for Running the program
 N=3; % number of particles in the play
 delta_t=50; % ms
 dt=10^-3; % ms 
-Obs_time_steps=10^6
+Obs_time_steps=10^4
 % Obs_time=Obs_time_steps*dt;
 
 %% Coefficients and parameters
@@ -48,10 +51,10 @@ toc
 %% Save movie 
 switch movie_create
 case 'on'
-    movie_name='2020.10.12,dt=10e-3'
+    movie_name=['2020.10.14,dt=10e-3 take ',num2str(nth_take)]
 %     movie_name='collection'
     % movie_name=['delta_t=',num2str(delta_t),', ',axis_choice,' frame, Obs_time_steps=',num2str(Obs_time_steps),', log(dt)=',num2str(log10(dt))]
-    frame_rate=100
+    frame_rate=10
     save_movie(MovieVector(2:end),movie_name,frame_rate);
 end
 %% Saving work space
@@ -59,3 +62,4 @@ tic
 % save('collection')
 save([movie_name,'.mat'])
 toc
+end
