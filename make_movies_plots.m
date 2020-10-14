@@ -1,5 +1,8 @@
 function [MovieVector,v_omega]=make_movies_plots(N,delta_t,v_0,dt,Obs_time_steps,x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace)
-
+switch movie_create
+    case 'off'
+    MovieVector=[];
+end
 %% Plotting figures
     %%% Plotting v_x
 figure
@@ -22,10 +25,12 @@ legend('1','2','3')
 for i=1:N
     figure
     hold on
-    plot(x(i,:))
-    plot(y(i,:))
+    plot(time,x(i,1:end-1))
+    plot(time,y(i,1:end-1))
     title(['Position of particle ',num2str(i)])
     legend('x','y')
+    xlabel('time (ms)')
+    ylabel('position (mm)')
 end
 %% Making movie of the partilces
 tic
@@ -98,14 +103,6 @@ switch movie_create
     %     drawnow
     end
 toc
-
-%     %% Save video
-% %     myWriter=VideoWriter('collection');movie_name
-%     myWriter=VideoWriter(movie_name); %
-%     myWriter=VideoWriter(['delta_t=',num2str(delta_t),', ',axis_choice,'
-%     frame, Obs_time_steps=',num2str(Obs_time_steps),',
-%     log(dt)=',num2str(log10(dt))] ); myWriter.FrameRate=20;
-%     open(myWriter); writeVideo(myWriter,MovieVector); close(myWriter);
 end
 %% Analyzing the angular frequency
 v_omega(1:N,1:Obs_time_steps+delta_t/dt)=0;
