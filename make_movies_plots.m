@@ -65,13 +65,7 @@ switch movie_create
         %% Calculating center of mass and the std deviation of the particles
         cm_x=mean(x(:,k),1);
         cm_y=mean(y(:,k),1);
-        %% Running std for axis, but I guess it's not a good idea
-    %     std=0; for i=1:N
-    %         for j=i+1:N
-    %             std=std+(x(i,k)-x(j,k))^2+(y(i,k)-y(j,k))^2;
-    % %         std=std+(x(i,k)-cm_x)^2+(y(i,k)-cm_y)^2;
-    %         end
-    %     end std=sqrt(std/(N-1));
+
         for i=1:N
             hold on
             scatter(x(i,k),y(i,k),'filled')
@@ -127,10 +121,10 @@ for k=1:Obs_time_steps+delta_t/dt % k=1:delta_t/dt does not move
     cm_y=mean(y(:,k),1);
     
     for i=1:N
-        %                 R_x=x(i,k)-cm_x;
-        %                 R_y=y(i,k)-cm_y;
-        R_x=x(i,k)-circle_center_x(i);
-        R_y=y(i,k)-circle_center_y(i);
+                        R_x=x(i,k)-cm_x;
+                        R_y=y(i,k)-cm_y;
+%         R_x=x(i,k)-circle_center_x(i);
+%         R_y=y(i,k)-circle_center_y(i);
         R=[R_x R_y 0];
         v=[v_x(i,k) v_y(i,k) 0];
         cross_R_v=cross(R,v);
