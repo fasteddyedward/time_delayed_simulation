@@ -28,7 +28,7 @@ D=k_B*T/gamma; % Diffusitivity
 %%% see will be flat, since the particle hasn't started to move yet.
 if Obs_time<delta_t
     warning('The observation time is less than time delay, please choose a larger Obs_time')
-    pause
+%     pause
 end
 
 

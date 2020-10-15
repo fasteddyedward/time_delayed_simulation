@@ -1,4 +1,4 @@
-function [MovieVector,v_omega]=make_movies_plots(N,delta_t,v_0,dt,Obs_time_steps,x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace)
+function [MovieVector,v_omega]=make_movies_plots(N,delta_t,v_0,dt,Obs_time_steps,x,y,~,~,v_x,v_y,~,~,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace)
 switch movie_create
     case 'off'
     MovieVector=[];
@@ -53,8 +53,9 @@ switch movie_create
         end
     end
     std=sqrt(std/(N-1));
-
-%     for k=1+delta_t/dt:animation_interval:Obs_time_steps+delta_t/dt % frames with k=1:delta_t/dt do not move
+    
+    %     for k=1+delta_t/dt:animation_interval:Obs_time_steps+delta_t/dt % frames with k=1:delta_t/dt do not move
+    %         MovieVector(1:((Obs_time_steps+delta_t/dt)/animation_interval))=0;
     for k=1:animation_interval:Obs_time_steps+delta_t/dt % frames with k=1:delta_t/dt only diffuses
         switch leave_trace
             case 'on'
@@ -110,7 +111,7 @@ for i=1:N % Center of Circle of each particle's trajectory
         circle_center_y(i)=mean(y(i,time>time_to_steady_state));
     else
         warning('The simulation is not long enough for the system to reach stable state.')
-        pause
+%         pause
         circle_center_x(i)=mean(mean(x,1),2);
         circle_center_y(i)=mean(mean(y,1),2);
     end
