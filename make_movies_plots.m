@@ -1,4 +1,4 @@
-function [MovieVector,v_omega]=make_movies_plots(N,delta_t,v_0,dt,Obs_time_steps,x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace)
+function [MovieVector,v_omega]=make_movies_plots(N,delta_t,v_0,dt,Obs_time_steps,x,y,~,~,v_x,v_y,~,~,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace)
 switch movie_create
     case 'off'
     MovieVector=[];
@@ -25,13 +25,14 @@ legend('1','2','3')
 for i=1:N
     figure
     hold on
-    plot(x(i,:))
-    plot(y(i,:))
+    plot(time,x(i,1:end-1))
+    plot(time,y(i,1:end-1))
     title(['Position of particle ',num2str(i)])
     legend('x','y')
+    xlabel('time (ms)')
+    ylabel('position (mm)')
 end
 %% Making movie of the partilces
-tic
 switch movie_create
     case 'off'
         'No movie created.'
@@ -51,8 +52,9 @@ switch movie_create
         end
     end
     std=sqrt(std/(N-1));
-
-%     for k=1+delta_t/dt:animation_interval:Obs_time_steps+delta_t/dt % frames with k=1:delta_t/dt do not move
+    
+    %     for k=1+delta_t/dt:animation_interval:Obs_time_steps+delta_t/dt % frames with k=1:delta_t/dt do not move
+    %         MovieVector(1:((Obs_time_steps+delta_t/dt)/animation_interval))=0;
     for k=1:animation_interval:Obs_time_steps+delta_t/dt % frames with k=1:delta_t/dt only diffuses
         switch leave_trace
             case 'on'
@@ -63,13 +65,7 @@ switch movie_create
         %% Calculating center of mass and the std deviation of the particles
         cm_x=mean(x(:,k),1);
         cm_y=mean(y(:,k),1);
-        %% Running std for axis, but I guess it's not a good idea
-    %     std=0; for i=1:N
-    %         for j=i+1:N
-    %             std=std+(x(i,k)-x(j,k))^2+(y(i,k)-y(j,k))^2;
-    % %         std=std+(x(i,k)-cm_x)^2+(y(i,k)-cm_y)^2;
-    %         end
-    %     end std=sqrt(std/(N-1));
+
         for i=1:N
             hold on
             scatter(x(i,k),y(i,k),'filled')
@@ -100,24 +96,34 @@ switch movie_create
         movie_frame_index=movie_frame_index+1;
     %     drawnow
     end
-toc
-
-%     %% Save video
-% %     myWriter=VideoWriter('collection');movie_name
-%     myWriter=VideoWriter(movie_name); %
-%     myWriter=VideoWriter(['delta_t=',num2str(delta_t),', ',axis_choice,'
-%     frame, Obs_time_steps=',num2str(Obs_time_steps),',
-%     log(dt)=',num2str(log10(dt))] ); myWriter.FrameRate=20;
-%     open(myWriter); writeVideo(myWriter,MovieVector); close(myWriter);
 end
 %% Analyzing the angular frequency
+% movie_name
 v_omega(1:N,1:Obs_time_steps+delta_t/dt)=0;
+circle_center_x(1:3)=0;
+circle_center_y(1:3)=0;
+time_to_steady_state=600; %ms
+for i=1:N % Center of Circle of each particle's trajectory
+    if time(end)>time_to_steady_state
+        circle_center_x(i)=mean(x(i,time>time_to_steady_state));
+        circle_center_y(i)=mean(y(i,time>time_to_steady_state));
+    else
+        warning('The simulation is not long enough for the system to reach stable state.')
+%         pause
+        circle_center_x(i)=mean(mean(x,1),2);
+        circle_center_y(i)=mean(mean(y,1),2);
+    end
+end
+
 for k=1:Obs_time_steps+delta_t/dt % k=1:delta_t/dt does not move
     cm_x=mean(x(:,k),1);
     cm_y=mean(y(:,k),1);
+    
     for i=1:N
-        R_x=x(i,k)-cm_x;
-        R_y=y(i,k)-cm_y;
+                        R_x=x(i,k)-cm_x;
+                        R_y=y(i,k)-cm_y;
+%         R_x=x(i,k)-circle_center_x(i);
+%         R_y=y(i,k)-circle_center_y(i);
         R=[R_x R_y 0];
         v=[v_x(i,k) v_y(i,k) 0];
         cross_R_v=cross(R,v);
@@ -126,9 +132,12 @@ for k=1:Obs_time_steps+delta_t/dt % k=1:delta_t/dt does not move
 end
 figure;
 hold on
-plot(time,v_omega(1,:))
-plot(time,v_omega(2,:))
-plot(time,v_omega(3,:))
+% plot(time,v_omega(1,:))
+% plot(time,v_omega(2,:))
+% plot(time,v_omega(3,:))
+plot(time,movmean(v_omega(1,:),100000))
+plot(time,movmean(v_omega(2,:),100000))
+plot(time,movmean(v_omega(3,:),100000))
 xline(delta_t)
 title('Normalized Rotation Speed')
 xlabel('time (ms)')
