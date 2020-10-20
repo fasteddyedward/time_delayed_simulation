@@ -1,4 +1,4 @@
-function [MovieVector,v_omega]=make_movies_plots(N,delta_t,v_0,dt,movie_time_steps,x,y,~,~,v_x,v_y,~,~,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace)
+function [MovieVector,v_omega]=make_movies_plots(N,delta_t,v_0,dt,movie_time_steps,x,y,~,~,v_x,v_y,~,~,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace,axis_scale)
 switch movie_create
     case 'off'
     MovieVector=[];
@@ -41,21 +41,26 @@ switch movie_create
     % time
 
     movie_frame_index=1; % For movie recording, increases 1 for each recorded frame
-    mean_x=mean(x(:,1+2*delta_t/dt:end),2); % We take the part of x and y after t=delta_t 
-    mean_y=mean(y(:,1+2*delta_t/dt:end),2);
-    std=0; % This is for setting the axis
-    figure(101)
-    for i=1:N
-        for j=i+1:N
-            std=std+(mean_x(i)-mean_x(j))^2+(mean_y(i)-mean_y(j))^2;
-        end
+
+    switch axis_choice
+        case 'cm'
+            mean_x=mean(x(:,1+2*delta_t/dt:end),2); % We take the part of x and y after t=delta_t
+            mean_y=mean(y(:,1+2*delta_t/dt:end),2);
+            std=0; % This is for setting the axis for cm frame
+            for i=1:N
+                for j=i+1:N
+                    std=std+(mean_x(i)-mean_x(j))^2+(mean_y(i)-mean_y(j))^2;
+                end
+            end
+            std=sqrt(std/(N-1));
     end
-    std=sqrt(std/(N-1));
     
     %     for k=1+delta_t/dt:animation_interval:Obs_time_steps+delta_t/dt % frames with k=1:delta_t/dt do not move
     %         MovieVector(1:((Obs_time_steps+delta_t/dt)/animation_interval))=0;
-%     for k=1:animation_interval:partition_time_steps+delta_t/dt % frames with k=1:delta_t/dt only diffuses
-    for k=1:control_animation_interval:delta_t/dt % frames with k=1:delta_t/dt only diffuses
+    %     for k=1:animation_interval:partition_time_steps+delta_t/dt % frames with k=1:delta_t/dt only diffuses
+    figure(101)
+    %     for k=1:control_animation_interval:delta_t/dt % frames with k=1:delta_t/dt only diffuses
+    for k=1:control_animation_interval:movie_time_steps % frames with k=1:delta_t/dt only diffuses
         switch leave_trace
             case 'on'
             case 'off'
@@ -85,7 +90,7 @@ switch movie_create
         %% Axis of choice
         switch axis_choice
             case 'lab'
-                axis_scale=[min(min(x)) max(max(x)) min(min(y)) max(max(y))];
+%                 axis_scale=[min(min(x)) max(max(x)) min(min(y)) max(max(y))];
                 axis(axis_scale);
             case 'cm'
                 axis([cm_x-magnify*std   cm_x+magnify*std   cm_y-magnify*std   cm_y+magnify*std]);
