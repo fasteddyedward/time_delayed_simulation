@@ -22,11 +22,11 @@ tic
 % tic
 %% Setup for Running the program
 N=3; % number of particles in the play
-delta_t=5; % ms
+delta_t=50; % ms
 dt=10^-3; % ms 
-Obs_time_steps=10^5   ;
+Obs_time_steps=10^7   ;
 % Obs_time=Obs_time_steps*dt;
-partition_time_steps=10^4  ;
+partition_time_steps=10^5  ;
 if partition_time_steps<delta_t/dt
     warning(['Please choose a partitioned time step larger than delta/dt= ',num2str(delta_t/dt)])
     pause
@@ -61,6 +61,7 @@ y_temp=y;
 %% Second stage: Delayed interaction starts. t=delta_t~Obs_time
 for lth_partition=2:round(Obs_time_steps/partition_time_steps)+1
     [x,y,~,~,v_x,v_y,~,~,~]=modulized_time_delay_proto(N,delta_t,dt,partition_time_steps,v_0,T,x_temp,y_temp,lth_partition);
+    ['lth_partition= ',num2str(lth_partition),' out of ',num2str(round(Obs_time_steps/partition_time_steps)+1)]
     movie_x_max=max([movie_x_max max(x)]);        movie_x_min=min([movie_x_min min(x)]);        movie_y_max=max([movie_y_max max(y)]);        movie_y_min=min([movie_y_min min(y)]);
     save([movie_name,' partition_',num2str(lth_partition),'.mat']);
     x_temp=x(:,end-delta_t/dt:end); % This last postitions of delayed time delta_t goes to the next round for simulation
@@ -92,8 +93,6 @@ for lth_partition=1:round(Obs_time_steps/partition_time_steps)+1
         v_y_full_time=[v_y_full_time v_y(:,1:end)];
     end
 end
-
-%
 x=x_full_time;
 y=y_full_time;
 v_x=v_x_full_time;
@@ -106,7 +105,7 @@ clear time
 %% Parameters for making the movies
 tic
 magnify=1000    ;
-control_animation_interval=10^4     ; % Record one frame in every ____ frame
+control_animation_interval=10^5     ; % Record one frame in every ____ frame
 movie_create='on'   ;
 ghost='on'      ;
 axis_choice='lab'; %'cm' or 'lab' 
