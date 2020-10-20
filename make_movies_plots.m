@@ -4,23 +4,23 @@ switch movie_create
     MovieVector=[];
 end
 %% Plotting figures
-    %%% Plotting v_x
-figure
-hold on
-for i=1:N
-    plot(time,v_x(i,:))
-end
-title('v_x')
-legend('1','2','3')
+    %% Plotting v_x
+% figure
+% hold on
+% for i=1:N
+%     plot(time,v_x(i,:))
+% end
+% title('v_x')
+% legend('1','2','3')
 
-    %%% Plotting v_y
-figure
-hold on
-for i=1:N
-    plot(time,v_y(i,:))
-end
-title('v_y')
-legend('1','2','3')
+    %% Plotting v_y
+% figure
+% hold on
+% for i=1:N
+%     plot(time,v_y(i,:))
+% end
+% title('v_y')
+% legend('1','2','3')
 %%
 for i=1:N
     figure
@@ -110,7 +110,9 @@ for i=1:N % Center of Circle of each particle's trajectory
         circle_center_x(i)=mean(x(i,time>time_to_steady_state));
         circle_center_y(i)=mean(y(i,time>time_to_steady_state));
     else
-        warning('The simulation is not long enough for the system to reach stable state.')
+        if i==1
+            warning('The simulation is not long enough for the system to reach stable state.')
+        end
 %         pause
         circle_center_x(i)=mean(mean(x,1),2);
         circle_center_y(i)=mean(mean(y,1),2);
