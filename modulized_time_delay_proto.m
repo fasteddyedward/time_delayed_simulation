@@ -3,9 +3,9 @@
 %% And copy everything above to main.m. 
 %% Just remember to comment the variables that were inputted to this file.
 
-function [x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time]=modulized_time_delay_proto(N,delta_t,dt,Obs_time_steps,v_0,T,x_init,y_init)
+function [x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time]=modulized_time_delay_proto(N,delta_t,dt,partition_time_steps,v_0,T,x_temp,y_temp,lth_partition)
 %% Setup for Running the program
-Obs_time=Obs_time_steps*dt;
+% Obs_time=Obs_time_steps*dt;
 
 %% Coefficients and parameters
 % v_0= 10^-5; % mm/ms
@@ -17,32 +17,33 @@ D=k_B*T/gamma; % Diffusitivity
 % delta_x=F_x*dt+normrnd(0,sqrt(4*D*dt)) ~ v_0*dt+sqrt(4*D*dt)
 ['The ratio v_0*dt/sqrt(4*D*dt) is ',num2str(v_0*dt/(sqrt(4*D*dt)))]
 %% Warning for choosing time steps 
-%%% If the Obs_time is smaller than time delay delta_t, the F_x and F_y we
-%%% see will be flat, since the particle hasn't started to move yet.
-if Obs_time<delta_t
-    warning('The observation time is less than time delay, please choose a larger Obs_time')
-end
+% %%% If the Obs_time is smaller than time delay delta_t, the F_x and F_y we
+% %%% see will be flat, since the particle hasn't started to move yet.
+% if Obs_time<delta_t
+%     warning('The observation time is less than time delay, please choose a larger Obs_time')
+% end
 
 
 %% Start solving equation of motion
-for i=1:N
-    x(i,1)=x_init(i);
-    y(i,1)=y_init(i);
-end
+% for i=1:N
+%     x(i,1)=x_init(i);
+%     y(i,1)=y_init(i);
+% end
 %% First stage: Diffusion. t=0 ~ delta_t
-F_x(1:N)=0;
-F_y(1:N)=0;
-for k=1:1+delta_t/dt
-    for i=1:N
-            x(i,k+1)=x(i,k)+normrnd(0,sqrt(4*D*dt));
-            y(i,k+1)=y(i,k)+normrnd(0,sqrt(4*D*dt));
-    end
-end
-
+% F_x(1:N)=0;
+% F_y(1:N)=0;
+% for k=1:1+delta_t/dt
+%     for i=1:N
+%             x(i,k+1)=x(i,k)+normrnd(0,sqrt(4*D*dt));
+%             y(i,k+1)=y(i,k)+normrnd(0,sqrt(4*D*dt));
+%     end
+% end
+x=x_temp;
+y=y_temp;
 %% Second stage: Delayed interaction starts. t=delta_t~Obs_time
 delta_x(1:N)=0;
 delta_y(1:N)=0;
-for k=1:Obs_time_steps
+for k=1:partition_time_steps
     e_x(1:N)=0; % template value
     e_y(1:N)=0;
     diff_x(1:N,1:N)=0;
@@ -87,11 +88,12 @@ for k=1:Obs_time_steps
         y(i,1+k+delta_t/dt)=y(i,k+delta_t/dt)+delta_y(i);
         end
 end
-
+x(:,1:size(x_temp,2)-1)=[];
+y(:,1:size(y_temp,2)-1)=[];
 %% Calculating the velocities at each timestep (from t=0+delta_t ~ Obs_time+delta_t)
 v_x=diff(x,1,2)/dt;
 v_y=diff(y,1,2)/dt;
-time=(1:Obs_time_steps+delta_t/dt)*dt;
+time=(1+(lth_partition-2)*partition_time_steps+delta_t/dt:(lth_partition-1)*partition_time_steps+delta_t/dt)*dt;
 end
     
     
