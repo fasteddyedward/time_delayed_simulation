@@ -1,27 +1,30 @@
 %% This file runs modulized_time_delay_proto
 %% 2020.10.14 to make the videos with several tries
-for nth_take=22
+for nth_take=27
 clearvars -except nth_take
 close all
 %% Output File Name
-% warning('Have you modified the file name?')
-% pause
 movie_name=['2020.10.16,dt=10e-3 take ',num2str(nth_take)];
-answer = questdlg(['Is the file name correct? ',movie_name], ...
-	'File Name Check', ...
-	'Yes','No, I will  modify it','No, I will modify it ');
-switch answer
-    case 'Yes'
-        'Start running program...'
-    case 'No, I will  modify it'
-        error('Please modify the file name')
-end
+warning('Have you modified the file name?')
+% pause
 tic
+%% Output File Name
+% movie_name=['2020.10.16,dt=10e-3 take ',num2str(nth_take)];
+% answer = questdlg(['Is the file name correct? ',movie_name], ...
+% 	'File Name Check', ...
+% 	'Yes','No, I will  modify it','No, I will modify it ');
+% switch answer
+%     case 'Yes'
+%         'Start running program...'
+%     case 'No, I will  modify it'
+%         error('Please modify the file name')
+% end
+% tic
 %% Setup for Running the program
 N=3; % number of particles in the play
 delta_t=50; % ms
 dt=10^-3; % ms 
-Obs_time_steps=10^7
+Obs_time_steps=10^5
 % Obs_time=Obs_time_steps*dt;
 
 %% Coefficients and parameters
@@ -49,13 +52,16 @@ tic
 clear time
 %% Parameters for making the movies
 magnify=1000    ;
-control_animation_interval=10^4     ; % Record one frame in every ____ frame
+control_animation_interval=10^3     ; % Record one frame in every ____ frame
 movie_create='on'   ;
 ghost='on'      ;
-axis_choice='lab'; %'cm' or 'lab'
+axis_choice='lab'; %'cm' or 'lab' 
 leave_trace='off'       ;
 close all
-(Obs_time_steps+delta_t/dt)/control_animation_interval      ;
+if control_animation_interval>Obs_time_steps+dt*delta_t
+    warning(['The number of movie frames is 0; Please modify control_animation_interval to a number smaller than Obs_time_steps= ',num2str(Obs_time_steps)])
+end
+    (Obs_time_steps+delta_t/dt)/control_animation_interval      ;
 if ((Obs_time_steps+delta_t/dt)/control_animation_interval>100)
     warning(['The plotting will take about ',num2str((Obs_time_steps+delta_t/dt)/control_animation_interval*0.15),' seconds. For faster time please choose different control_animation_interval'])
 end
@@ -68,8 +74,10 @@ clear x y v_x v_y time
 %% Save movie 
 switch movie_create
 case 'on'
+    if control_animation_interval<=Obs_time_steps+dt*delta_t
     frame_rate=5    ;
     save_movie(MovieVector(2:end),movie_name,frame_rate);
+    end
 end
 %% Saving work space
 save([movie_name,'.mat'],'MovieVector','v_omega','magnify','control_animation_interval','movie_create','ghost','axis_choice','leave_trace','-append')
