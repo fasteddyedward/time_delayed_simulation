@@ -39,8 +39,8 @@ T=300; % Kelvin
 
 
 %% Initial positions
-x_init(1:N)=[];
-y_init(1:N)=[];
+x_init(1:N)=0;
+y_init(1:N)=0;
 % for i=1:N
 %     x_init(i)=0;
 %     y_init(i)=0;
