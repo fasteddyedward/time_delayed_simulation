@@ -51,7 +51,7 @@ for i=1:N
 end
 y_init(3)=2*10^-4;
 %% Boundary of the particles (for making the movie)
-movie_x_max=0;movie_x_min=0;movie_y_max=0;movie_y_min=0;
+% movie_x_max=0;movie_x_min=0;movie_y_max=0;movie_y_min=0;
 
 
 %% Start calculating finite element numericals for the equation of motion
@@ -62,7 +62,7 @@ time_simulation_start=tic;
     % Obs_time_Steps in this case is round(delta_t/dt)
     ['lth_partition= ',num2str(1),' out of ',num2str(round(Obs_time_steps/partition_time_steps)+1)]
     [x,y,v_x,v_y,~]=first_stage_pure_diffusion(N,delta_t,dt,T,x_init,y_init);
-    movie_x_max=max([movie_x_max max(x)]);    movie_x_min=min([movie_x_min min(x)]);    movie_y_max=max([movie_y_max max(y)]);    movie_y_min=min([movie_y_min min(y)]);
+%     movie_x_max=max([movie_x_max max(x)]);    movie_x_min=min([movie_x_min min(x)]);    movie_y_max=max([movie_y_max max(y)]);    movie_y_min=min([movie_y_min min(y)]);
     save([movie_name,' partition_',num2str(1),'.mat']); %% Takes ~ 0.16 sec
     x_temp=x;
     y_temp=y;
@@ -70,7 +70,7 @@ time_simulation_start=tic;
     for lth_partition=2:round(Obs_time_steps/partition_time_steps)+1
         ['lth_partition= ',num2str(lth_partition),' out of ',num2str(round(Obs_time_steps/partition_time_steps)+1)]
         [x,y,~,~,v_x,v_y,~,~,~]=second_stage_delayed_int(N,delta_t,dt,partition_time_steps,v_0,T,x_temp,y_temp,lth_partition);
-        movie_x_max=max([movie_x_max max(x)]);        movie_x_min=min([movie_x_min min(x)]);        movie_y_max=max([movie_y_max max(y)]);        movie_y_min=min([movie_y_min min(y)]);
+%         movie_x_max=max([movie_x_max max(x)]);        movie_x_min=min([movie_x_min min(x)]);        movie_y_max=max([movie_y_max max(y)]);        movie_y_min=min([movie_y_min min(y)]);
         save([movie_name,' partition_',num2str(lth_partition),'.mat']);
         x_temp=x(:,end-delta_t/dt:end); % This last postitions of delayed time delta_t goes to the next round for simulation
         y_temp=y(:,end-delta_t/dt:end);
@@ -84,6 +84,10 @@ time_simulation=toc(time_simulation_start)
 %% Loading all the recorded positions (! Might cause memery overflow)
 combine_data_partitions_start=tic;
 [x,y,v_x,v_y,time]=combine_partitions(movie_name,Obs_time_steps,partition_time_steps,delta_t,dt);
+movie_x_max=max(x,[],'all');
+movie_y_max=max(y,[],'all');
+movie_x_min=min(x,[],'all');
+movie_y_min=min(y,[],'all');
 save([movie_name,'.mat']);
 clear x y v_x v_y time
 time_combine_data_partitions=toc(combine_data_partitions_start)
