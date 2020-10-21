@@ -1,13 +1,12 @@
 %% This file runs modulized_time_delay_proto
 %% 2020.10.14 to make the videos with several tries
-for nth_take=37
+for nth_take=39
 clearvars -except nth_take
 close all
 %% Output File Name
-movie_name=['2020.10.20,dt=10e-4 take ',num2str(nth_take)];
+movie_name=['2020.10.21,dt=10e-3 take ',num2str(nth_take)];
 warning('Have you modified the file name?')
 % pause
-tic
 %% Output File Name
 % movie_name=['2020.10.16,dt=10e-3 take ',num2str(nth_take)];
 % answer = questdlg(['Is the file name correct? ',movie_name], ...
@@ -22,11 +21,15 @@ tic
 % tic
 %% Setup for Running the program
 N=3; % number of particles in the play
-delta_t=50; % ms
+delta_t=0.5; % ms
 dt=10^-3; % ms 
-Obs_time_steps=10^6   ;
 % Obs_time=Obs_time_steps*dt;
-partition_time_steps=10^5  ;
+Obs_time_steps=10^4   ;
+partition_time_steps=10^3  ;
+if partition_time_steps>Obs_time_steps
+    warning(['Please choose a partitioned time step larger than Obs_time_steps= ',num2str(Obs_time_steps)])
+    pause
+end
 if partition_time_steps<delta_t/dt
     warning(['Please choose a partitioned time step larger than delta/dt= ',num2str(delta_t/dt)])
     pause
@@ -49,8 +52,12 @@ end
 y_init(3)=2*10^-4;
 %% Boundary of the particles (for making the movie)
 movie_x_max=0;movie_x_min=0;movie_y_max=0;movie_y_min=0;
-%% Start calculating finite element numericals for the equation of motion
 
+
+%% Start calculating finite element numericals for the equation of motion
+time_simulation_start=tic;
+    %% Making Folder for the Partitioned Files
+    if (~exist(movie_name, 'dir')); mkdir(movie_name); end%if
     %% First stage: Diffusion. t=0 ~ delta_t (lth_partition=1)
     % Obs_time_Steps in this case is round(delta_t/dt)
     ['lth_partition= ',num2str(1),' out of ',num2str(round(Obs_time_steps/partition_time_steps)+1)]
@@ -69,10 +76,13 @@ movie_x_max=0;movie_x_min=0;movie_y_max=0;movie_y_min=0;
         y_temp=y(:,end-delta_t/dt:end);
         clear time
     end
-    toc
+clear x_temp y_temp
+time_simulation=toc(time_simulation_start)
+
+
 
 %% Loading all the recorded positions (! Might cause memery overflow)
-tic
+combine_data_partitions_start=tic;
 x_full_time=[];
 y_full_time=[];
 v_x_full_time=[];
@@ -85,6 +95,7 @@ for lth_partition=1:round(Obs_time_steps/partition_time_steps)+1
         y_full_time=[y_full_time y(:,1:end)];
         v_x_full_time=[v_x_full_time v_x(:,1:end)];
         v_y_full_time=[v_y_full_time v_y(:,1:end)];
+        movefile([movie_name,' partition_',num2str(lth_partition),'.mat'],movie_name);
     else
         %% Putting the data for the second stage: interactions
         load([movie_name,' partition_',num2str(lth_partition),'.mat'],'x','y','v_x','v_y')
@@ -92,20 +103,21 @@ for lth_partition=1:round(Obs_time_steps/partition_time_steps)+1
         y_full_time=[y_full_time y(:,2:end)];
         v_x_full_time=[v_x_full_time v_x(:,1:end)];
         v_y_full_time=[v_y_full_time v_y(:,1:end)];
+        movefile([movie_name,' partition_',num2str(lth_partition),'.mat'],movie_name);
     end
 end
 x=x_full_time;
 y=y_full_time;
 v_x=v_x_full_time;
 v_y=v_y_full_time;
-clear x_full_time y_full_time v_x_full_time v_y_full_time x_temp y_temp
+clear x_full_time y_full_time v_x_full_time v_y_full_time 
 time=(1:Obs_time_steps+delta_t/dt)*dt;
 save([movie_name,'.mat']);
 clear time
-toc
+time_combine_data_partitions=toc(combine_data_partitions_start)
 
 %% Parameters for making the movies
-tic
+making_movies=tic;
 magnify=1000    ;
 control_animation_interval=10^4     ; % Record one frame in every ____ frame
 movie_create='on'   ;
@@ -123,8 +135,6 @@ end
 % 1000 takes about 150 seconds. 
 
 %% Start plotting the movies and plots
-% load([movie_name,'.mat'],'time','x','y','v_x','v_y')
-% [MovieVector,v_omega]=make_movies_plots(N,delta_t,v_0,dt,Obs_time_steps,x,y,NaN,NaN,v_x,v_y,NaN,NaN,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace);
 load([movie_name,'.mat'],'time','x','y')
 MovieVector=make_movies_plots(N,delta_t,NaN,dt,Obs_time_steps,x,y,NaN,NaN,NaN,NaN,NaN,NaN,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace);
 clear time x y
@@ -142,12 +152,13 @@ clear time x y
     %% Saving work space
     save([movie_name,'.mat'],'MovieVector','magnify','control_animation_interval','movie_create','ghost','axis_choice','leave_trace','-append')
     clear MovieVector
-    
+time_making_movies=toc(making_movies)
 %% Start Analyzing the Rotation Behavior
+Analyze_rot=tic;
 load([movie_name,'.mat'],'time','x','y','v_x','v_y')
 v_omega=Rotation(N,x,y,v_0,v_x,v_y,time,delta_t,Obs_time_steps,dt);
-save([movie_name,'.mat','v_omega','-append'])
+save([movie_name,'.mat'],'v_omega','-append')
 clear v_omega x y v_x v_y time
-toc
+time_analyze_rot=toc(Analyze_rot)
 end
 
