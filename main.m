@@ -1,6 +1,6 @@
 %% This file runs modulized_time_delay_proto
 %% 2020.10.14 to make the videos with several tries
-for nth_take=39
+for nth_take=4
 clearvars -except nth_take
 close all
 %% Output File Name
@@ -83,37 +83,9 @@ time_simulation=toc(time_simulation_start)
 
 %% Loading all the recorded positions (! Might cause memery overflow)
 combine_data_partitions_start=tic;
-x_full_time=[];
-y_full_time=[];
-v_x_full_time=[];
-v_y_full_time=[];
-for lth_partition=1:round(Obs_time_steps/partition_time_steps)+1
-    if lth_partition==1
-        %% Putting the data for the first stage: pure diffusion
-        load([movie_name,' partition_',num2str(lth_partition),'.mat'],'x','y','v_x','v_y')
-        x_full_time=[x_full_time x(:,1:end)];
-        y_full_time=[y_full_time y(:,1:end)];
-        v_x_full_time=[v_x_full_time v_x(:,1:end)];
-        v_y_full_time=[v_y_full_time v_y(:,1:end)];
-        movefile([movie_name,' partition_',num2str(lth_partition),'.mat'],movie_name);
-    else
-        %% Putting the data for the second stage: interactions
-        load([movie_name,' partition_',num2str(lth_partition),'.mat'],'x','y','v_x','v_y')
-        x_full_time=[x_full_time x(:,2:end)];
-        y_full_time=[y_full_time y(:,2:end)];
-        v_x_full_time=[v_x_full_time v_x(:,1:end)];
-        v_y_full_time=[v_y_full_time v_y(:,1:end)];
-        movefile([movie_name,' partition_',num2str(lth_partition),'.mat'],movie_name);
-    end
-end
-x=x_full_time;
-y=y_full_time;
-v_x=v_x_full_time;
-v_y=v_y_full_time;
-clear x_full_time y_full_time v_x_full_time v_y_full_time 
-time=(1:Obs_time_steps+delta_t/dt)*dt;
+[x,y,v_x,v_y,time]=combine_partitions(movie_name,Obs_time_steps,partition_time_steps,delta_t,dt);
 save([movie_name,'.mat']);
-clear time
+clear x y v_x v_y time
 time_combine_data_partitions=toc(combine_data_partitions_start)
 
 %% Parameters for making the movies
@@ -160,5 +132,7 @@ v_omega=Rotation(N,x,y,v_0,v_x,v_y,time,delta_t,Obs_time_steps,dt);
 save([movie_name,'.mat'],'v_omega','-append')
 clear v_omega x y v_x v_y time
 time_analyze_rot=toc(Analyze_rot)
+%% Clearing Unwanted Timing Variables
+clear Analyze_rot combine_data_partitions_start making_movies time_simulation_start
 end
 
