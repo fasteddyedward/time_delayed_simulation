@@ -1,10 +1,11 @@
 %% This file runs modulized_time_delay_proto
 %% 2020.10.14 to make the videos with several tries
-for nth_take=4
+for nth_take=42
 clearvars -except nth_take
 close all
 %% Output File Name
-movie_name=['2020.10.21,dt=10e-3 take ',num2str(nth_take)];
+% movie_name=['2020.10.21,dt=10e-3 take ',num2str(nth_take)];
+movie_name=['test3']
 warning('Have you modified the file name?')
 % pause
 %% Output File Name
@@ -57,7 +58,7 @@ y_init(3)=2*10^-4;
 %% Start calculating finite element numericals for the equation of motion
 time_simulation_start=tic;
     %% Making Folder for the Partitioned Files
-    if (~exist(movie_name, 'dir')); mkdir(movie_name); end%if
+%     if (~exist(movie_name, 'dir')); mkdir(movie_name); end%if
     %% First stage: Diffusion. t=0 ~ delta_t (lth_partition=1)
     % Obs_time_Steps in this case is round(delta_t/dt)
     ['lth_partition= ',num2str(1),' out of ',num2str(round(Obs_time_steps/partition_time_steps)+1)]
@@ -80,14 +81,18 @@ clear x_temp y_temp
 time_simulation=toc(time_simulation_start)
 
 
-
+%% Putting all the files into a folder
+if (~exist(movie_name, 'dir')); mkdir(movie_name); end%if
+for lth_partition=1:round(Obs_time_steps/partition_time_steps)+1
+    movefile([movie_name,' partition_',num2str(lth_partition),'.mat'],movie_name);
+end
 %% Loading all the recorded positions (! Might cause memery overflow)
 combine_data_partitions_start=tic;
 [x,y,v_x,v_y,time]=combine_partitions(movie_name,Obs_time_steps,partition_time_steps,delta_t,dt);
-movie_x_max=max(x,[],'all');
-movie_y_max=max(y,[],'all');
-movie_x_min=min(x,[],'all');
-movie_y_min=min(y,[],'all');
+% movie_x_max=max(x,[],'all');
+% movie_y_max=max(y,[],'all');
+% movie_x_min=min(x,[],'all');
+% movie_y_min=min(y,[],'all');
 save([movie_name,'.mat']);
 clear x y v_x v_y time
 time_combine_data_partitions=toc(combine_data_partitions_start)
@@ -130,7 +135,7 @@ clear time x y
     clear MovieVector
 time_making_movies=toc(making_movies)
 %% Start Analyzing the Rotation Behavior
-Analyze_rot=tic;
+Analyze_rot=tic; 
 load([movie_name,'.mat'],'time','x','y','v_x','v_y')
 v_omega=Rotation(N,x,y,v_0,v_x,v_y,time,delta_t,Obs_time_steps,dt);
 save([movie_name,'.mat'],'v_omega','-append')
