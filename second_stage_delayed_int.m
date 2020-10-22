@@ -9,9 +9,9 @@ function [x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time]=second_stage_delayed_int(N,d
 
 %% Coefficients and parameters
 % v_0= 10^-5; % mm/ms
-gamma=6*pi*1.0016*10^-3*10^-6; % Stoke's drag, gamma=6*pi*eta*a
+gamma=1; % Stoke's drag, gamma=6*pi*eta*a
 % T=300; % Kelvin
-k_B=10^-23; % Boltzmann constant
+k_B=1; % Boltzmann constant
 D=k_B*T/gamma; % Diffusitivity
 %% Checking comparison of Driving force and diffusion
 % delta_x=F_x*dt+normrnd(0,sqrt(4*D*dt)) ~ v_0*dt+sqrt(4*D*dt)

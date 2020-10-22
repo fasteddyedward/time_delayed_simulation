@@ -11,12 +11,12 @@ warning('Have you modified the file name?')
 
 %% Setup for Running the program
 N=3; % number of particles in the play
-delta_t=0.5; % ms
+delta_t=1; % ms
 dt=10^-3; % ms 
 % Obs_time=Obs_time_steps*dt;
-Obs_time_steps=10^4   ;
-partition_time_steps=10^3  ;
-partition_movie='yes';
+Obs_time_steps=10^5   ;
+partition_time_steps=Obs_time_steps ;
+partition_movie='no';
 if partition_time_steps>Obs_time_steps
     warning(['Please choose a partitioned time step larger than Obs_time_steps= ',num2str(Obs_time_steps)])
     pause
@@ -41,9 +41,9 @@ end
 % tic
 
 %% Coefficients and parameters
-v_0= 10^-6; % mm/ms
+v_0= 1; % mm/ms
 % gamma=6*pi*1.0016*10^-3*10^-6; % Stoke's drag, gamma=6*pi*eta*a
-T=300; % Kelvin 
+T=0.01; % Kelvin 
 % k_B=10^-23; % Boltzmann constant
 % D=k_B*T/gamma; % Diffusitivity
 
@@ -52,10 +52,10 @@ T=300; % Kelvin
 x_init(1:N)=0;
 y_init(1:N)=0;
 for i=1:N
-    x_init(i)=i*10^-4;
-    y_init(i)=i*10^-4;
+    x_init(i)=i*10^1;
+    y_init(i)=i*10^1;
 end
-y_init(3)=2*10^-4;
+y_init(3)=2*10^1;
 %% Boundary of the particles (for making the movie)
 movie_x_max=0;movie_x_min=0;movie_y_max=0;movie_y_min=0;
 
@@ -119,9 +119,9 @@ axis_scale=[movie_x_min movie_x_max movie_y_min movie_y_max];
     %% Parameters for making the movies
     making_movies=tic;
     magnify=1000    ;
-    control_animation_interval=10^4     ; % Record one frame in every ____ frame
+    control_animation_interval=10^2     ; % Record one frame in every ____ frame
     movie_create='on'   ;
-    ghost='on'      ;
+    ghost='off'      ;
     axis_choice='lab'; %'cm' or 'lab' 
     leave_trace='off'       ;
     close all
