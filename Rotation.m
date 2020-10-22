@@ -37,7 +37,7 @@ for k=1:partition_time_steps % k=1:delta_t/dt does not move
         v_omega(i,k)=cross_R_v(3)/(norm(R))/v_0; %Normalized angular speed
     end
 end
-figure(102)
+figure(99)
 hold on
 switch partition_movie
     case 'yes'

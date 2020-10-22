@@ -1,8 +1,8 @@
-function [MovieVector]=make_movies_plots(N,delta_t,~,dt,partition_time_steps,~,x,y,~,~,~,~,~,~,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace)
+function [Movie_Vector]=make_movies_plots(N,delta_t,~,dt,partition_time_steps,~,x,y,~,~,~,~,~,~,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace,axis_scale)
 % function [MovieVector,v_omega]=make_movies_plots(N,delta_t,v_0,dt,Obs_time_steps,x,y,~,~,v_x,v_y,~,~,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace)
 switch movie_create
     case 'off'
-    MovieVector=[];
+    Movie_Vector=[];
 end
 %% Plotting figures
     %% Plotting v_x
@@ -24,7 +24,7 @@ end
 % legend('1','2','3')
 %%
 for i=1:N
-    figure(100)
+    figure(100+i)
     hold on
     plot(time,x(i,1:end-1))
     plot(time,y(i,1:end-1))
@@ -47,7 +47,7 @@ switch movie_create
     mean_x=mean(x(:,1+2*delta_t/dt:end),2); % We take the part of x and y after t=delta_t 
     mean_y=mean(y(:,1+2*delta_t/dt:end),2);
     std=0; % This is for setting the axis
-    figure(101)
+    figure(100)
     for i=1:N
         for j=i+1:N
             std=std+(mean_x(i)-mean_x(j))^2+(mean_y(i)-mean_y(j))^2;
@@ -89,7 +89,7 @@ switch movie_create
         %% Axis of choice
         switch axis_choice
             case 'lab'
-                axis_scale=[min(min(x)) max(max(x)) min(min(y)) max(max(y))];
+%                 axis_scale=[min(min(x)) max(max(x)) min(min(y)) max(max(y))];
                 axis(axis_scale);
             case 'cm'
                 %                                 axis([cm_x-magnify*std   cm_x+magnify*std   cm_y-magnify*std   cm_y+magnify*std]);
@@ -100,7 +100,7 @@ switch movie_create
         end
         
         %%% For making movie
-        MovieVector(movie_frame_index)=getframe(gcf);
+        Movie_Vector(movie_frame_index)=getframe(gcf);
         movie_frame_index=movie_frame_index+1;
     %     drawnow
     end
