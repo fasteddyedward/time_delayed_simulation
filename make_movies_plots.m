@@ -1,4 +1,4 @@
-function [MovieVector]=make_movies_plots(N,delta_t,~,dt,Obs_time_steps,x,y,~,~,~,~,~,~,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace)
+function [MovieVector]=make_movies_plots(N,delta_t,~,dt,partition_time_steps,~,x,y,~,~,~,~,~,~,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace)
 % function [MovieVector,v_omega]=make_movies_plots(N,delta_t,v_0,dt,Obs_time_steps,x,y,~,~,v_x,v_y,~,~,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace)
 switch movie_create
     case 'off'
@@ -24,7 +24,7 @@ end
 % legend('1','2','3')
 %%
 for i=1:N
-    figure
+    figure(100)
     hold on
     plot(time,x(i,1:end-1))
     plot(time,y(i,1:end-1))
@@ -47,7 +47,7 @@ switch movie_create
     mean_x=mean(x(:,1+2*delta_t/dt:end),2); % We take the part of x and y after t=delta_t 
     mean_y=mean(y(:,1+2*delta_t/dt:end),2);
     std=0; % This is for setting the axis
-    figure
+    figure(101)
     for i=1:N
         for j=i+1:N
             std=std+(mean_x(i)-mean_x(j))^2+(mean_y(i)-mean_y(j))^2;
@@ -57,7 +57,8 @@ switch movie_create
     
     %     for k=1+delta_t/dt:animation_interval:Obs_time_steps+delta_t/dt % frames with k=1:delta_t/dt do not move
     %         MovieVector(1:((Obs_time_steps+delta_t/dt)/animation_interval))=0;
-    for k=1:animation_interval:Obs_time_steps+delta_t/dt % frames with k=1:delta_t/dt only diffuses
+%     for k=1:animation_interval:Obs_time_steps+delta_t/dt % frames with k=1:delta_t/dt only diffuses
+    for k=1:animation_interval:partition_time_steps % frames with k=1:delta_t/dt only diffuses
         switch leave_trace
             case 'on'
             case 'off'
@@ -105,53 +106,5 @@ switch movie_create
     end
 toc
 end
-%% Analyzing the angular frequency
-% % movie_name
-% v_omega(1:N,1:Obs_time_steps+delta_t/dt)=0;
-% circle_center_x(1:3)=0;
-% circle_center_y(1:3)=0;
-% time_to_steady_state=600; %ms
-% for i=1:N % Center of Circle of each particle's trajectory
-%     if time(end)>time_to_steady_state
-%         circle_center_x(i)=mean(x(i,time>time_to_steady_state));
-%         circle_center_y(i)=mean(y(i,time>time_to_steady_state));
-%     else
-%         if i==1
-%             warning('The simulation is not long enough for the system to reach stable state.')
-%         end
-% %         pause
-%         circle_center_x(i)=mean(mean(x,1),2);
-%         circle_center_y(i)=mean(mean(y,1),2);
-%     end
-% end
-% 
-% for k=1:Obs_time_steps+delta_t/dt % k=1:delta_t/dt does not move
-%     cm_x=mean(x(:,k),1);
-%     cm_y=mean(y(:,k),1);
-%     
-%     for i=1:N
-%                         R_x=x(i,k)-cm_x;
-%                         R_y=y(i,k)-cm_y;
-% %         R_x=x(i,k)-circle_center_x(i);
-% %         R_y=y(i,k)-circle_center_y(i);
-%         R=[R_x R_y 0];
-%         v=[v_x(i,k) v_y(i,k) 0];
-%         cross_R_v=cross(R,v);
-%         v_omega(i,k)=cross_R_v(3)/(norm(R))/v_0; %Normalized angular speed
-%     end
-% end
-% figure;
-% hold on
-% % plot(time,v_omega(1,:))
-% % plot(time,v_omega(2,:))
-% % plot(time,v_omega(3,:))
-% plot(time,movmean(v_omega(1,:),100000))
-% plot(time,movmean(v_omega(2,:),100000))
-% plot(time,movmean(v_omega(3,:),100000))
-% xline(delta_t)
-% title('Normalized Rotation Speed')
-% xlabel('time (ms)')
-% ylabel('v_\omega(rad/ms) /v_0 ')
-% legend('1','2','3','\deltat')        
 end
 
