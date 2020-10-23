@@ -3,16 +3,16 @@
 %% And copy everything above to main.m. 
 %% Just remember to comment the variables that were inputted to this file.
 
-function [x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time]=second_stage_delayed_int(N,delta_t,dt,partition_time_steps,v_0,T,x_temp,y_temp,lth_partition)
+function [x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time]=second_stage_delayed_int(N,delta_t,dt,partition_time_steps,v_0,T,x_temp,y_temp,lth_partition,gamma,k_B,D)
 %% Setup for Running the program
 % Obs_time=Obs_time_steps*dt;
 
 %% Coefficients and parameters
 % v_0= 10^-5; % mm/ms
-gamma=1; % Stoke's drag, gamma=6*pi*eta*a
+% gamma=1; % Stoke's drag, gamma=6*pi*eta*a
 % T=300; % Kelvin
-k_B=1; % Boltzmann constant
-D=k_B*T/gamma; % Diffusitivity
+% k_B=1; % Boltzmann constant
+% D=k_B*T/gamma; % Diffusitivity
 %% Checking comparison of Driving force and diffusion
 % delta_x=F_x*dt+normrnd(0,sqrt(4*D*dt)) ~ v_0*dt+sqrt(4*D*dt)
 % ['The ratio v_0*dt/sqrt(4*D*dt) is ',num2str(v_0*dt/(sqrt(4*D*dt)))]
