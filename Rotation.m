@@ -1,4 +1,4 @@
-function v_omega=Rotation(N,x,y,v_0,v_x,v_y,time,partition_time_steps,delta_t,partition_movie)
+function v_omega=Rotation(N,x,y,v_0,v_x,v_y,time,partition_time_steps,delta_t,partition_movie,moving_avg)
 %% Analyzing the angular frequency
 % movie_name
 % v_omega(1:N,1:Obs_time_steps+delta_t/dt)=0;
@@ -42,21 +42,15 @@ hold on
 switch partition_movie
     case 'yes'
         for i=1:N
-            plot(time,movmean(v_omega(i,:),100000))
-            % plot(time,v_omega(1,:))
-            % plot(time,v_omega(2,:))
-            % plot(time,v_omega(3,:))
+            plot(time,movmean(v_omega(i,:),moving_avg))
         end
     case 'no'
         for i=1:N
-            plot(time,movmean(v_omega(i,:),100000))
-            % plot(time,movmean(v_omega(1,:),100000))
-            % plot(time,movmean(v_omega(2,:),100000))
-            % plot(time,movmean(v_omega(3,:),100000))
+            plot(time,movmean(v_omega(i,:),moving_avg))
         end
 end
 xline(delta_t)
-title('Normalized Rotation Speed')
+title('Normalized Rotation Speed (test plot)')
 xlabel('time (ms)')
 ylabel('v_\omega(rad/ms) /v_0 ')
 legend('1','2','3','\deltat')        

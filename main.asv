@@ -15,7 +15,7 @@ dt=10^-3; % ms
 % Obs_time=Obs_time_steps*dt;
 Obs_time_steps=10^6
 partition_time_steps=10^5
-partition_movie='no'
+partition_movie='yes'
 
 %% Coefficients and parameters
 v_0= 1; % mm/ms
@@ -35,7 +35,7 @@ elseif partition_time_steps<delta_t/dt
     pause
 end
 if (~exist('time', 'var'))
-    warning(['Some variables e.g. time,x,y has been existent, delete the old folders if the simulations crash.'])
+    warning(['
 end%if
 %% Initial positions
 x_init(1:N)=0;
@@ -122,6 +122,7 @@ axis_scale=[movie_x_min movie_x_max movie_y_min movie_y_max];
                     cd ..
                     time=(1:delta_t/dt)*dt;
                     Movie_Vector_Partition=make_movies_plots(N,delta_t,dt,delta_t/dt,x,y,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace,axis_scale);
+%                     v_omega_partition=Rotation(N,x,y,v_0,v_x,v_y,time,delta_t/dt,delta_t,partition_movie,moving_avg);
                     clear x y v_x v_y time
                 else
                     %% Start plotting movie for stage 2
@@ -144,19 +145,17 @@ axis_scale=[movie_x_min movie_x_max movie_y_min movie_y_max];
     clear Movie_Vector
     time_making_movies=toc(making_movies)
 
-
+    
+    
     
 %% Rotational Analysis
 Analyze_rot=tic;
 moving_avg=1000 ;
 Rotational_Analysis(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg);
 time_analyze_rot=toc(Analyze_rot)
-    
-%% check point to make sure time is not wrong, or %% Drawing v_omega will break
-time=(1:Obs_time_steps+delta_t/dt)*dt;
-save([movie_name,'.mat'],'time','-append')
 %% Drawing v_omega
-
+time=(1:Obs_time_steps+delta_t/dt)*dt;
+save(movie_name,'time','-append')
 moving_avg=1000 ;
 figure(98); clf %% Would be same as figure(99) if partition movie='no'
 plot_v_omega(N,delta_t,movie_name,moving_avg)
