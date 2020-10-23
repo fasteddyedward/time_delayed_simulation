@@ -41,13 +41,19 @@ figure(99)
 hold on
 switch partition_movie
     case 'yes'
-plot(time,v_omega(1,:))
-plot(time,v_omega(2,:))
-plot(time,v_omega(3,:))
+        for i=1:N
+            plot(time,movmean(v_omega(i,:),100000))
+            % plot(time,v_omega(1,:))
+            % plot(time,v_omega(2,:))
+            % plot(time,v_omega(3,:))
+        end
     case 'no'
-plot(time,movmean(v_omega(1,:),100000))
-plot(time,movmean(v_omega(2,:),100000))
-plot(time,movmean(v_omega(3,:),100000))
+        for i=1:N
+            plot(time,movmean(v_omega(i,:),100000))
+            % plot(time,movmean(v_omega(1,:),100000))
+            % plot(time,movmean(v_omega(2,:),100000))
+            % plot(time,movmean(v_omega(3,:),100000))
+        end
 end
 xline(delta_t)
 title('Normalized Rotation Speed')

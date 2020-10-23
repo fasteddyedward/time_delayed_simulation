@@ -1,5 +1,4 @@
-function [Movie_Vector]=make_movies_plots(N,delta_t,~,dt,partition_time_steps,~,x,y,~,~,~,~,~,~,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace,axis_scale)
-% function [MovieVector,v_omega]=make_movies_plots(N,delta_t,v_0,dt,Obs_time_steps,x,y,~,~,v_x,v_y,~,~,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace)
+function [Movie_Vector]=make_movies_plots(N,delta_t,dt,partition_time_steps,x,y,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace,axis_scale)
 switch movie_create
     case 'off'
     Movie_Vector=[];
