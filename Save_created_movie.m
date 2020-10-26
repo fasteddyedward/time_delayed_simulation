@@ -6,7 +6,7 @@ switch movie_create
             if exist('Movie_Vector','var')==0
                 load([movie_name,'.mat'],'Movie_Vector')
             end
-            save_movie(Movie_Vector(1:end),movie_name,frame_rate);
+            save_movie(Movie_Vector(2:end),movie_name,frame_rate);
         end
 end
 end
