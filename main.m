@@ -1,25 +1,21 @@
 %% This file runs modulized_time_delay_proto
 %% 2020.10.14 to make the videos with several tries
 clearvars -except nth_take
-
-
-nth_take=122
-delta_t_matrix=[0.01 0.1 1 5 10]
-T_matrix=[0.01 0.1 1 10]
-v_0_matrix=[0.01 0.1 1 10]
-% nth_interest=[55 76 81 96 97 102 107 117 118 123 128 133 138 139 143 144 149 154]
-nth_interest=[128 133 138 139 143 144 149 154]
-% 
-for delta_t_index=1:5
-%     nth_take=nth_take+1
-    for T_index=1:4
-%         nth_take=nth_take+1
-        for v_0_index=1:4
-%             nth_take=nth_take+1
-            if ismember(nth_take,nth_interest)
+nth_take=1
+% delta_t_matrix=[0.01 0.1 1 5 10]
+% T_matrix=[0.01 0.1 1 10]
+% v_0_matrix=[0.01 0.1 1 10]
+delta_t_matrix=[1]
+T_matrix=[1]
+v_0_matrix=[10]
+for delta_t_index=1:length(delta_t_matrix)
+    for T_index=1:length(T_matrix)
+        for v_0_index=1:length(v_0_matrix)
+            if 1
+                %             if ismember(nth_take,nth_interest)
 close all
 %% Output File Name
-movie_name=['2020.10.27,dt=10e-3 take ',num2str(nth_take)];
+movie_name=['2020.10.29,dt=10e-3 take ',num2str(nth_take)];
 % movie_name=['test3']
 warning('Have you modified the file name?')
 
@@ -28,12 +24,12 @@ N=3; % number of particles in the play
 delta_t=delta_t_matrix(delta_t_index); % ms
 dt=10^-3; % ms 
 % Obs_time=Obs_time_steps*dt;
-Obs_time_steps=10^7
-
-
+Obs_time_steps=10^6
 partition_time_steps=10^5
 partition_movie='no'
-
+%% For hardcore interaction
+hard_collision='on' % or 'off'
+a=10 % Particle radius, typically 1 micrometer
 %% Coefficients and parameters
 v_0= v_0_matrix(v_0_index); % mm/ms
 T=T_matrix(T_index); % Kelvin 
@@ -67,7 +63,7 @@ y_init(3)=2*10^1;
 time_simulation_start=tic;
 % movie_x_max=0;movie_x_min=0;movie_y_max=0;movie_y_min=0; %% Boundary
 % for the movie
-[x,y,v_x,v_y,movie_x_min,movie_x_max,movie_y_min,movie_y_max,x_final,y_final]=simulation(movie_name,Obs_time_steps,partition_time_steps,0,0,0,0,N,delta_t,dt,v_0,T,gamma,k_B,D,x_init,y_init);
+[x,y,v_x,v_y,movie_x_min,movie_x_max,movie_y_min,movie_y_max,x_final,y_final]=simulation(movie_name,Obs_time_steps,partition_time_steps,0,0,0,0,N,delta_t,dt,v_0,T,gamma,k_B,D,x_init,y_init,hard_collision,a);
 time_simulation=toc(time_simulation_start)
 
 %% Putting all the partitioned files into one folder
@@ -105,8 +101,8 @@ axis_scale=[movie_x_min movie_x_max movie_y_min movie_y_max];
     %% Parameters for making the movies
     making_movies=tic;
     magnify=1000    ;
-    control_animation_interval=10^4     ; % Record one frame in every ____ frame
-    movie_create='off'   ;
+    control_animation_interval=10^3     ; % Record one frame in every ____ frame
+    movie_create='on'   ;
     ghost='off'      ;
     axis_choice='lab'; %'cm' or 'lab'
     leave_trace='off'       ;
@@ -154,10 +150,10 @@ saveas(gcf,[movie_name,'.png'])
 %% Clearing Unwanted Timing Variables
 clear Analyze_rot combine_data_partitions_start making_movies time_simulation_start
             end
-            nth_take=nth_take+1
+            nth_take=nth_take+1;
         end
-        nth_take=nth_take+1
+        nth_take=nth_take+1;
     end
-    nth_take=nth_take+1
+    nth_take=nth_take+1;
 end
 

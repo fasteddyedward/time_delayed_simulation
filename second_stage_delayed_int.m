@@ -1,43 +1,6 @@
-%% This file is the modulated version of time_delay_proto. 
-%% Basically copy everything below the section %% Checking comparison of Driving force and diffusion to modulized_time_delay_proto.m
-%% And copy everything above to main.m. 
-%% Just remember to comment the variables that were inputted to this file.
+%% 2nd stage subfunction of simulation.m
 
-function [x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time]=second_stage_delayed_int(N,delta_t,dt,partition_time_steps,v_0,T,x_temp,y_temp,lth_partition,gamma,k_B,D)
-%% Setup for Running the program
-% Obs_time=Obs_time_steps*dt;
-
-%% Coefficients and parameters
-% v_0= 10^-5; % mm/ms
-% gamma=1; % Stoke's drag, gamma=6*pi*eta*a
-% T=300; % Kelvin
-% k_B=1; % Boltzmann constant
-% D=k_B*T/gamma; % Diffusitivity
-%% Checking comparison of Driving force and diffusion
-% delta_x=F_x*dt+normrnd(0,sqrt(4*D*dt)) ~ v_0*dt+sqrt(4*D*dt)
-% ['The ratio v_0*dt/sqrt(4*D*dt) is ',num2str(v_0*dt/(sqrt(4*D*dt)))]
-%% Warning for choosing time steps 
-% %%% If the Obs_time is smaller than time delay delta_t, the F_x and F_y we
-% %%% see will be flat, since the particle hasn't started to move yet.
-% if Obs_time<delta_t
-%     warning('The observation time is less than time delay, please choose a larger Obs_time')
-% end
-
-
-%% Start solving equation of motion
-% for i=1:N
-%     x(i,1)=x_init(i);
-%     y(i,1)=y_init(i);
-% end
-%% First stage: Diffusion. t=0 ~ delta_t
-% F_x(1:N)=0;
-% F_y(1:N)=0;
-% for k=1:1+delta_t/dt
-%     for i=1:N
-%             x(i,k+1)=x(i,k)+normrnd(0,sqrt(4*D*dt));
-%             y(i,k+1)=y(i,k)+normrnd(0,sqrt(4*D*dt));
-%     end
-% end
+function [x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time]=second_stage_delayed_int(N,delta_t,dt,partition_time_steps,v_0,T,x_temp,y_temp,lth_partition,gamma,k_B,D,hard_collision,a)
 x=x_temp;
 y=y_temp;
 %% Second stage: Delayed interaction starts. t=delta_t~Obs_time
@@ -86,6 +49,37 @@ for k=1:partition_time_steps
         %% Updating particle position with Particle Interaction and Diffusion
         x(i,1+k+delta_t/dt)=x(i,k+delta_t/dt)+delta_x(i);
         y(i,1+k+delta_t/dt)=y(i,k+delta_t/dt)+delta_y(i);
+        %% Including hard core interaction
+switch hard_collision
+    case 'on'
+            delta_x_attempt=x(i,k+1+delta_t/dt)-x(i,k+delta_t/dt);
+            delta_y_attempt=y(i,k+1+delta_t/dt)-y(i,k+delta_t/dt);
+            for j=1:N
+                if i>j % j has been updated to k+1+delta_t/dt, now updating i to k+1+delta_t/dt
+                    diff_x=x(j,k+1+delta_t/dt)-x(i,k+1+delta_t/dt);
+                    diff_y=y(j,k+1+delta_t/dt)-y(i,k+1+delta_t/dt);
+                    if diff_x^2+diff_y^2 < (2*a)^2
+                        %                             delta_x_attempt=x(i,k+1+delta_t/dt)-x(i,k+delta_t/dt);
+                        %                             delta_y_attempt=y(i,k+1+delta_t/dt)-y(i,k+delta_t/dt);
+                        x(i,k+1+delta_t/dt)=x(i,k+1+delta_t/dt)-0.5*delta_x_attempt; % the ith particle at k+1+delta_t/dt (hitting j) goes backwards half its way
+                        x(j,k+1+delta_t/dt)=x(j,k+1+delta_t/dt)+0.5*delta_x_attempt; % the jth particle at k+1+delta_t/dt (being hitted by i) goes forward half i's way
+                        y(i,k+1+delta_t/dt)=y(i,k+1+delta_t/dt)-0.5*delta_y_attempt;
+                        y(j,k+1+delta_t/dt)=y(j,k+1+delta_t/dt)+0.5*delta_y_attempt;
+                    end
+                elseif i<j % j has not been updated (now at k+delta_t/dt), now updating i to k+1+delta_t/dt
+                    diff_x=x(j,k+delta_t/dt)-x(i,k+1+delta_t/dt);
+                    diff_y=y(j,k+delta_t/dt)-y(i,k+1+delta_t/dt);
+                    if diff_x^2+diff_y^2 < (2*a)^2
+                        %                             delta_x_attempt=x(i,k+1+delta_t/dt)-x(i,k+delta_t/dt);
+                        %                             delta_y_attempt=y(i,k+1+delta_t/dt)-y(i,k+delta_t/dt);
+                        x(i,k+1+delta_t/dt)=x(i,k+1+delta_t/dt)-0.5*delta_x_attempt; % the ith particle at k+1 (hitting j) goes backwards half its way
+                        x(j,k+delta_t/dt)=x(j,k+delta_t/dt)    +0.5*delta_x_attempt; % the jth particle at k (being hitted by i) goes forward half i's way
+                        y(i,k+1+delta_t/dt)=y(i,k+1+delta_t/dt)-0.5*delta_y_attempt;
+                        y(j,k+delta_t/dt)=y(j,k+delta_t/dt)    +0.5*delta_y_attempt;
+                    end
+                end
+            end
+        end
         end
 end
 x(:,1:size(x_temp,2)-1)=[];

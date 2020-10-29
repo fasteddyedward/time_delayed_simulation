@@ -1,9 +1,9 @@
 %% For the v_omega caluculated in the simulations, if the v_omega doen't meet the requirement 
 %lower=78
-for nth_take=[143 144 149 154]
+for nth_take=[1]
 %     nth_take=154
     moving_avg=10000
-    movie_name=['2020.10.27,dt=10e-3 take ',num2str(nth_take)];
+    movie_name=['2020.10.29,dt=10e-3 take ',num2str(nth_take)];
 %     if (exist([movie_name,'.mat'],'file')==0)
 %         continue
 %     end
