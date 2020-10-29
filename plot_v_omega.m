@@ -8,5 +8,5 @@ end
 xline(delta_t)
 title('Normalized Rotation Speed')
 xlabel('time (ms)')
-ylabel('v_\omega(rad/ms) /v_0 ')
+ylabel('v_\omega(rad/ms) ')
 legend('1','2','3','\deltat')        

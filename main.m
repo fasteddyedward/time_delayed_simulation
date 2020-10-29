@@ -1,26 +1,42 @@
 %% This file runs modulized_time_delay_proto
 %% 2020.10.14 to make the videos with several tries
-for nth_take=49
 clearvars -except nth_take
+
+
+nth_take=122
+delta_t_matrix=[0.01 0.1 1 5 10]
+T_matrix=[0.01 0.1 1 10]
+v_0_matrix=[0.01 0.1 1 10]
+% nth_interest=[55 76 81 96 97 102 107 117 118 123 128 133 138 139 143 144 149 154]
+nth_interest=[128 133 138 139 143 144 149 154]
+% 
+for delta_t_index=1:5
+%     nth_take=nth_take+1
+    for T_index=1:4
+%         nth_take=nth_take+1
+        for v_0_index=1:4
+%             nth_take=nth_take+1
+            if ismember(nth_take,nth_interest)
 close all
 %% Output File Name
-% movie_name=['2020.10.26,dt=10e-3 take ',num2str(nth_take)];
-movie_name=['test3']
+movie_name=['2020.10.27,dt=10e-3 take ',num2str(nth_take)];
+% movie_name=['test3']
 warning('Have you modified the file name?')
 
 %% Setup for Running the program
 N=3; % number of particles in the play
-delta_t=0.1; % ms
+delta_t=delta_t_matrix(delta_t_index); % ms
 dt=10^-3; % ms 
 % Obs_time=Obs_time_steps*dt;
-Obs_time_steps=10^4
+Obs_time_steps=10^7
 
-partition_time_steps=10^3
+
+partition_time_steps=10^5
 partition_movie='no'
 
 %% Coefficients and parameters
-v_0= 1; % mm/ms
-T=0.01; % Kelvin 
+v_0= v_0_matrix(v_0_index); % mm/ms
+T=T_matrix(T_index); % Kelvin 
 gamma=1;
 k_B=1;
 % gamma=6*pi*1.0016*10^-3*10^-6; % Stoke's drag, gamma=6*pi*eta*a
@@ -90,7 +106,7 @@ axis_scale=[movie_x_min movie_x_max movie_y_min movie_y_max];
     making_movies=tic;
     magnify=1000    ;
     control_animation_interval=10^4     ; % Record one frame in every ____ frame
-    movie_create='on'   ;
+    movie_create='off'   ;
     ghost='off'      ;
     axis_choice='lab'; %'cm' or 'lab'
     leave_trace='off'       ;
@@ -132,8 +148,16 @@ save([movie_name,'.mat'],'time','-append')
 moving_avg=1000 ;
 figure(98); clf %% Would be same as figure(99) if partition movie='no'
 plot_v_omega(N,delta_t,movie_name,moving_avg)
+title(['Normalized Rotation Speed, v_0 = ',num2str(v_0),', \delta t = ',num2str(delta_t),', T = ',num2str(T)])
+% subtitle(['v_0=',num2str(v_0),', delta_t=',num2str(delta_t),', T=',num2str(T)])
 saveas(gcf,[movie_name,'.png'])
 %% Clearing Unwanted Timing Variables
 clear Analyze_rot combine_data_partitions_start making_movies time_simulation_start
+            end
+            nth_take=nth_take+1
+        end
+        nth_take=nth_take+1
+    end
+    nth_take=nth_take+1
 end
 
