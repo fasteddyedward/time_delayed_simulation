@@ -1,12 +1,12 @@
 %% This file runs modulized_time_delay_proto
 %% 2020.10.14 to make the videos with several tries
 clearvars -except nth_take
-nth_take=1
+nth_take=3
 % delta_t_matrix=[0.01 0.1 1 5 10]
 % T_matrix=[0.01 0.1 1 10]
 % v_0_matrix=[0.01 0.1 1 10]
 delta_t_matrix=[1]
-T_matrix=[1]
+T_matrix=[10]
 v_0_matrix=[10]
 for delta_t_index=1:length(delta_t_matrix)
     for T_index=1:length(T_matrix)
@@ -20,7 +20,7 @@ movie_name=['2020.10.29,dt=10e-3 take ',num2str(nth_take)];
 warning('Have you modified the file name?')
 
 %% Setup for Running the program
-N=3; % number of particles in the play
+N=5; % number of particles in the play
 delta_t=delta_t_matrix(delta_t_index); % ms
 dt=10^-3; % ms 
 % Obs_time=Obs_time_steps*dt;
@@ -29,7 +29,7 @@ partition_time_steps=10^5
 partition_movie='no'
 %% For hardcore interaction
 hard_collision='on' % or 'off'
-a=10 % Particle radius, typically 1 micrometer
+a=20 % Particle radius, typically 1 micrometer
 %% Coefficients and parameters
 v_0= v_0_matrix(v_0_index); % mm/ms
 T=T_matrix(T_index); % Kelvin 
@@ -50,15 +50,28 @@ end
 if (~exist('time', 'var'))
     warning(['Some variables e.g. time,x,y has been existent, delete the old folders if the simulations crash.'])
 end%if
+
+        
 %% Initial positions
 x_init(1:N)=0;
 y_init(1:N)=0;
 for i=1:N
-    x_init(i)=i*10^1;
-    y_init(i)=i*10^1;
+    x_init(i)=i*2*a;
+    y_init(i)=i*2*a;
 end
 y_init(3)=2*10^1;
-
+    %% Warning for initial position
+    for i=1:N
+        for j=i+1:N
+            diff_x=x_init(i)-x_init(j);
+            diff_y=y_init(i)-y_init(j);
+            if diff_x^2+diff_y^2 < (2*a)^2
+                warning('The particles initial position are too close!')
+                warning('If you decided to continue, the particles will appear to be stuck together; the hard core interaction does not have the ability to avoid this yet.')
+                pause
+            end
+        end
+    end
 %% Start calculating finite element numericals for the equation of motion
 time_simulation_start=tic;
 % movie_x_max=0;movie_x_min=0;movie_y_max=0;movie_y_min=0; %% Boundary
@@ -101,7 +114,7 @@ axis_scale=[movie_x_min movie_x_max movie_y_min movie_y_max];
     %% Parameters for making the movies
     making_movies=tic;
     magnify=1000    ;
-    control_animation_interval=10^3     ; % Record one frame in every ____ frame
+    control_animation_interval=10^4     ; % Record one frame in every ____ frame
     movie_create='on'   ;
     ghost='off'      ;
     axis_choice='lab'; %'cm' or 'lab'

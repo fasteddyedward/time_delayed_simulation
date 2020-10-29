@@ -1,6 +1,6 @@
 %% For the v_omega caluculated in the simulations, if the v_omega doen't meet the requirement 
 %lower=78
-for nth_take=[1]
+for nth_take=[3]
 %     nth_take=154
     moving_avg=10000
     movie_name=['2020.10.29,dt=10e-3 take ',num2str(nth_take)];
