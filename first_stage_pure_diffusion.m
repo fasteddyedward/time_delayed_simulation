@@ -1,6 +1,6 @@
 %% 1st stage subfunction of simulation.m
 
-function [x,y,v_x,v_y,time]=first_stage_pure_diffusion(N,delta_t,dt,T,x_init,y_init,gamma,k_B,D,hard_collision,a)
+function [x,y,v_x,v_y,time]=first_stage_pure_diffusion(N,delta_t,dt,T,x_init,y_init,gamma,k_B,D,hard_collision,a,b)
 
 %% Start solving equation of motion
 for i=1:N
@@ -48,6 +48,35 @@ for k=1:delta_t/dt
                         end
                     end
             end
+    end
+    %% What if the particles still overlap after the previous subsection?
+    while 1==1
+        check_relax(1:N,1:N)=0;
+        %             b=0.6;
+        for i=1:N
+            for j=1:N
+                if j~=i % both i and j have been updated to k+1+delta_t/dt, now updating i to k+1+delta_t/dt
+                    diff_x=x(j,k+1)-x(i,k+1);
+                    diff_y=y(j,k+1)-y(i,k+1);
+                    diff_r_sqr=diff_x^2+diff_y^2;
+                    if diff_r_sqr < (2*a)^2
+                        x(i,k+1)=x(i,k+1)-b*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the ith particle at k+1+delta_t/dt (hitting j) goes backwards half its way
+                        x(j,k+1)=x(j,k+1)+b*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the jth particle at k+1+delta_t/dt (being hitted by i) goes forward half i's way
+                        y(i,k+1)=y(i,k+1)-b*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
+                        y(j,k+1)=y(j,k+1)+b*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
+                    else
+                        check_relax(i,j)=1;
+                    end
+                end
+            end
+        end
+        
+        if sum(sum(check_relax,2))==N^2-N % All particles have inter distance larger than 2a
+            break
+        else
+            sum(sum(check_relax,2))
+            k
+        end
     end
 end
 

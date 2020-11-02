@@ -1,7 +1,7 @@
 %% This file runs modulized_time_delay_proto
 %% 2020.10.14 to make the videos with several tries
 clearvars -except nth_take
-nth_take=3
+nth_take=6
 % delta_t_matrix=[0.01 0.1 1 5 10]
 % T_matrix=[0.01 0.1 1 10]
 % v_0_matrix=[0.01 0.1 1 10]
@@ -20,7 +20,7 @@ movie_name=['2020.11.2,dt=10e-3 take ',num2str(nth_take)];
 warning('Have you modified the file name?')
 
 %% Setup for Running the program
-N=3; % number of particles in the play
+N=5; % number of particles in the play
 delta_t=delta_t_matrix(delta_t_index); % ms
 dt=10^-3; % ms 
 % Obs_time=Obs_time_steps*dt;
@@ -31,6 +31,7 @@ partition_movie='no'
 %% For hardcore interaction
 hard_collision='on' % or 'off'
 a=20 % Particle radius, typically 1 micrometer
+b= 0.6 % 0.5 is the least possible value, but would converge very slowly
 %% Coefficients and parameters
 v_0= v_0_matrix(v_0_index); % mm/ms
 T=T_matrix(T_index); % Kelvin 
@@ -56,9 +57,10 @@ end%if
 %% Initial positions
 x_init(1:N)=0;
 y_init(1:N)=0;
+c=2
 for i=1:N
-    x_init(i)=i*2*a;
-    y_init(i)=i*2*a;
+    x_init(i)=i*2*a*c;
+    y_init(i)=i*2*a*c;
 end
 y_init(3)=2*10^1;
     %% Warning for initial position
@@ -77,7 +79,7 @@ y_init(3)=2*10^1;
 time_simulation_start=tic;
 % movie_x_max=0;movie_x_min=0;movie_y_max=0;movie_y_min=0; %% Boundary
 % for the movie
-[x,y,v_x,v_y,movie_x_min,movie_x_max,movie_y_min,movie_y_max,x_final,y_final]=simulation(movie_name,Obs_time_steps,partition_time_steps,0,0,0,0,N,delta_t,dt,v_0,T,gamma,k_B,D,x_init,y_init,hard_collision,a);
+[x,y,v_x,v_y,movie_x_min,movie_x_max,movie_y_min,movie_y_max,x_final,y_final]=simulation(movie_name,Obs_time_steps,partition_time_steps,0,0,0,0,N,delta_t,dt,v_0,T,gamma,k_B,D,x_init,y_init,hard_collision,a,b);
 time_simulation=toc(time_simulation_start)
 
 %% Putting all the partitioned files into one folder

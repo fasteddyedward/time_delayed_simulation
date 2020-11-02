@@ -1,6 +1,6 @@
 %% 2nd stage subfunction of simulation.m
 
-function [x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time]=second_stage_delayed_int(N,delta_t,dt,partition_time_steps,v_0,T,x_temp,y_temp,lth_partition,gamma,k_B,D,hard_collision,a)
+function [x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time]=second_stage_delayed_int(N,delta_t,dt,partition_time_steps,v_0,T,x_temp,y_temp,lth_partition,gamma,k_B,D,hard_collision,a,b)
 x=x_temp;
 y=y_temp;
 %% Second stage: Delayed interaction starts. t=delta_t~Obs_time
@@ -83,9 +83,8 @@ for k=1:partition_time_steps
         end
         %% What if the particles still overlap after the previous subsection?
         while 1==1
-            %% Change I and J back to i, j
             check_relax(1:N,1:N)=0;
-            b=0.51;
+%             b=0.6;
             for i=1:N
                 for j=1:N
                     if j~=i % both i and j have been updated to k+1+delta_t/dt, now updating i to k+1+delta_t/dt
