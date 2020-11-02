@@ -1,12 +1,12 @@
 %% This file runs modulized_time_delay_proto
 %% 2020.10.14 to make the videos with several tries
 clearvars -except nth_take
-nth_take=3
+nth_take=1
 % delta_t_matrix=[0.01 0.1 1 5 10]
 % T_matrix=[0.01 0.1 1 10]
 % v_0_matrix=[0.01 0.1 1 10]
-delta_t_matrix=[1]
-T_matrix=[10]
+delta_t_matrix=[0.1]
+T_matrix=[0.01]
 v_0_matrix=[10]
 for delta_t_index=1:length(delta_t_matrix)
     for T_index=1:length(T_matrix)
@@ -15,17 +15,18 @@ for delta_t_index=1:length(delta_t_matrix)
                 %             if ismember(nth_take,nth_interest)
 close all
 %% Output File Name
-movie_name=['2020.10.29,dt=10e-3 take ',num2str(nth_take)];
+movie_name=['2020.11.2,dt=10e-3 take ',num2str(nth_take)];
 % movie_name=['test3']
 warning('Have you modified the file name?')
 
 %% Setup for Running the program
-N=5; % number of particles in the play
+N=3; % number of particles in the play
 delta_t=delta_t_matrix(delta_t_index); % ms
 dt=10^-3; % ms 
 % Obs_time=Obs_time_steps*dt;
 Obs_time_steps=10^6
 partition_time_steps=10^5
+
 partition_movie='no'
 %% For hardcore interaction
 hard_collision='on' % or 'off'
@@ -114,7 +115,7 @@ axis_scale=[movie_x_min movie_x_max movie_y_min movie_y_max];
     %% Parameters for making the movies
     making_movies=tic;
     magnify=1000    ;
-    control_animation_interval=10^4     ; % Record one frame in every ____ frame
+    control_animation_interval=10^3     ; % Record one frame in every ____ frame
     movie_create='on'   ;
     ghost='off'      ;
     axis_choice='lab'; %'cm' or 'lab'
