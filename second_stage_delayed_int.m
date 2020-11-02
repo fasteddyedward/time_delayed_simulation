@@ -85,16 +85,7 @@ for k=1:partition_time_steps
         while 1==1
             %% Change I and J back to i, j
             check_relax(1:N,1:N)=0;
-%             for I=1:N
-%                 for J=1:N
-%                     i=max(N,mod(I,N)); 
-%                     if i==0
-%                         i=N;
-%                     end
-%                     j=max(N,mod(I,N));
-%                     if j==0
-%                         j=N;
-%                     end
+            b=0.51;
             for i=1:N
                 for j=1:N
                     if j~=i % both i and j have been updated to k+1+delta_t/dt, now updating i to k+1+delta_t/dt
@@ -102,10 +93,10 @@ for k=1:partition_time_steps
                         diff_y=y(j,k+1+delta_t/dt)-y(i,k+1+delta_t/dt);
                         diff_r_sqr=diff_x^2+diff_y^2;
                         if diff_r_sqr < (2*a)^2
-                            x(i,k+1+delta_t/dt)=x(i,k+1+delta_t/dt)-1*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the ith particle at k+1+delta_t/dt (hitting j) goes backwards half its way
-                            x(j,k+1+delta_t/dt)=x(j,k+1+delta_t/dt)+1*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the jth particle at k+1+delta_t/dt (being hitted by i) goes forward half i's way
-                            y(i,k+1+delta_t/dt)=y(i,k+1+delta_t/dt)-1*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
-                            y(j,k+1+delta_t/dt)=y(j,k+1+delta_t/dt)+1*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
+                            x(i,k+1+delta_t/dt)=x(i,k+1+delta_t/dt)-b*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the ith particle at k+1+delta_t/dt (hitting j) goes backwards half its way
+                            x(j,k+1+delta_t/dt)=x(j,k+1+delta_t/dt)+b*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the jth particle at k+1+delta_t/dt (being hitted by i) goes forward half i's way
+                            y(i,k+1+delta_t/dt)=y(i,k+1+delta_t/dt)-b*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
+                            y(j,k+1+delta_t/dt)=y(j,k+1+delta_t/dt)+b*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
                         else 
                             check_relax(i,j)=1;
                         end
@@ -117,6 +108,7 @@ for k=1:partition_time_steps
                 break
             else
 %                 sum(sum(check_relax,2))
+%                 k
             end
         end
 end
