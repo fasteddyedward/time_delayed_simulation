@@ -22,16 +22,16 @@ end
 % title('v_y')
 % legend('1','2','3')
 %%
-for i=1:N
-    figure(100+i)
-    hold on
-    plot(time,x(i,1:end-1))
-    plot(time,y(i,1:end-1))
-    title(['Position of particle ',num2str(i)])
-    legend('x','y')
-    xlabel('time (ms)')
-    ylabel('position (mm)')
-end
+% for i=1:N
+%     figure(100+i)
+%     hold on
+%     plot(time,x(i,1:end-1))
+%     plot(time,y(i,1:end-1))
+%     title(['Position of particle ',num2str(i)])
+%     legend('x','y')
+%     xlabel('time (ms)')
+%     ylabel('position (mm)')
+% end
 %% Making movie of the partilces
 tic
 switch movie_create

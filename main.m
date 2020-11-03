@@ -1,12 +1,12 @@
 %% This file runs modulized_time_delay_proto
 %% 2020.10.14 to make the videos with several tries
 clearvars -except nth_take
-nth_take=6
+nth_take=2
 % delta_t_matrix=[0.01 0.1 1 5 10]
 % T_matrix=[0.01 0.1 1 10]
 % v_0_matrix=[0.01 0.1 1 10]
-delta_t_matrix=[0.1]
-T_matrix=[0.1]
+delta_t_matrix=[1]
+T_matrix=[1]
 v_0_matrix=[10]
 for delta_t_index=1:length(delta_t_matrix)
     for T_index=1:length(T_matrix)
@@ -15,7 +15,7 @@ for delta_t_index=1:length(delta_t_matrix)
                 %             if ismember(nth_take,nth_interest)
 close all
 %% Output File Name
-movie_name=['2020.11.2,dt=10e-3 take ',num2str(nth_take)];
+movie_name=['2020.11.3,dt=10e-3 take ',num2str(nth_take)];
 % movie_name=['test3']
 warning('Have you modified the file name?')
 
@@ -117,7 +117,7 @@ axis_scale=[movie_x_min movie_x_max movie_y_min movie_y_max];
     %% Parameters for making the movies
     making_movies=tic;
     magnify=1000    ;
-    control_animation_interval=10^3     ; % Record one frame in every ____ frame
+    control_animation_interval=10^4     ; % Record one frame in every ____ frame
     movie_create='on'   ;
     ghost='off'      ;
     axis_choice='lab'; %'cm' or 'lab'
@@ -132,6 +132,8 @@ axis_scale=[movie_x_min movie_x_max movie_y_min movie_y_max];
         warning(['The plotting will take about ',num2str((Obs_time_steps+delta_t/dt)/control_animation_interval*0.15),' seconds. For faster time please choose different control_animation_interval'])
     end
     % 1000 takes about 150 seconds. 
+    %% Plotting x and y of the N particles
+    plot_x_y(movie_name)
 
     %% Start Making Movie
     Movie_Vector=Make_Movie(movie_name,N,dt,Obs_time_steps,partition_time_steps,delta_t,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace,axis_scale,partition_movie,movie_x_min, movie_x_max,movie_y_min,movie_y_max);
