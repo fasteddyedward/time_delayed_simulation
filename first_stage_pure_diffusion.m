@@ -24,9 +24,9 @@ for k=1:delta_t/dt
                     delta_y_attempt=y(i,k+1)-y(i,k);
                     for j=1:N
                         if i>j % j has been updated to k+1, now updating i to k+1
-                            diff_x=x(j,k+1)-x(i,k+1);
-                            diff_y=y(j,k+1)-y(i,k+1);
-                            if diff_x^2+diff_y^2 < (2*a)^2
+                            Diff_x=x(j,k+1)-x(i,k+1);
+                            Diff_y=y(j,k+1)-y(i,k+1);
+                            if Diff_x^2+Diff_y^2 < (2*a)^2
                                 %                             delta_x_attempt=x(i,k+1)-x(i,k);
                                 %                             delta_y_attempt=y(i,k+1)-y(i,k);
                                 x(i,k+1)=x(i,k+1)-0.5*delta_x_attempt; % the ith particle at k+1 (hitting j) goes backwards half its way
@@ -35,9 +35,9 @@ for k=1:delta_t/dt
                                 y(j,k+1)=y(j,k+1)+0.5*delta_y_attempt;
                             end
                         elseif i<j % j has not been updated (now at k), now updating i to k+1
-                            diff_x=x(j,k)-x(i,k+1);
-                            diff_y=y(j,k)-y(i,k+1);
-                            if diff_x^2+diff_y^2 < (2*a)^2
+                            Diff_x=x(j,k)-x(i,k+1);
+                            Diff_y=y(j,k)-y(i,k+1);
+                            if Diff_x^2+Diff_y^2 < (2*a)^2
                                 %                             delta_x_attempt=x(i,k+1)-x(i,k);
                                 %                             delta_y_attempt=y(i,k+1)-y(i,k);
                                 x(i,k+1)=x(i,k+1)-0.5*delta_x_attempt; % the ith particle at k+1 (hitting j) goes backwards half its way
@@ -56,14 +56,14 @@ for k=1:delta_t/dt
         for i=1:N
             for j=1:N
                 if j~=i % both i and j have been updated to k+1+delta_t/dt, now updating i to k+1+delta_t/dt
-                    diff_x=x(j,k+1)-x(i,k+1);
-                    diff_y=y(j,k+1)-y(i,k+1);
-                    diff_r_sqr=diff_x^2+diff_y^2;
+                    Diff_x=x(j,k+1)-x(i,k+1);
+                    Diff_y=y(j,k+1)-y(i,k+1);
+                    diff_r_sqr=Diff_x^2+Diff_y^2;
                     if diff_r_sqr < (2*a)^2
-                        x(i,k+1)=x(i,k+1)-b*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the ith particle at k+1+delta_t/dt (hitting j) goes backwards half its way
-                        x(j,k+1)=x(j,k+1)+b*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the jth particle at k+1+delta_t/dt (being hitted by i) goes forward half i's way
-                        y(i,k+1)=y(i,k+1)-b*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
-                        y(j,k+1)=y(j,k+1)+b*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
+                        x(i,k+1)=x(i,k+1)-b*Diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the ith particle at k+1+delta_t/dt (hitting j) goes backwards half its way
+                        x(j,k+1)=x(j,k+1)+b*Diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the jth particle at k+1+delta_t/dt (being hitted by i) goes forward half i's way
+                        y(i,k+1)=y(i,k+1)-b*Diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
+                        y(j,k+1)=y(j,k+1)+b*Diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
                     else
                         check_relax(i,j)=1;
                     end

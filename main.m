@@ -151,7 +151,8 @@ axis_scale=[movie_x_min movie_x_max movie_y_min movie_y_max];
 %% Rotational Analysis: calculates and plots v_omega
 Analyze_rot=tic;
 moving_avg=1000 ;
-Rotational_Analysis(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg);
+plot_rot='no';
+Rotational_Analysis(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
 time_analyze_rot=toc(Analyze_rot)
     
 %% check point to make sure time is not wrong, or %% Drawing v_omega will break
@@ -159,7 +160,7 @@ time=(1:Obs_time_steps+delta_t/dt)*dt;
 save([movie_name,'.mat'],'time','-append')
 %% Plotting v_omega
 
-moving_avg=10000 ;
+moving_avg=1000 ;
 figure(98); clf %% Would be same as figure(99) if partition movie='no'
 plot_v_omega(N,delta_t,movie_name,moving_avg)
 title(['Normalized Rotation Speed, v_0 = ',num2str(v_0),', \delta t = ',num2str(delta_t),', T = ',num2str(T)])
@@ -174,4 +175,6 @@ clear Analyze_rot combine_data_partitions_start making_movies time_simulation_st
     end
     nth_take=nth_take+1;
 end
+
+
 

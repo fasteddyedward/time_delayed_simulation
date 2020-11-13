@@ -1,10 +1,10 @@
-function Rotational_Analysis(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg)
+function Rotational_Analysis(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot)
 figure(99)
 clf
 switch partition_movie
     case 'no'
         load([movie_name,'.mat'],'time','x','y','v_x','v_y')
-        v_omega=Rotation(N,x,y,v_0,v_x,v_y,time,Obs_time_steps+delta_t/dt,delta_t,partition_movie,moving_avg);
+        v_omega=Rotation(N,x,y,v_0,v_x,v_y,time,Obs_time_steps+delta_t/dt,delta_t,partition_movie,moving_avg,plot_rot);
         %% Saving v_omega
         save([movie_name,'.mat'],'v_omega','-append')
         clear v_omega x y v_x v_y time
@@ -18,7 +18,7 @@ switch partition_movie
                 load([movie_name,' partition_',num2str(lth_partition),'.mat'],'x','y','v_x','v_y')
                 cd ..
                 time=(1:delta_t/dt)*dt;
-                v_omega_partition=Rotation(N,x,y,v_0,v_x,v_y,time,delta_t/dt,delta_t,partition_movie,moving_avg);
+                v_omega_partition=Rotation(N,x,y,v_0,v_x,v_y,time,delta_t/dt,delta_t,partition_movie,moving_avg,plot_rot);
                 clear x y v_x v_y time
             else
                 %% Start plotting movie for stage 2
@@ -27,7 +27,7 @@ switch partition_movie
                 load([movie_name,' partition_',num2str(lth_partition),'.mat'],'x','y','v_x','v_y')
                 cd ..
                 time=(1+(lth_partition-2)*partition_time_steps+delta_t/dt:(lth_partition-1)*partition_time_steps+delta_t/dt)*dt;
-                v_omega_partition=Rotation(N,x,y,v_0,v_x,v_y,time,partition_time_steps,delta_t,partition_movie,moving_avg);
+                v_omega_partition=Rotation(N,x,y,v_0,v_x,v_y,time,partition_time_steps,delta_t,partition_movie,moving_avg,plot_rot);
                 clear x y v_x v_y time
             end
             % Note appending v_omega like this might cause memory overflow.
