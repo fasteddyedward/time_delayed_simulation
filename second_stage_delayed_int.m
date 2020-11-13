@@ -1,14 +1,19 @@
 %% 2nd stage subfunction of simulation.m
 
-function [x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time]=second_stage_delayed_int(N,delta_t,dt,partition_time_steps,v_0,T,x_temp,y_temp,lth_partition,gamma,k_B,D,hard_collision,a,b)
-int_delay = 0.1; % Intrinsic Delay
-d= 0.8*a % Distance from the center of the particle where the laser would shine on
+function [x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time]=second_stage_delayed_int(N,delta_t,dt,partition_time_steps,v_0,T,x_temp,y_temp,lth_partition,gamma,k_B,D,hard_collision,a,b,int_delay)
+%% Introducing the intrinsic delay feature
+
+% int_delay = 0.1; % Intrinsic Delay
+d= 0.7754*a; % Distance from the center of the particle where the laser would shine on for maximum velocity. See laser_reduction.m and Martin_exp.m
+%%
 x=x_temp;
 y=y_temp;
 unit_vec = @(x,y) ([x,y]/norm([x,y]));
 %% Second stage: Delayed interaction starts. t=delta_t~Obs_time
 delta_x(1:N)=0;
 delta_y(1:N)=0;
+F_x(1:N)=0;
+F_y(1:N)=0;
 for k=1:partition_time_steps
     e_x(1:N)=0; % template value
     e_y(1:N)=0;
@@ -43,16 +48,26 @@ for k=1:partition_time_steps
             %% The Force and Singulartiy (We can actually get rid of Singularity part since F_x and F_y is nearly impossible to be 0)
             %%% If e_x or e_y is 0, F_x & F_y will not be calculated as 0
             %%% numerically, so we have to put it by hand.
-%             F_x(i)=e_x(i)/sqrt(e_x(i)^2+e_y(i)^2)*v_0;
-%             F_y(i)=e_y(i)/sqrt(e_x(i)^2+e_y(i)^2)*v_0;
-            e=unit_vec(e_x(i),e_y(i));
-            F_x(i)=e(1)*v_0;
-            F_y(i)=e(2)*v_0;
-
-            if norm(e_x(i),e_y(i))==0 && e_x(i)==0
-                F_x(i)=0;        end
-            if norm(e_x(i),e_y(i))==0 && e_y(i)==0
-                F_y(i)=0;        end
+            if int_delay==0 %% No intrinsic delay, then same as before.
+                e=unit_vec(e_x(i),e_y(i)); % This is the direction of the applied force
+                F_x(i)=e(1)*v_0;
+                F_y(i)=e(2)*v_0;
+                if a==0 %% The scenario below happens only when the particles are allowed to overlap each other
+                    if norm(e_x(i),e_y(i))==0 && e_x(i)==0
+                        F_x(i)=0;        end
+                    if norm(e_x(i),e_y(i))==0 && e_y(i)==0
+                        F_y(i)=0;        end
+                end
+                %% In case there is intrinsic delay
+            else % Including finite intrinsic delay
+                e=unit_vec(e_x(i),e_y(i)); % This is the direction of the applied force
+                %                 r = d*e+[x(i,k+delta_t/dt), y(i,k+delta_t/dt)]-[x(i,k+(delta_t-int_delay)/dt), y(i,k+(delta_t-int_delay)/dt)]; % Error because of MATLAB numerical error
+                r = d*e+[x(i,k+delta_t/dt), y(i,k+delta_t/dt)]-[x(i,k+round((delta_t-int_delay)/dt)), y(i,k+round((delta_t-int_delay)/dt))]; % Need the round because of MATLAB numerical error
+                r_unit=unit_vec(r(1),r(2));
+                v=v_0*laser_reduction(norm(r)/a); % This is the reduction of the laser power based on Martin's model
+                F_x(i)=r_unit(1)*v;
+                F_y(i)=r_unit(2)*v;
+            end
 
         %% Storing the particle's displacement (including the fluctuation)
         delta_x(i)=F_x(i)*dt+normrnd(0,sqrt(4*D*dt));
