@@ -5,9 +5,10 @@ nth_take=1
 % delta_t_matrix=[0.01 0.1 1 5 10]
 % T_matrix=[0.01 0.1 1 10]
 % v_0_matrix=[0.01 0.1 1 10]
-delta_t_matrix=[0.1]
+delta_t_matrix=[0.2]
 T_matrix=[0.1]
 v_0_matrix=[10]
+int_delay=0.1 % Intrinsic delay
 for delta_t_index=1:length(delta_t_matrix)
     for T_index=1:length(T_matrix)
         for v_0_index=1:length(v_0_matrix)
@@ -79,7 +80,7 @@ y_init(3)=2*10^1;
 time_simulation_start=tic;
 % movie_x_max=0;movie_x_min=0;movie_y_max=0;movie_y_min=0; %% Boundary
 % for the movie
-[x,y,v_x,v_y,movie_x_min,movie_x_max,movie_y_min,movie_y_max,x_final,y_final]=simulation(movie_name,Obs_time_steps,partition_time_steps,0,0,0,0,N,delta_t,dt,v_0,T,gamma,k_B,D,x_init,y_init,hard_collision,a,b);
+[x,y,v_x,v_y,movie_x_min,movie_x_max,movie_y_min,movie_y_max,x_final,y_final]=simulation(movie_name,Obs_time_steps,partition_time_steps,0,0,0,0,N,delta_t,dt,v_0,T,gamma,k_B,D,x_init,y_init,hard_collision,a,b,int_delay);
 time_simulation=toc(time_simulation_start)
 
 %% Putting all the partitioned files into one folder
@@ -117,8 +118,8 @@ axis_scale=[movie_x_min movie_x_max movie_y_min movie_y_max];
     %% Parameters for making the movies
     making_movies=tic;
     magnify=1000    ;
-    control_animation_interval=10^3     ; % Record one frame in every ____ frame
-    movie_create='on'   ;
+    control_animation_interval=10^2     ; % Record one frame in every ____ frame
+    movie_create='off'   ;
     ghost='off'      ;
     axis_choice='lab'; %'cm' or 'lab'
     leave_trace='off'       ;
