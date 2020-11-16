@@ -1,6 +1,6 @@
 %% 2nd stage subfunction of simulation.m
 
-function [x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time]=second_stage_delayed_int(N,delta_t,dt,partition_time_steps,v_0,T,x_temp,y_temp,lth_partition,gamma,k_B,D,hard_collision,a,b,int_delay,fixed_flag)
+function [x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time]=second_stage_delayed_int(N,delta_t,dt,partition_time_steps,v_0,T,x_temp,y_temp,lth_partition,gamma,k_B,D,hard_collision,a,b,int_delay)
 %% Introducing the intrinsic delay feature
 
 % int_delay = 0.1; % Intrinsic Delay
@@ -85,6 +85,8 @@ for k=1:partition_time_steps
                         Diff_x=x(j,k+1+delta_t/dt)-x(i,k+1+delta_t/dt);
                         Diff_y=y(j,k+1+delta_t/dt)-y(i,k+1+delta_t/dt);
                         if Diff_x^2+Diff_y^2 < (2*a)^2
+                            %                             delta_x_attempt=x(i,k+1+delta_t/dt)-x(i,k+delta_t/dt);
+                            %                             delta_y_attempt=y(i,k+1+delta_t/dt)-y(i,k+delta_t/dt);
                             x(i,k+1+delta_t/dt)=x(i,k+1+delta_t/dt)-0.5*delta_x_attempt; % the ith particle at k+1+delta_t/dt (hitting j) goes backwards half its way
                             x(j,k+1+delta_t/dt)=x(j,k+1+delta_t/dt)+0.5*delta_x_attempt; % the jth particle at k+1+delta_t/dt (being hitted by i) goes forward half i's way
                             y(i,k+1+delta_t/dt)=y(i,k+1+delta_t/dt)-0.5*delta_y_attempt;
@@ -94,6 +96,8 @@ for k=1:partition_time_steps
                         Diff_x=x(j,k+delta_t/dt)-x(i,k+1+delta_t/dt);
                         Diff_y=y(j,k+delta_t/dt)-y(i,k+1+delta_t/dt);
                         if Diff_x^2+Diff_y^2 < (2*a)^2
+                            %                             delta_x_attempt=x(i,k+1+delta_t/dt)-x(i,k+delta_t/dt);
+                            %                             delta_y_attempt=y(i,k+1+delta_t/dt)-y(i,k+delta_t/dt);
                             x(i,k+1+delta_t/dt)=x(i,k+1+delta_t/dt)-0.5*delta_x_attempt; % the ith particle at k+1 (hitting j) goes backwards half its way
                             x(j,k+delta_t/dt)=x(j,k+delta_t/dt)    +0.5*delta_x_attempt; % the jth particle at k (being hitted by i) goes forward half i's way
                             y(i,k+1+delta_t/dt)=y(i,k+1+delta_t/dt)-0.5*delta_y_attempt;
