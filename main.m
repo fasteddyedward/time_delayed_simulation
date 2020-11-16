@@ -16,12 +16,12 @@ for delta_t_index=1:length(delta_t_matrix)
                 %             if ismember(nth_take,nth_interest)
 close all
 %% Output File Name
-movie_name=['2020.11.13,dt=10e-3 take ',num2str(nth_take)];
+movie_name=['2020.11.16,dt=10e-3 take ',num2str(nth_take)];
 % movie_name=['test3']
 warning('Have you modified the file name?')
 
 %% Setup for Running the program
-N=3; % number of particles in the play
+N=3; % total number of particles in the simulation
 delta_t=delta_t_matrix(delta_t_index); % ms
 dt=10^-3; % ms 
 % Obs_time=Obs_time_steps*dt;
@@ -64,6 +64,10 @@ for i=1:N
     y_init(i)=i*2*a*c;
 end
 y_init(3)=2*10^1;
+%% State if the particles are fixed, 0 for mobile, 1 for fixed
+fixed_flag(1:N)=0;
+fixed_flag(3)=1;
+
     %% Warning for initial position
     for i=1:N
         for j=i+1:N
@@ -80,7 +84,7 @@ y_init(3)=2*10^1;
 time_simulation_start=tic;
 % movie_x_max=0;movie_x_min=0;movie_y_max=0;movie_y_min=0; %% Boundary
 % for the movie
-[x,y,v_x,v_y,movie_x_min,movie_x_max,movie_y_min,movie_y_max,x_final,y_final]=simulation(movie_name,Obs_time_steps,partition_time_steps,0,0,0,0,N,delta_t,dt,v_0,T,gamma,k_B,D,x_init,y_init,hard_collision,a,b,int_delay);
+[x,y,v_x,v_y,movie_x_min,movie_x_max,movie_y_min,movie_y_max,x_final,y_final]=simulation(movie_name,Obs_time_steps,partition_time_steps,0,0,0,0,N,delta_t,dt,v_0,T,gamma,k_B,D,x_init,y_init,hard_collision,a,b,int_delay,fixed_flag);
 time_simulation=toc(time_simulation_start)
 
 %% Putting all the partitioned files into one folder
