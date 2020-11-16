@@ -1,37 +1,8 @@
-function [Movie_Vector]=make_movies_plots(N,delta_t,dt,partition_time_steps,x,y,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace,axis_scale)
+function [Movie_Vector]=make_movies_plots(N,delta_t,dt,partition_time_steps,x,y,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace,axis_scale,a)
 switch movie_create
     case 'off'
     Movie_Vector=[];
 end
-%% Plotting figures
-    %% Plotting v_x
-% figure
-% hold on
-% for i=1:N
-%     plot(time,v_x(i,:))
-% end
-% title('v_x')
-% legend('1','2','3')
-
-    %% Plotting v_y
-% figure
-% hold on
-% for i=1:N
-%     plot(time,v_y(i,:))
-% end
-% title('v_y')
-% legend('1','2','3')
-%%
-% for i=1:N
-%     figure(100+i)
-%     hold on
-%     plot(time,x(i,1:end-1))
-%     plot(time,y(i,1:end-1))
-%     title(['Position of particle ',num2str(i)])
-%     legend('x','y')
-%     xlabel('time (ms)')
-%     ylabel('position (mm)')
-% end
 %% Making movie of the partilces
 tic
 switch movie_create
@@ -70,7 +41,8 @@ switch movie_create
 
         for i=1:N
             hold on
-            scatter(x(i,k),y(i,k),'filled')
+            %             marker_size=a/0.8*10000;
+            h(i)=scatter(x(i,k),y(i,k),'filled');
             switch ghost
                 case 'on'
                     if k>delta_t/dt
@@ -78,9 +50,12 @@ switch movie_create
                     end
                 case 'off'
             end
+
         end
+        
+        
         %         plot(cm_x,cm_y,'.')
-        plot(mean(x(:,k),1),mean(y(:,k),1),'.')
+%         plot(mean(x(:,k),1),mean(y(:,k),1),'.')
         %% Don't use legend since it costs too much time
 %         legend('1','2','3','CM','Location','northeastoutside')
         title(['Movie with ',axis_choice,' frame'])
@@ -97,7 +72,12 @@ switch movie_create
                 axis([mean(x(:,k),1)-magnify*std   mean(x(:,k),1)+magnify*std   mean(y(:,k),1)-magnify*std   mean(y(:,k),1)+magnify*std]);
                 
         end
-        
+        axis square
+        ax=gca;
+        marker_size=200/0.4*a/diff(xlim);
+        for i=1:N
+        h(i).SizeData=marker_size^2;
+        end
         %%% For making movie
         Movie_Vector(movie_frame_index)=getframe(gcf);
         movie_frame_index=movie_frame_index+1;

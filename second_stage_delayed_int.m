@@ -20,30 +20,20 @@ for k=1:partition_time_steps
     diff_x(1:N,1:N)=0;
     diff_y(1:N,1:N)=0;
     %% Particle Interaction: calculating the F_x and F_y with position at delayed times
-%     if v_0==0 %% Here I simplify the calculation for pure diffusion v_0=0 to save time
-%         F_x(i,k+delta_t/dt)=0;
-%         F_y(i,k+delta_t/dt)=0;
-%     else
         for i=1:N
             for j=1:N
-                if fixed_flag(i)==0
-                    if(j~=i)
-                        diff_x(i,j)=x(j,k)-x(i,k);
-                        diff_y(i,j)=y(j,k)-y(i,k);
-                        %                     if diff_x(i,j)^2+diff_y(i,j)^2==0 && diff_x(i,j)==0
-                        if norm([diff_x(i,j),diff_y(i,j)])==0 && diff_x(i,j)==0
-                            e_x(i)=e_x(i)+0;
-                        else
-                            %                         e_x(i)=e_x(i)+diff_x(i,j)/sqrt(diff_x(i,j)^2+diff_y(i,j)^2);
-                            e_x(i)=e_x(i)+diff_x(i,j)/norm([diff_x(i,j),diff_y(i,j)]);
-                        end
-                        %                     if diff_x(i,j)^2+diff_y(i,j)^2==0 && diff_y(i,j)==0
-                        if norm([diff_x(i,j),diff_y(i,j)])==0 && diff_y(i,j)==0
-                            e_y(i)=e_y(i)+0 ;
-                        else
-                            %                         e_y(i)=e_y(i)+diff_y(i,j)/sqrt(diff_x(i,j)^2+diff_y(i,j)^2);
-                            e_y(i)=e_y(i)+diff_y(i,j)/norm([diff_x(i,j),diff_y(i,j)]);
-                        end
+                if(j~=i)
+                    diff_x(i,j)=x(j,k)-x(i,k);
+                    diff_y(i,j)=y(j,k)-y(i,k);
+                    if norm([diff_x(i,j),diff_y(i,j)])==0 && diff_x(i,j)==0
+                        e_x(i)=e_x(i)+0;
+                    else
+                        e_x(i)=e_x(i)+diff_x(i,j)/norm([diff_x(i,j),diff_y(i,j)]);
+                    end
+                    if norm([diff_x(i,j),diff_y(i,j)])==0 && diff_y(i,j)==0
+                        e_y(i)=e_y(i)+0 ;
+                    else
+                        e_y(i)=e_y(i)+diff_y(i,j)/norm([diff_x(i,j),diff_y(i,j)]);
                     end
                 end
                 %% The Force and Singulartiy (We can actually get rid of Singularity part since F_x and F_y is nearly impossible to be 0)
@@ -108,38 +98,56 @@ for k=1:partition_time_steps
                         end
                 end
             end
+            if fixed_flag(i)==1 %% particle is fixed, overwrite the updated x(i,1+k+delta_t/dt) with x(i,k+delta_t/dt)
+                x(i,1+k+delta_t/dt)=x(i,k+delta_t/dt);
+                y(i,1+k+delta_t/dt)=y(i,k+delta_t/dt);
+            end
         end
+        
         %% What if the particles still overlap after the previous subsection?
         while 1==1
             check_relax(1:N,1:N)=0;
-%             b=0.6;
             for i=1:N
-                if fixed_flag(i)==0
-                    for j=1:N
-                        if j~=i % both i and j have been updated to k+1+delta_t/dt, now updating i to k+1+delta_t/dt
-                            diff_x=x(j,k+1+delta_t/dt)-x(i,k+1+delta_t/dt);
-                            diff_y=y(j,k+1+delta_t/dt)-y(i,k+1+delta_t/dt);
-                            diff_r_sqr=diff_x^2+diff_y^2;
-                            if diff_r_sqr < (2*a)^2
+                for j=1:N
+                    if j~=i % both i and j have been updated to k+1+delta_t/dt, now updating i to k+1+delta_t/dt
+                        diff_x=x(j,k+1+delta_t/dt)-x(i,k+1+delta_t/dt);
+                        diff_y=y(j,k+1+delta_t/dt)-y(i,k+1+delta_t/dt);
+                        diff_r_sqr=diff_x^2+diff_y^2;
+                        if diff_r_sqr < (2*a)^2
+                            %% Note that here we comment out the fixed_flag(i)==0 condition or else the calculations will take forever. 
+%                             if fixed_flag(i)==0
                                 x(i,k+1+delta_t/dt)=x(i,k+1+delta_t/dt)-b*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the ith particle at k+1+delta_t/dt (hitting j) goes backwards half its way
                                 y(i,k+1+delta_t/dt)=y(i,k+1+delta_t/dt)-b*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
-                                if fixed_flag(j)==0
-                                    x(j,k+1+delta_t/dt)=x(j,k+1+delta_t/dt)+b*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the jth particle at k+1+delta_t/dt (being hitted by i) goes forward half i's way
-                                    y(j,k+1+delta_t/dt)=y(j,k+1+delta_t/dt)+b*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
-                                end
-                            else
-                                check_relax(i,j)=1;
-                            end
+%                             elseif fixed_flag(i)==1
+%                                 x(i,1+k+delta_t/dt)=x(i,k+delta_t/dt);
+%                                 y(i,1+k+delta_t/dt)=y(i,k+delta_t/dt);
+%                             end
+%                             if fixed_flag(j)==0
+                                x(j,k+1+delta_t/dt)=x(j,k+1+delta_t/dt)+b*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the jth particle at k+1+delta_t/dt (being hitted by i) goes forward half i's way
+                                y(j,k+1+delta_t/dt)=y(j,k+1+delta_t/dt)+b*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
+%                             elseif fixed_flag(j)==1
+%                                 x(j,1+k+delta_t/dt)=x(j,k+delta_t/dt);
+%                                 y(j,1+k+delta_t/dt)=y(j,k+delta_t/dt);
+%                             end
+                        else
+                            check_relax(i,j)=1;
                         end
                     end
                 end
             end
 
-            if sum(sum(check_relax,2))==N^2-N % All particles have inter distance larger than 2a
+            if sum(sum(check_relax,2))==(N^2-N) % All particles have inter distance larger than 2a
+                for i=1:N
+                    if fixed_flag(i)==1 %% particle is fixed, overwrite the updated x(i,1+k+delta_t/dt) with x(i,k+delta_t/dt)
+                        x(i,1+k+delta_t/dt)=x(i,k+delta_t/dt);
+                        y(i,1+k+delta_t/dt)=y(i,k+delta_t/dt);
+                    end
+                end
                 break
             else
-%                 sum(sum(check_relax,2))
-%                 k
+                %                 diff_r_sqr-(2*a)^2
+%                 sum(sum(check_relax,2))    
+                k
             end
         end
 end

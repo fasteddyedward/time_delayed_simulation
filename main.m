@@ -5,7 +5,7 @@ nth_take=1
 % delta_t_matrix=[0.01 0.1 1 5 10]
 % T_matrix=[0.01 0.1 1 10]
 % v_0_matrix=[0.01 0.1 1 10]
-delta_t_matrix=[0.1]
+delta_t_matrix=[1]
 T_matrix=[0.1]
 v_0_matrix=[10]
 int_delay=0. % Intrinsic delay
@@ -26,13 +26,13 @@ delta_t=delta_t_matrix(delta_t_index); % ms
 dt=10^-3; % ms 
 % Obs_time=Obs_time_steps*dt;
 Obs_time_steps=10^5
-partition_time_steps=10^5
+partition_time_steps=Obs_time_steps
 
 partition_movie='no'
 %% For hardcore interaction
 hard_collision='on' % or 'off'
-a=0.5 % Particle radius, typically 1 micrometer
-b= 0.6 % 0.5 is the least possible value, but would converge very slowly
+a=20 % Particle radius, typically 1 micrometer
+b= 0.555 % 0.5 is the least possible value, but would converge very slowly
 %% Coefficients and parameters
 v_0= v_0_matrix(v_0_index); % mm/ms
 T=T_matrix(T_index); % Kelvin 
@@ -58,7 +58,7 @@ end%if
 %% Initial positions
 x_init(1:N)=0;
 y_init(1:N)=0;
-c=2
+c=1
 for i=1:N
     x_init(i)=i*2*a*c;
     y_init(i)=i*2*a*c;
@@ -66,7 +66,8 @@ end
 y_init(3)=2*10^1;
 %% State if the particles are fixed, 0 for mobile, 1 for fixed
 fixed_flag(1:N)=0;
-fixed_flag(3)=1;
+% fixed_flag(1)=1; % particle 1 is fixed
+% fixed_flag(2)=1;
 
     %% Warning for initial position
     for i=1:N
@@ -122,8 +123,8 @@ axis_scale=[movie_x_min movie_x_max movie_y_min movie_y_max];
     %% Parameters for making the movies
     making_movies=tic;
     magnify=1000    ;
-    control_animation_interval=10^2     ; % Record one frame in every ____ frame
-    movie_create='off'   ;
+    control_animation_interval=10^3     ; % Record one frame in every ____ frame
+    movie_create='on'   ;
     ghost='off'      ;
     axis_choice='lab'; %'cm' or 'lab'
     leave_trace='off'       ;
@@ -141,7 +142,7 @@ axis_scale=[movie_x_min movie_x_max movie_y_min movie_y_max];
     plot_x_y(movie_name)
 
     %% Start Making Movie
-    Movie_Vector=Make_Movie(movie_name,N,dt,Obs_time_steps,partition_time_steps,delta_t,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace,axis_scale,partition_movie,movie_x_min, movie_x_max,movie_y_min,movie_y_max);
+    Movie_Vector=Make_Movie(movie_name,N,dt,Obs_time_steps,partition_time_steps,delta_t,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace,axis_scale,partition_movie,movie_x_min, movie_x_max,movie_y_min,movie_y_max,a);
     
     %% Save movie
     frame_rate=10;
