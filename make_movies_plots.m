@@ -1,4 +1,4 @@
-function [Movie_Vector]=make_movies_plots(N,delta_t,dt,partition_time_steps,x,y,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace,axis_scale,a)
+function [Movie_Vector]=make_movies_plots(N,delta_t,dt,partition_time_steps,x,y,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace,axis_scale,a,force_tracks)
 switch movie_create
     case 'off'
     Movie_Vector=[];
@@ -36,12 +36,12 @@ switch movie_create
         end
         grid on
         %% Calculating center of mass and the std deviation of the particles
-%         cm_x=mean(x(:,k),1);
-%         cm_y=mean(y(:,k),1);
-
+        %         cm_x=mean(x(:,k),1);
+        %         cm_y=mean(y(:,k),1);
+        F_x(1:N)=0;
+        F_y(1:N)=0;
         for i=1:N
             hold on
-            %             marker_size=a/0.8*10000;
             h(i)=scatter(x(i,k),y(i,k),'filled');
             switch ghost
                 case 'on'
@@ -50,8 +50,18 @@ switch movie_create
                     end
                 case 'off'
             end
-
+            switch force_tracks 
+                case 'on'
+%                 F_x(i)=x(i,k)-x(i,k-1);
+%                 F_y(i)=y(i,k)-y(i,k-1);
+                F_x(i)=x(i,k+1)-x(i,k);
+                F_y(i)=y(i,k+1)-y(i,k);
+                hold on
+                magnify=5*10^3;
+                quiver(x(i,k),y(i,k),F_x(i)*magnify,F_y(i)*magnify,'k');
+            end
         end
+
         
         
         %         plot(cm_x,cm_y,'.')
@@ -73,8 +83,8 @@ switch movie_create
                 
         end
         axis square
-        ax=gca;
-        marker_size=200/0.4*a/diff(xlim);
+        ax=get(gca);
+        marker_size=200/0.4*a/diff(ax.XLim);
         for i=1:N
         h(i).SizeData=marker_size^2;
         end

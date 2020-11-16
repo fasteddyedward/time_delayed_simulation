@@ -6,9 +6,9 @@ nth_take=1
 % T_matrix=[0.01 0.1 1 10]
 % v_0_matrix=[0.01 0.1 1 10]
 delta_t_matrix=[1]
-T_matrix=[0.1]
+T_matrix=[0]
 v_0_matrix=[10]
-int_delay=0. % Intrinsic delay
+int_delay=0 % Intrinsic delay
 for delta_t_index=1:length(delta_t_matrix)
     for T_index=1:length(T_matrix)
         for v_0_index=1:length(v_0_matrix)
@@ -32,7 +32,7 @@ partition_movie='no'
 %% For hardcore interaction
 hard_collision='on' % or 'off'
 a=20 % Particle radius, typically 1 micrometer
-b= 0.555 % 0.5 is the least possible value, but would converge very slowly
+b= 0.8 % 0.5 is the least possible value, but would converge very slowly
 %% Coefficients and parameters
 v_0= v_0_matrix(v_0_index); % mm/ms
 T=T_matrix(T_index); % Kelvin 
@@ -123,9 +123,10 @@ axis_scale=[movie_x_min movie_x_max movie_y_min movie_y_max];
     %% Parameters for making the movies
     making_movies=tic;
     magnify=1000    ;
-    control_animation_interval=10^3     ; % Record one frame in every ____ frame
+    control_animation_interval=10^3    ; % Record one frame in every ____ frame
     movie_create='on'   ;
-    ghost='off'      ;
+    ghost='on'      ;
+    force_tracks='off';
     axis_choice='lab'; %'cm' or 'lab'
     leave_trace='off'       ;
     close all
@@ -142,7 +143,7 @@ axis_scale=[movie_x_min movie_x_max movie_y_min movie_y_max];
     plot_x_y(movie_name)
 
     %% Start Making Movie
-    Movie_Vector=Make_Movie(movie_name,N,dt,Obs_time_steps,partition_time_steps,delta_t,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace,axis_scale,partition_movie,movie_x_min, movie_x_max,movie_y_min,movie_y_max,a);
+    Movie_Vector=Make_Movie(movie_name,N,dt,Obs_time_steps,partition_time_steps,delta_t,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace,axis_scale,partition_movie,movie_x_min, movie_x_max,movie_y_min,movie_y_max,a,force_tracks);
     
     %% Save movie
     frame_rate=10;
