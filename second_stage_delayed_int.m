@@ -85,8 +85,6 @@ for k=1:partition_time_steps
                         Diff_x=x(j,k+1+delta_t/dt)-x(i,k+1+delta_t/dt);
                         Diff_y=y(j,k+1+delta_t/dt)-y(i,k+1+delta_t/dt);
                         if Diff_x^2+Diff_y^2 < (2*a)^2
-                            %                             delta_x_attempt=x(i,k+1+delta_t/dt)-x(i,k+delta_t/dt);
-                            %                             delta_y_attempt=y(i,k+1+delta_t/dt)-y(i,k+delta_t/dt);
                             x(i,k+1+delta_t/dt)=x(i,k+1+delta_t/dt)-0.5*delta_x_attempt; % the ith particle at k+1+delta_t/dt (hitting j) goes backwards half its way
                             x(j,k+1+delta_t/dt)=x(j,k+1+delta_t/dt)+0.5*delta_x_attempt; % the jth particle at k+1+delta_t/dt (being hitted by i) goes forward half i's way
                             y(i,k+1+delta_t/dt)=y(i,k+1+delta_t/dt)-0.5*delta_y_attempt;
@@ -96,8 +94,6 @@ for k=1:partition_time_steps
                         Diff_x=x(j,k+delta_t/dt)-x(i,k+1+delta_t/dt);
                         Diff_y=y(j,k+delta_t/dt)-y(i,k+1+delta_t/dt);
                         if Diff_x^2+Diff_y^2 < (2*a)^2
-                            %                             delta_x_attempt=x(i,k+1+delta_t/dt)-x(i,k+delta_t/dt);
-                            %                             delta_y_attempt=y(i,k+1+delta_t/dt)-y(i,k+delta_t/dt);
                             x(i,k+1+delta_t/dt)=x(i,k+1+delta_t/dt)-0.5*delta_x_attempt; % the ith particle at k+1 (hitting j) goes backwards half its way
                             x(j,k+delta_t/dt)=x(j,k+delta_t/dt)    +0.5*delta_x_attempt; % the jth particle at k (being hitted by i) goes forward half i's way
                             y(i,k+1+delta_t/dt)=y(i,k+1+delta_t/dt)-0.5*delta_y_attempt;

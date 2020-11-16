@@ -24,14 +24,14 @@ for k=1:delta_t/dt
                     delta_x_attempt=x(i,k+1)-x(i,k);
                     delta_y_attempt=y(i,k+1)-y(i,k);
                     for j=1:N
-                        if j==0 % j is mobile
+%                         if fixed_flag(j)==0 % j is mobile
                             if i>j % j has been updated to k+1, now updating i to k+1
                                 Diff_x=x(j,k+1)-x(i,k+1);
                                 Diff_y=y(j,k+1)-y(i,k+1);
                                 if Diff_x^2+Diff_y^2 < (2*a)^2
                                     x(i,k+1)=x(i,k+1)-0.5*delta_x_attempt; % the ith particle at k+1 (hitting j) goes backwards half its way
                                     y(i,k+1)=y(i,k+1)-0.5*delta_y_attempt;
-                                    if j==0 %  j is mobile; if j==1 then j doesn't move, the line under will not execute
+                                    if fixed_flag(j)==0 %  j is mobile; if j==1 then j doesn't move, the line under will not execute
                                     x(j,k+1)=x(j,k+1)+0.5*delta_x_attempt; % the jth particle at k+1 (being hitted by i) goes forward half i's way
                                     y(j,k+1)=y(j,k+1)+0.5*delta_y_attempt;
                                     end
@@ -42,7 +42,7 @@ for k=1:delta_t/dt
                                 if Diff_x^2+Diff_y^2 < (2*a)^2
                                     x(i,k+1)=x(i,k+1)-0.5*delta_x_attempt; % the ith particle at k+1 (hitting j) goes backwards half its way
                                     y(i,k+1)=y(i,k+1)-0.5*delta_y_attempt;
-                                    if j==0 %  j is mobile; if j==1 then j doesn't move, the line under will not execute
+                                    if fixed_flag(j)==0 %  j is mobile; if j==1 then j doesn't move, the line under will not execute
                                     x(j,k)=x(j,k)    +0.5*delta_x_attempt; % the jth particle at k (being hitted by i) goes forward half i's way
                                     y(j,k)=y(j,k)    +0.5*delta_y_attempt;
                                     end
@@ -68,7 +68,7 @@ for k=1:delta_t/dt
 % %                                     y(j,k)=y(j,k)    +0.5*delta_y_attempt;
 %                                 end
 %                             end
-                        end
+%                         end
                     end
             end
         end
@@ -79,7 +79,7 @@ for k=1:delta_t/dt
         %             b=0.6;
         for i=1:N
             for j=1:N
-                if i==0 % i is mobile
+                if fixed_flag(i)==0 % i is mobile
                     if j~=i % both i and j have been updated to k+1+delta_t/dt, now updating i to k+1+delta_t/dt
                         Diff_x=x(j,k+1)-x(i,k+1);
                         Diff_y=y(j,k+1)-y(i,k+1);
@@ -87,7 +87,7 @@ for k=1:delta_t/dt
                         if diff_r_sqr < (2*a)^2
                             x(i,k+1)=x(i,k+1)-b*Diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the ith particle at k+1+delta_t/dt (hitting j) goes backwards half its way
                             y(i,k+1)=y(i,k+1)-b*Diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
-                            if j==0 % j is mobile; if j==1 then j doesn't move, the line under will not execute
+                            if fixed_flag(j)==0 % j is mobile; if j==1 then j doesn't move, the line under will not execute
                             x(j,k+1)=x(j,k+1)+b*Diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the jth particle at k+1+delta_t/dt (being hitted by i) goes forward half i's way
                             y(j,k+1)=y(j,k+1)+b*Diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
                             end
