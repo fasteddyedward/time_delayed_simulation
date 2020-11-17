@@ -20,6 +20,8 @@ for k=1:partition_time_steps
     diff_x(1:N,1:N)=0;
     diff_y(1:N,1:N)=0;
     %% Particle Interaction: calculating the F_x and F_y with position at delayed times
+%         for i=N:-1:1
+%             for j=N:-1:1
         for i=1:N
             for j=1:N
                 if(j~=i)
