@@ -164,35 +164,39 @@ end
     plot_x_y(movie_name)
 
 
-
-%% Rotational Analysis: calculates and plots v_omega
-Analyze_rot=tic;
-moving_avg=1000 ;
-plot_rot='no';
-if N==2 && fixed_flag(1)==1
-    Theta_Analysis_Fixed_Center(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
-end
-% Rotational_Analysis(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
-time_analyze_rot=toc(Analyze_rot)
-   
 %% check point to make sure time is not wrong, or %% Drawing v_omega will break
 time=(1:Obs_time_steps+delta_t/dt)*dt;
 save([movie_name,'.mat'],'time','-append')
-
-%% Plotting Theta
+%% Rotational Analysis: calculates and plots v_omega
 if N==2 && fixed_flag(1)==1
+    Analyze_theta=tic;
+    moving_avg=1000 ;
+    plot_rot='no';
+    Theta_Analysis_Fixed_Center(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
+%     Rotational_Analysis(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
+    time_analyze_theta=toc(Analyze_theta)
+    
+    %% Plotting Theta
     moving_avg=10000
     figure(80);clf;
     plot_theta(N,delta_t,movie_name,moving_avg)
     title(['Theta (Time Delay Angle), v_0 = ',num2str(v_0),', \delta t = ',num2str(delta_t),', T = ',num2str(T)])
+    saveas(gcf,[movie_name,' (theta).png'])
 end
-%% Plotting v_omega
+%% Rotational Analysis: calculates and plots v_omega
+Analyze_rot=tic;
 moving_avg=1000 ;
+plot_rot='no';
+Rotational_Analysis(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
+time_analyze_rot=toc(Analyze_rot)
+%% Plotting v_omega
+moving_avg=10000;
 figure(98); clf %% Would be same as figure(99) if partition movie='no'
 plot_v_omega(N,delta_t,movie_name,moving_avg)
 title(['Normalized Rotation Speed, v_0 = ',num2str(v_0),', \delta t = ',num2str(delta_t),', T = ',num2str(T)])
 % subtitle(['v_0=',num2str(v_0),', delta_t=',num2str(delta_t),', T=',num2str(T)])
 saveas(gcf,[movie_name,'.png'])
+
 %% Clearing Unwanted Timing Variables
 clear Analyze_rot combine_data_partitions_start making_movies time_simulation_start
             end

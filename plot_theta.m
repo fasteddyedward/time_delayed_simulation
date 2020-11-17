@@ -6,6 +6,8 @@ for i=2:N
     plot(time,movmean(theta(i,:),moving_avg))
 end
 xline(delta_t)
+yline(pi/2)
+yline(-pi/2)
 title('\theta')
 xlabel('time (ms)')
 ylabel('\theta (rad/ms) ')
