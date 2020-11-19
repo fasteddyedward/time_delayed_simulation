@@ -9,6 +9,8 @@ for i=1:N
     x(i,1)=x_init(i);
     y(i,1)=y_init(i);
 end
+
+unit_vec = @(x,y) ([x,y]/norm([x,y]));
 %% First stage: Diffusion. t=0 ~ delta_t
 % F_x(1:N)=0;
 % F_y(1:N)=0;

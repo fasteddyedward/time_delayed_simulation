@@ -1,14 +1,17 @@
 function [k_trans,theta_plus,theta_minus,num_transitions]=hist_analysis(movie_name,moving_avg,num_bins,bin_limit,Obs_time_steps,delta_t,dt)
 
-moving_avg=1;
+% moving_avg=1;
 load([movie_name,'.mat'],'theta','time')
 
 bin_interval=2*bin_limit/num_bins;
 bin_loc=-bin_limit:bin_interval:bin_limit;
 %     h=histogram(movmean(theta(2,:),moving_avg),1000)
 h=histogram(movmean(theta(2,:),moving_avg),bin_loc);
-theta_plus_index=find(h.Values==max(h.Values(end/2:end)));
-theta_minus_index=find(h.Values==max(h.Values(1:end/2)));
+
+%%% Note that before reaching steady state, theta=0, and that is not the
+%%% part we are interested in.
+theta_plus_index=find(h.Values==max(h.Values(end/2+2:end))); % end/2+2 instead of end/2 to avoid theta=0;
+theta_minus_index=find(h.Values==max(h.Values(1:end/2-2)));  % end/2-2 instead of end/2 to avoid theta=0;
 if theta_plus_index==num_bins-find(h.Values==max(h.Values(1:end/2)))
     'The histogram is symmetric.'
 end
