@@ -185,7 +185,7 @@ if N==2 && fixed_flag(1)==1
     %% Plotting Theta
     moving_avg=1;
     figure(80);clf;
-    show_transitions='on'
+    show_transitions='off'
     plot_theta(N,delta_t,movie_name,moving_avg,theta_plus,theta_minus,k_trans,show_transitions)
     title(['Theta (Time Delay Angle), v_0 = ',num2str(v_0),', \delta t = ',num2str(delta_t),', T = ',num2str(T)])
     saveas(gcf,[movie_name,' (theta).png'])    
