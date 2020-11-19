@@ -38,6 +38,7 @@ for k=1:partition_time_steps
                         e_y(i)=e_y(i)+diff_y(i,j)/norm([diff_x(i,j),diff_y(i,j)]);
                     end
                 end
+            end
                 %% The Force and Singulartiy (We can actually get rid of Singularity part since F_x and F_y is nearly impossible to be 0)
                 %%% If e_x or e_y is 0, F_x & F_y will not be calculated as 0
                 %%% numerically, so we have to put it by hand.
@@ -99,13 +100,13 @@ for k=1:partition_time_steps
                             end
                         end
                 end
-            end
+%             end
+            %% Restoring position for fixed particle
             if fixed_flag(i)==1 %% particle is fixed, overwrite the updated x(i,1+k+delta_t/dt) with x(i,k+delta_t/dt)
                 x(i,1+k+delta_t/dt)=x(i,k+delta_t/dt);
                 y(i,1+k+delta_t/dt)=y(i,k+delta_t/dt);
             end
         end
-        
         %% What if the particles still overlap after the previous subsection?
         while 1==1
             check_relax(1:N,1:N)=0;

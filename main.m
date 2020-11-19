@@ -7,7 +7,7 @@ nth_take=1
 % v_0_matrix=[0.01 0.1 1 10]
 delta_t_matrix=[2]
 T_matrix=[1]
-v_0_matrix=[5.5:0.5:8]
+v_0_matrix=[7.5]
 intrinsic_delay=0 % Intrinsic delay
 for delta_t_index=1:length(delta_t_matrix)
     for T_index=1:length(T_matrix)
@@ -16,8 +16,8 @@ for delta_t_index=1:length(delta_t_matrix)
                 %             if ismember(nth_take,nth_interest)
 close all
 %% Output File Name
-movie_name=['2020.11.17,dt=10e-3 take ',num2str(nth_take)];
-movie_name=['2020.11.17,dt=10e-3 take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
+movie_name=['2020.11.19,dt=10e-3 take ',num2str(nth_take)];
+% movie_name=['2020.11.17,dt=10e-3 take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
 
 % movie_name=['test3']
 warning('Have you modified the file name?')
@@ -27,7 +27,7 @@ N=2; % total number of particles in the simulation
 delta_t=delta_t_matrix(delta_t_index); % ms
 dt=10^-3; % ms 
 % Obs_time=Obs_time_steps*dt;
-Obs_time_steps=10^6
+Obs_time_steps=10^5
 partition_time_steps=Obs_time_steps
 
 partition_movie='no'
@@ -182,6 +182,10 @@ if N==2 && fixed_flag(1)==1
     plot_theta(N,delta_t,movie_name,moving_avg)
     title(['Theta (Time Delay Angle), v_0 = ',num2str(v_0),', \delta t = ',num2str(delta_t),', T = ',num2str(T)])
     saveas(gcf,[movie_name,' (theta).png'])
+    %% Plotting histogram
+    close all
+    moving_avg=100
+    histogram(movmean(theta(i,:),moving_avg))
 end
 %% Rotational Analysis: calculates and plots v_omega
 Analyze_rot=tic;
