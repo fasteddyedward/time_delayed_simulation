@@ -36,7 +36,7 @@ fixed_flag(1:N)=0;
 fixed_flag(1)=1; % particle 1 is fixed
 % fixed_flag(2)=1;
 %% For hardcore interaction
-hard_collision='on' % or 'off'
+hard_collision='method_2' % or 'off'
 a=5 % Particle radius, typically 1 micrometer
 b= 0.55 % 0.5 is the least possible value, but would converge very slowly
 %% Coefficients and parameters

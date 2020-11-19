@@ -3,7 +3,7 @@
 function [x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time]=second_stage_delayed_int(N,delta_t,dt,partition_time_steps,v_0,T,x_temp,y_temp,lth_partition,gamma,k_B,D,hard_collision,a,b,int_delay,fixed_flag)
 %% Introducing the intrinsic delay feature
 
-% int_delay = 0.1; % Intrinsic Delay
+frac=0.5;
 d= 0.7754*a; % Distance from the center of the particle where the laser would shine on for maximum velocity. See laser_reduction.m and Martin_exp.m
 %%
 x=x_temp;
@@ -71,7 +71,7 @@ for k=1:partition_time_steps
                 y(i,1+k+delta_t/dt)=y(i,k+delta_t/dt)+delta_y(i);
                 %% Including hard core interaction
                 switch hard_collision
-                    case 'on'
+                    case 'method_1'
                         delta_x_attempt=x(i,k+1+delta_t/dt)-x(i,k+delta_t/dt);
                         delta_y_attempt=y(i,k+1+delta_t/dt)-y(i,k+delta_t/dt);
                         for j=1:N
@@ -99,58 +99,106 @@ for k=1:partition_time_steps
                                 end
                             end
                         end
+                    case 'method_2'
+                        delta_x_attempt=x(i,k+1+delta_t/dt)-x(i,k+delta_t/dt);
+                        delta_y_attempt=y(i,k+1+delta_t/dt)-y(i,k+delta_t/dt);
+                        for j=1:N
+                            if i>j % j has been updated to k+1+delta_t/dt, now updating i to k+1+delta_t/dt
+                                Diff_x=x(j,k+1+delta_t/dt)-x(i,k+1+delta_t/dt);
+                                Diff_y=y(j,k+1+delta_t/dt)-y(i,k+1+delta_t/dt);
+                                %                                 if Diff_x^2+Diff_y^2 < (2*a)^2                                
+                                if norm([Diff_x Diff_y]) < 2*a
+                                    reflect_normal_unit=unit_vec(Diff_x,Diff_y); % The normal vector of the reflective surface
+                                    reflected_unit=unit_vec(delta_x_attempt,delta_y_attempt)-2*(unit_vec(delta_x_attempt,delta_y_attempt)*reflect_normal_unit')*reflect_normal_unit;
+                                    
+%                                     x(i,k+1+delta_t/dt)=x(i,k+1+delta_t/dt)-0.5*delta_x_attempt; % the ith particle at k+1+delta_t/dt (hitting j) goes backwards half its way
+%                                     y(i,k+1+delta_t/dt)=y(i,k+1+delta_t/dt)-0.5*delta_y_attempt;
+                                    x(i,k+1+delta_t/dt)=x(i,k+1+delta_t/dt)-0.5*delta_x_attempt+0.5*norm([delta_x_attempt,delta_y_attempt])*reflected_unit(1); % the ith particle at k+1+delta_t/dt (hitting j) goes backwards half its way
+                                    y(i,k+1+delta_t/dt)=y(i,k+1+delta_t/dt)-0.5*delta_y_attempt+0.5*norm([delta_x_attempt,delta_y_attempt])*reflected_unit(2);
+                                    if fixed_flag(j)==0
+%                                     x(j,k+1+delta_t/dt)=x(j,k+1+delta_t/dt)+0.5*delta_x_attempt; % the jth particle at k+1+delta_t/dt (being hitted by i) goes forward half i's way
+%                                     y(j,k+1+delta_t/dt)=y(j,k+1+delta_t/dt)+0.5*delta_y_attempt;
+                                    x(j,k+1+delta_t/dt)=x(j,k+1+delta_t/dt)+0.5*norm([delta_x_attempt,delta_y_attempt])*reflect_normal_unit(1); % the jth particle at k+1+delta_t/dt (being hitted by i) goes forward half i's way
+                                    y(j,k+1+delta_t/dt)=y(j,k+1+delta_t/dt)+0.5*norm([delta_x_attempt,delta_y_attempt])*reflect_normal_unit(2);
+                                    end
+                                end
+                            elseif i<j % j has not been updated (now at k+delta_t/dt), now updating i to k+1+delta_t/dt
+                                Diff_x=x(j,k+delta_t/dt)-x(i,k+1+delta_t/dt);
+                                Diff_y=y(j,k+delta_t/dt)-y(i,k+1+delta_t/dt);
+                                %                                 if Diff_x^2+Diff_y^2 < (2*a)^2
+                                if norm([Diff_x Diff_y]) < 2*a
+                                    reflect_normal_unit=unit_vec(Diff_x,Diff_y); % The normal vector of the reflective surface
+                                    reflected_unit=unit_vec(delta_x_attempt,delta_y_attempt)-2*(unit_vec(delta_x_attempt,delta_y_attempt)*reflect_normal_unit')*reflect_normal_unit;
+                                    
+%                                     x(i,k+1+delta_t/dt)=x(i,k+1+delta_t/dt)-0.5*delta_x_attempt; % the ith particle at k+1 (hitting j) goes backwards half its way
+%                                     y(i,k+1+delta_t/dt)=y(i,k+1+delta_t/dt)-0.5*delta_y_attempt;
+                                    x(i,k+1+delta_t/dt)=x(i,k+1+delta_t/dt)-0.5*delta_x_attempt+0.5*norm([delta_x_attempt,delta_y_attempt])*reflected_unit(1); % the ith particle at k+1 (hitting j) goes backwards half its way
+                                    y(i,k+1+delta_t/dt)=y(i,k+1+delta_t/dt)-0.5*delta_y_attempt+0.5*norm([delta_x_attempt,delta_y_attempt])*reflected_unit(2);
+                                    if fixed_flag(j)==0
+%                                     x(j,k+delta_t/dt)=x(j,k+delta_t/dt)    +0.5*delta_x_attempt; % the jth particle at k (being hitted by i) goes forward half i's way
+%                                     y(j,k+delta_t/dt)=y(j,k+delta_t/dt)    +0.5*delta_y_attempt;
+                                    x(j,k+delta_t/dt)=x(j,k+delta_t/dt)    +0.5*norm([delta_x_attempt,delta_y_attempt])*reflect_normal_unit(1); % the jth particle at k (being hitted by i) goes forward half i's way
+                                    y(j,k+delta_t/dt)=y(j,k+delta_t/dt)    +0.5*norm([delta_x_attempt,delta_y_attempt])*reflect_normal_unit(2);
+                                    end
+                                end
+                            end
+                        end
                 end
                 if fixed_flag(i)==1 %% particle is fixed, overwrite the updated x(i,1+k+delta_t/dt) with x(i,k+delta_t/dt)
                     x(i,1+k+delta_t/dt)=x(i,k+delta_t/dt);
                     y(i,1+k+delta_t/dt)=y(i,k+delta_t/dt);
                 end
-        end%% Restoring position for fixed particle
+        end
         
         %% What if the particles still overlap after the previous subsection?
-        while 1==1
-            check_relax(1:N,1:N)=0;
-            for i=1:N
-                for j=1:N
-                    if j~=i % both i and j have been updated to k+1+delta_t/dt, now updating i to k+1+delta_t/dt
-                        diff_x=x(j,k+1+delta_t/dt)-x(i,k+1+delta_t/dt);
-                        diff_y=y(j,k+1+delta_t/dt)-y(i,k+1+delta_t/dt);
-                        diff_r_sqr=diff_x^2+diff_y^2;
-                        if diff_r_sqr < (2*a)^2
-                            %% Note that here we comment out the fixed_flag(i)==0 condition or else the calculations will take forever. 
-%                             if fixed_flag(i)==0
-                                x(i,k+1+delta_t/dt)=x(i,k+1+delta_t/dt)-b*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the ith particle at k+1+delta_t/dt (hitting j) goes backwards half its way
-                                y(i,k+1+delta_t/dt)=y(i,k+1+delta_t/dt)-b*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
-%                             elseif fixed_flag(i)==1
-%                                 x(i,1+k+delta_t/dt)=x(i,k+delta_t/dt);
-%                                 y(i,1+k+delta_t/dt)=y(i,k+delta_t/dt);
-%                             end
-%                             if fixed_flag(j)==0
-                                x(j,k+1+delta_t/dt)=x(j,k+1+delta_t/dt)+b*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the jth particle at k+1+delta_t/dt (being hitted by i) goes forward half i's way
-                                y(j,k+1+delta_t/dt)=y(j,k+1+delta_t/dt)+b*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
-%                             elseif fixed_flag(j)==1
-%                                 x(j,1+k+delta_t/dt)=x(j,k+delta_t/dt);
-%                                 y(j,1+k+delta_t/dt)=y(j,k+delta_t/dt);
-%                             end
-                        else
-                            check_relax(i,j)=1;
+        switch hard_collision
+            case {'method_1', 'method_2'}
+                while 1==1
+                    
+                    check_relax(1:N,1:N)=0;
+                    for i=1:N
+                        for j=1:N
+                            if j~=i % both i and j have been updated to k+1+delta_t/dt, now updating i to k+1+delta_t/dt
+                                diff_x=x(j,k+1+delta_t/dt)-x(i,k+1+delta_t/dt);
+                                diff_y=y(j,k+1+delta_t/dt)-y(i,k+1+delta_t/dt);
+                                diff_r_sqr=diff_x^2+diff_y^2;
+                                if diff_r_sqr < (2*a)^2
+                                    %% Note that here we comment out the fixed_flag(i)==0 condition or else the calculations will take forever.
+                                    %                             if fixed_flag(i)==0
+                                    x(i,k+1+delta_t/dt)=x(i,k+1+delta_t/dt)-b*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the ith particle at k+1+delta_t/dt (hitting j) goes backwards half its way
+                                    y(i,k+1+delta_t/dt)=y(i,k+1+delta_t/dt)-b*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
+                                    %                             elseif fixed_flag(i)==1
+                                    %                                 x(i,1+k+delta_t/dt)=x(i,k+delta_t/dt);
+                                    %                                 y(i,1+k+delta_t/dt)=y(i,k+delta_t/dt);
+                                    %                             end
+                                    %                             if fixed_flag(j)==0
+                                    x(j,k+1+delta_t/dt)=x(j,k+1+delta_t/dt)+b*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the jth particle at k+1+delta_t/dt (being hitted by i) goes forward half i's way
+                                    y(j,k+1+delta_t/dt)=y(j,k+1+delta_t/dt)+b*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
+                                    %                             elseif fixed_flag(j)==1
+                                    %                                 x(j,1+k+delta_t/dt)=x(j,k+delta_t/dt);
+                                    %                                 y(j,1+k+delta_t/dt)=y(j,k+delta_t/dt);
+                                    %                             end
+                                else
+                                    check_relax(i,j)=1;
+                                end
+                            end
                         end
                     end
-                end
-            end
-
-            if sum(sum(check_relax,2))==(N^2-N) % All particles have inter distance larger than 2a
-                for i=1:N
-                    if fixed_flag(i)==1 %% particle is fixed, overwrite the updated x(i,1+k+delta_t/dt) with x(i,k+delta_t/dt)
-                        x(i,1+k+delta_t/dt)=x(i,k+delta_t/dt);
-                        y(i,1+k+delta_t/dt)=y(i,k+delta_t/dt);
+                    
+                    if sum(sum(check_relax,2))==(N^2-N) % All particles have inter distance larger than 2a
+                        for i=1:N
+                            if fixed_flag(i)==1 %% particle is fixed, overwrite the updated x(i,1+k+delta_t/dt) with x(i,k+delta_t/dt)
+                                x(i,1+k+delta_t/dt)=x(i,k+delta_t/dt);
+                                y(i,1+k+delta_t/dt)=y(i,k+delta_t/dt);
+                            end
+                        end
+                        break
+                    else
+                        %                 diff_r_sqr-(2*a)^2
+                        %                 sum(sum(check_relax,2))
+                        k
                     end
                 end
-                break
-            else
-                %                 diff_r_sqr-(2*a)^2
-%                 sum(sum(check_relax,2))    
-                k
-            end
         end
 end
 x(:,1:size(x_temp,2)-1)=[];
