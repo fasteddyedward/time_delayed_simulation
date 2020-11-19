@@ -1,7 +1,7 @@
-function [theta_plus,theta_minus,num_transitions]=hist_analysis(movie_name,moving_avg,num_bins,bin_limit,Obs_time_steps,delta_t,dt)
+function [k_trans,theta_plus,theta_minus,num_transitions]=hist_analysis(movie_name,moving_avg,num_bins,bin_limit,Obs_time_steps,delta_t,dt)
 
 moving_avg=1;
-load([movie_name,'.mat'],'theta')
+load([movie_name,'.mat'],'theta','time')
 
 bin_interval=2*bin_limit/num_bins;
 bin_loc=-bin_limit:bin_interval:bin_limit;
@@ -23,22 +23,26 @@ xlabel('\theta (rad)')
 ylabel('Entries')
 
 %% Start Calculating Transition Rates
+theta_sing=theta(2,:);
 
 
 sign_old=0; % Initial 'order parameter' for the orbit. +1 for stable orbit with theta_plus, -1 for stable orbit with theta_miunus
 sign_current=0;
 num_transitions=0;
+k_trans=[];
 for k=1:Obs_time_steps+delta_t/dt
-    if theta(k)>theta_plus
+    if theta_sing(k)>theta_plus
         sign_current=1;
-    elseif theta(k)<theta_minus
+    elseif theta_sing(k)<theta_minus
         sign_current=-1;
     end
     % Updating sign: sign_old -> sign_current
     if sign_current*sign_old==-1
         num_transitions=num_transitions+1;
+        k_trans=[k_trans k];
     end
     sign_old=sign_current;
+    
 end
 clear theta
 

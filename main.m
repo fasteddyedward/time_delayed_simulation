@@ -168,25 +168,31 @@ end
 %% check point to make sure time is not wrong, or %% Drawing v_omega will break
 time=(1:Obs_time_steps+delta_t/dt)*dt;
 save([movie_name,'.mat'],'time','-append')
-%% Rotational Analysis: calculates and plots v_omega
+
+
+%% Rotational Analysis: calculates and plots theta
 if N==2 && fixed_flag(1)==1
     theta=0;
     Analyze_theta=tic;
-    moving_avg=1000 ;
+    moving_avg=1 ;
     plot_rot='no';
     Theta_Analysis_Fixed_Center(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
     time_analyze_theta=toc(Analyze_theta)
     %% Plotting histogram
     num_bins=100  ;
     bin_limit=2;
-    figure(81),clf
-    [theta_plus,theta_minus,num_transitions]=hist_analysis(movie_name,moving_avg,num_bins,bin_limit,Obs_time_steps,delta_t,dt);
+    figure(81),clf % Note that hist_analysis only works for one particle orbitting a fixed particle at the moment
+    [k_trans,theta_plus,theta_minus,num_transitions]=hist_analysis(movie_name,moving_avg,num_bins,bin_limit,Obs_time_steps,delta_t,dt);
     %% Plotting Theta
     moving_avg=1;
     figure(80);clf;
-    plot_theta(N,delta_t,movie_name,moving_avg,theta_plus,theta_minus)
+    show_transitions='on'
+    plot_theta(N,delta_t,movie_name,moving_avg,theta_plus,theta_minus,k_trans,show_transitions)
     title(['Theta (Time Delay Angle), v_0 = ',num2str(v_0),', \delta t = ',num2str(delta_t),', T = ',num2str(T)])
     saveas(gcf,[movie_name,' (theta).png'])    
+    
+    num_transitions
+    
 end
 %% Rotational Analysis: calculates and plots v_omega
 Analyze_rot=tic;

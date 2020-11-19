@@ -1,7 +1,7 @@
 function Theta_Analysis_Fixed_Center(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot)
 % figure(99)
 % clf
-theta(1:Obs_time_steps)=0;
+% theta(1:Obs_time_steps)=0;
 theta(1:N,1:Obs_time_steps+delta_t/dt)=0;
 switch partition_movie
     case 'no'
