@@ -3,13 +3,15 @@
 function [x,y,v_x,v_y,time]=first_stage_pure_diffusion(N,delta_t,dt,T,x_init,y_init,gamma,k_B,D,hard_collision,a,b,fixed_flag)
 
 %% Start solving equation of motion
+x(1:N,1:delta_t/dt+1)=0;
+y(1:N,1:delta_t/dt+1)=0;
 for i=1:N
     x(i,1)=x_init(i);
     y(i,1)=y_init(i);
 end
 %% First stage: Diffusion. t=0 ~ delta_t
-F_x(1:N)=0;
-F_y(1:N)=0;
+% F_x(1:N)=0;
+% F_y(1:N)=0;
 % for k=1:1+delta_t/dt
 for k=1:delta_t/dt    
     %% Diffusion Process

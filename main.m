@@ -31,6 +31,10 @@ Obs_time_steps=10^5
 partition_time_steps=Obs_time_steps
 
 partition_movie='no'
+%% State if the particles are fixed, 0 for mobile, 1 for fixed
+fixed_flag(1:N)=0;
+fixed_flag(1)=1; % particle 1 is fixed
+% fixed_flag(2)=1;
 %% For hardcore interaction
 hard_collision='on' % or 'off'
 a=5 % Particle radius, typically 1 micrometer
@@ -66,10 +70,7 @@ for i=1:N
     y_init(i)=i*2*a*c;
 end
 y_init(3)=2*10^1;
-%% State if the particles are fixed, 0 for mobile, 1 for fixed
-fixed_flag(1:N)=0;
-fixed_flag(1)=1; % particle 1 is fixed
-% fixed_flag(2)=1;
+
 
     %% Warning for initial position
     for i=1:N
@@ -133,8 +134,8 @@ end
     %% Parameters for making the movies
     making_movies=tic;
     magnify=1000    ;
-    control_animation_interval=10^4*0.5    ; % Record one frame in every ____ frame
-    movie_create='on'   ;
+    control_animation_interval=10^3*0.5    ; % Record one frame in every ____ frame
+    movie_create='off'   ;
     ghost='off'      ;
     force_tracks='off';
     axis_choice='lab'; %'cm' or 'lab'
@@ -169,23 +170,23 @@ time=(1:Obs_time_steps+delta_t/dt)*dt;
 save([movie_name,'.mat'],'time','-append')
 %% Rotational Analysis: calculates and plots v_omega
 if N==2 && fixed_flag(1)==1
+    theta=0;
     Analyze_theta=tic;
     moving_avg=1000 ;
     plot_rot='no';
     Theta_Analysis_Fixed_Center(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
-%     Rotational_Analysis(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
     time_analyze_theta=toc(Analyze_theta)
-    
-    %% Plotting Theta
-    moving_avg=10000
-    figure(80);clf;
-    plot_theta(N,delta_t,movie_name,moving_avg)
-    title(['Theta (Time Delay Angle), v_0 = ',num2str(v_0),', \delta t = ',num2str(delta_t),', T = ',num2str(T)])
-    saveas(gcf,[movie_name,' (theta).png'])
     %% Plotting histogram
-    close all
-    moving_avg=100
-    histogram(movmean(theta(i,:),moving_avg))
+    num_bins=100  ;
+    bin_limit=2;
+    figure(81),clf
+    [theta_plus,theta_minus,num_transitions]=hist_analysis(movie_name,moving_avg,num_bins,bin_limit,Obs_time_steps,delta_t,dt);
+    %% Plotting Theta
+    moving_avg=1;
+    figure(80);clf;
+    plot_theta(N,delta_t,movie_name,moving_avg,theta_plus,theta_minus)
+    title(['Theta (Time Delay Angle), v_0 = ',num2str(v_0),', \delta t = ',num2str(delta_t),', T = ',num2str(T)])
+    saveas(gcf,[movie_name,' (theta).png'])    
 end
 %% Rotational Analysis: calculates and plots v_omega
 Analyze_rot=tic;

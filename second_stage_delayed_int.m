@@ -100,13 +100,12 @@ for k=1:partition_time_steps
                             end
                         end
                 end
-%             end
-            %% Restoring position for fixed particle
-            if fixed_flag(i)==1 %% particle is fixed, overwrite the updated x(i,1+k+delta_t/dt) with x(i,k+delta_t/dt)
-                x(i,1+k+delta_t/dt)=x(i,k+delta_t/dt);
-                y(i,1+k+delta_t/dt)=y(i,k+delta_t/dt);
-            end
-        end
+                if fixed_flag(i)==1 %% particle is fixed, overwrite the updated x(i,1+k+delta_t/dt) with x(i,k+delta_t/dt)
+                    x(i,1+k+delta_t/dt)=x(i,k+delta_t/dt);
+                    y(i,1+k+delta_t/dt)=y(i,k+delta_t/dt);
+                end
+        end%% Restoring position for fixed particle
+        
         %% What if the particles still overlap after the previous subsection?
         while 1==1
             check_relax(1:N,1:N)=0;
