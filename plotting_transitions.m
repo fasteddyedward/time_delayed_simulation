@@ -39,7 +39,7 @@ load([movie_name,'.mat'])
     Theta_Analysis_Fixed_Center(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
     time_analyze_theta=toc(Analyze_theta)
     %% Plotting histogram
-    num_bins=500  ;
+    num_bins=100  ;
     bin_limit=2;
     figure(81),clf % Note that hist_analysis only works for one particle orbitting a fixed particle at the moment
     
@@ -62,14 +62,15 @@ theta_minus_matrix=[theta_minus_matrix, theta_minus];
 end
 
 %%
+close all 
 figure(1)
 % plot(v_0_matrix(2:end),num_transitions_matrix,'.')
-plot(v_0_matrix(2:end),num_transitions_matrix,'.')
+plot(v_0_matrix(2:end),num_transitions_matrix,'-')
 figure(2)
 hold on
-% plot(v_0_matrix(2:end),theta_plus_matrix,'.')
-% plot(v_0_matrix(2:end),theta_minus_matrix,'.')
-plot(v_0_matrix(2:end),theta_plus_matrix,'-')
-plot(v_0_matrix(2:end),theta_minus_matrix,'-')
+plot(v_0_matrix(2:end),theta_plus_matrix,'.')
+plot(v_0_matrix(2:end),theta_minus_matrix,'.')
+% plot(v_0_matrix(2:end),theta_plus_matrix,'-')
+% plot(v_0_matrix(2:end),theta_minus_matrix,'-')
 
 
