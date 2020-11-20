@@ -15,8 +15,20 @@ theta_minus_index=find(h.Values==max(h.Values(1:end/2-2)));  % end/2-2 instead o
 if theta_plus_index==num_bins-find(h.Values==max(h.Values(1:end/2)))
     'The histogram is symmetric.'
 end
-theta_plus=bin_loc(theta_plus_index)+0.5*bin_interval;
-theta_minus=bin_loc(theta_minus_index)+0.5*bin_interval;
+
+if length(theta_plus_index)==1 
+    theta_plus=bin_loc(theta_plus_index)+0.5*bin_interval;
+else 
+    theta_plus=0;
+    warning('There is more than one maximum for theta_plus')
+end
+if  length(theta_minus_index)==1
+    theta_minus=bin_loc(theta_minus_index)+0.5*bin_interval;
+else 
+    theta_minus=0;
+    warning('There is more than one maximum for theta_minus')
+end
+
 hold on
 xline(theta_plus)
 xline(theta_minus)
@@ -25,6 +37,8 @@ title('Histogram of \theta')
 xlabel('\theta (rad)')
 ylabel('Entries')
 
+
+    
 %% Start Calculating Transition Rates
 theta_sing=theta(2,:);
 

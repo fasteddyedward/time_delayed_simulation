@@ -1,13 +1,13 @@
 %% This file runs modulized_time_delay_proto
 %% 2020.10.14 to make the videos with several tries
 clearvars -except nth_take
-nth_take=4
+nth_take=7
 % delta_t_matrix=[0.01 0.1 1 5 10]
 % T_matrix=[0.01 0.1 1 10]
 % v_0_matrix=[0.01 0.1 1 10]
 delta_t_matrix=[2]
 T_matrix=[1]
-v_0_matrix=[6.5]
+v_0_matrix=[7:0.1:9]
 intrinsic_delay=0 % Intrinsic delay
 for delta_t_index=1:length(delta_t_matrix)
     for T_index=1:length(T_matrix)
@@ -16,8 +16,8 @@ for delta_t_index=1:length(delta_t_matrix)
                 %             if ismember(nth_take,nth_interest)
 close all
 %% Output File Name
-movie_name=['2020.11.19,dt=10e-3 take ',num2str(nth_take)];
-% movie_name=['2020.11.17,dt=10e-3 take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
+% movie_name=['2020.11.19,dt=10e-3 take ',num2str(nth_take)];
+movie_name=['2020.11.20,dt=10e-3 take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
 % movie_name=['test3']
 warning('Have you modified the file name?')
 
@@ -181,7 +181,10 @@ if N==2 && fixed_flag(1)==1
     num_bins=100  ;
     bin_limit=2;
     figure(81),clf % Note that hist_analysis only works for one particle orbitting a fixed particle at the moment
+    
     [k_trans,theta_plus,theta_minus,num_transitions]=hist_analysis(movie_name,moving_avg,num_bins,bin_limit,Obs_time_steps,delta_t,dt);
+    set(gca, 'YScale', 'linear')
+    saveas(gcf,[movie_name,' (hist).png'])    
     %% Plotting Theta
     moving_avg=1;
     figure(80);clf;
@@ -189,6 +192,7 @@ if N==2 && fixed_flag(1)==1
     plot_theta(N,delta_t,movie_name,moving_avg,theta_plus,theta_minus,k_trans,show_transitions)
     title(['Theta (Time Delay Angle), v_0 = ',num2str(v_0),', \delta t = ',num2str(delta_t),', T = ',num2str(T)])
     saveas(gcf,[movie_name,' (theta).png'])    
+    
     
     num_transitions
     
@@ -205,7 +209,8 @@ figure(98); clf %% Would be same as figure(99) if partition movie='no'
 plot_v_omega(N,delta_t,movie_name,moving_avg)
 title(['Normalized Rotation Speed, v_0 = ',num2str(v_0),', \delta t = ',num2str(delta_t),', T = ',num2str(T)])
 % subtitle(['v_0=',num2str(v_0),', delta_t=',num2str(delta_t),', T=',num2str(T)])
-saveas(gcf,[movie_name,'.png'])
+
+% saveas(gcf,[movie_name,'.png'])
 
 %% Clearing Unwanted Timing Variables
 clear Analyze_rot combine_data_partitions_start making_movies time_simulation_start

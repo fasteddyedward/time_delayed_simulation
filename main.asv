@@ -7,7 +7,7 @@ nth_take=1
 % v_0_matrix=[0.01 0.1 1 10]
 delta_t_matrix=[2]
 T_matrix=[1]
-v_0_matrix=[5.5:0.5:8]
+v_0_matrix=[7.1]
 intrinsic_delay=0 % Intrinsic delay
 for delta_t_index=1:length(delta_t_matrix)
     for T_index=1:length(T_matrix)
@@ -16,9 +16,8 @@ for delta_t_index=1:length(delta_t_matrix)
                 %             if ismember(nth_take,nth_interest)
 close all
 %% Output File Name
-movie_name=['2020.11.17,dt=10e-3 take ',num2str(nth_take)];
-movie_name=['2020.11.17,dt=10e-3 take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
-
+% movie_name=['2020.11.19,dt=10e-3 take ',num2str(nth_take)];
+movie_name=['2020.11.20,dt=10e-3 take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
 % movie_name=['test3']
 warning('Have you modified the file name?')
 
@@ -31,8 +30,12 @@ Obs_time_steps=10^6
 partition_time_steps=Obs_time_steps
 
 partition_movie='no'
+%% State if the particles are fixed, 0 for mobile, 1 for fixed
+fixed_flag(1:N)=0;
+fixed_flag(1)=1; % particle 1 is fixed
+% fixed_flag(2)=1;
 %% For hardcore interaction
-hard_collision='on' % or 'off'
+hard_collision='method_2' % or 'off'
 a=5 % Particle radius, typically 1 micrometer
 b= 0.55 % 0.5 is the least possible value, but would converge very slowly
 %% Coefficients and parameters
@@ -66,10 +69,7 @@ for i=1:N
     y_init(i)=i*2*a*c;
 end
 y_init(3)=2*10^1;
-%% State if the particles are fixed, 0 for mobile, 1 for fixed
-fixed_flag(1:N)=0;
-fixed_flag(1)=1; % particle 1 is fixed
-% fixed_flag(2)=1;
+
 
     %% Warning for initial position
     for i=1:N
@@ -133,8 +133,8 @@ end
     %% Parameters for making the movies
     making_movies=tic;
     magnify=1000    ;
-    control_animation_interval=10^4*0.5    ; % Record one frame in every ____ frame
-    movie_create='on'   ;
+    control_animation_interval=10^3*0.5    ; % Record one frame in every ____ frame
+    movie_create='off'   ;
     ghost='off'      ;
     force_tracks='off';
     axis_choice='lab'; %'cm' or 'lab'
@@ -167,41 +167,50 @@ end
 %% check point to make sure time is not wrong, or %% Drawing v_omega will break
 time=(1:Obs_time_steps+delta_t/dt)*dt;
 save([movie_name,'.mat'],'time','-append')
-%% Rotational Analysis: calculates and plots v_omega
-Analyze_tht=tic;
-moving_avg=1000 ;
-plot_rot='no';
-if fixed_flag(1)==1
-    Theta_Analysis_Fixed_Center(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
-end
-Rotational_Analysis(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
-time_analyze_rot=toc(Analyze_rot)
-   
 
 
-%% Plotting Theta
+%% Rotational Analysis: calculates and plots theta
 if N==2 && fixed_flag(1)==1
-    moving_avg=10000
+    theta=0;
+    Analyze_theta=tic;
+    moving_avg=1 ;
+    plot_rot='no';
+    Theta_Analysis_Fixed_Center(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
+    time_analyze_theta=toc(Analyze_theta)
+    %% Plotting histogram
+    num_bins=100  ;
+    bin_limit=2;
+    figure(81),clf % Note that hist_analysis only works for one particle orbitting a fixed particle at the moment
+    
+    [k_trans,theta_plus,theta_minus,num_transitions]=hist_analysis(movie_name,moving_avg,num_bins,bin_limit,Obs_time_steps,delta_t,dt);
+    set(gca, 'YScale', 'linear')
+    saveas(gcf,[movie_name,' (hist).png'])    
+    %% Plotting Theta
+    moving_avg=1;
     figure(80);clf;
-    plot_theta(N,delta_t,movie_name,moving_avg)
+    show_transitions='off'
+    plot_theta(N,delta_t,movie_name,moving_avg,theta_plus,theta_minus,k_trans,show_transitions)
     title(['Theta (Time Delay Angle), v_0 = ',num2str(v_0),', \delta t = ',num2str(delta_t),', T = ',num2str(T)])
+    saveas(gcf,[movie_name,' (theta).png'])    
+    
+    
+    num_transitions
+    
 end
 %% Rotational Analysis: calculates and plots v_omega
 Analyze_rot=tic;
 moving_avg=1000 ;
 plot_rot='no';
-if fixed_flag(1)==1
-    Theta_Analysis_Fixed_Center(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
-end
 Rotational_Analysis(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
 time_analyze_rot=toc(Analyze_rot)
 %% Plotting v_omega
-moving_avg=1000;
+moving_avg=10000;
 figure(98); clf %% Would be same as figure(99) if partition movie='no'
 plot_v_omega(N,delta_t,movie_name,moving_avg)
 title(['Normalized Rotation Speed, v_0 = ',num2str(v_0),', \delta t = ',num2str(delta_t),', T = ',num2str(T)])
 % subtitle(['v_0=',num2str(v_0),', delta_t=',num2str(delta_t),', T=',num2str(T)])
-saveas(gcf,[movie_name,'.png'])
+
+% saveas(gcf,[movie_name,'.png'])
 
 %% Clearing Unwanted Timing Variables
 clear Analyze_rot combine_data_partitions_start making_movies time_simulation_start
