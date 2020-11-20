@@ -196,7 +196,7 @@ for k=1:partition_time_steps
                     else
                         %                 diff_r_sqr-(2*a)^2
                         %                 sum(sum(check_relax,2))
-                        k
+%                         k
                     end
                 end
         end

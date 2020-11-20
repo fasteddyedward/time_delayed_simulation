@@ -7,7 +7,9 @@ nth_take=7
 % v_0_matrix=[0.01 0.1 1 10]
 delta_t_matrix=[2]
 T_matrix=[1]
-v_0_matrix=[7:0.1:9]
+v_0_matrix=[3.5:0.1:7]
+% v_0_matrix=6
+dt=10^-2; % ms 
 intrinsic_delay=0 % Intrinsic delay
 for delta_t_index=1:length(delta_t_matrix)
     for T_index=1:length(T_matrix)
@@ -16,19 +18,17 @@ for delta_t_index=1:length(delta_t_matrix)
                 %             if ismember(nth_take,nth_interest)
 close all
 %% Output File Name
-% movie_name=['2020.11.19,dt=10e-3 take ',num2str(nth_take)];
-movie_name=['2020.11.20,dt=10e-3 take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
+% movie_name=['2020.11.19,dt=',num2str(dt),' take ',num2str(nth_take)];
+movie_name=['2020.11.20,dt=',num2str(dt),' take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
 % movie_name=['test3']
 warning('Have you modified the file name?')
 
 %% Setup for Running the program
 N=2; % total number of particles in the simulation
 delta_t=delta_t_matrix(delta_t_index); % ms
-dt=10^-3; % ms 
 % Obs_time=Obs_time_steps*dt;
 Obs_time_steps=10^6
 partition_time_steps=Obs_time_steps
-
 partition_movie='no'
 %% State if the particles are fixed, 0 for mobile, 1 for fixed
 fixed_flag(1:N)=0;
