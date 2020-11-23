@@ -63,14 +63,92 @@ end
 
 %%
 close all 
-figure(1)
+figure(1);clf
 % plot(v_0_matrix(2:end),num_transitions_matrix,'.')
 plot(v_0_matrix(2:end),num_transitions_matrix,'-')
-figure(2)
+title(['Transition rates, \delta t= ',num2str(delta_t),', T=',num2str(T)])
+xlabel('v_0')
+ylabel('Number of transitions')
+figure(1)
+hold on
+set(gca, 'YScale', 'linear')
+parameter_1=3000 % a in paper
+parameter_2=3 % b in paper
+omega_0=@(a,v_0) v_0./(a);
+k=@(omega_0) parameter_1*exp(-parameter_2*3/2*(omega_0*delta_t-1).^2/(D*delta_t));
+trans_theory=k(omega_0(a,v_0_matrix));
+
+f=polyfit(v_0_matrix,log(trans_theory),2);
+plot(v_0_matrix,exp(polyval(f,v_0_matrix)))
+set(gca, 'YScale', 'log')
+legend('simulation','theory')
+
+
+
+
+%%
+figure(2);clf
 hold on
 plot(v_0_matrix(2:end),theta_plus_matrix,'.')
 plot(v_0_matrix(2:end),theta_minus_matrix,'.')
 % plot(v_0_matrix(2:end),theta_plus_matrix,'-')
 % plot(v_0_matrix(2:end),theta_minus_matrix,'-')
+title(['Bifurcation Diagram, \delta t= ',num2str(delta_t),', T=',num2str(T)])
+xlabel('v_0')
+ylabel('\theta (rad)')
+figure(2)
+x=@(delta_t,v_0,a)2*a./(v_0*delta_t);
+theta_theory=@(x)sqrt(10-sqrt(x.^6/42+120*x-20));
+theta_theory(x(delta_t,v_0_matrix,a))
+plot(v_0_matrix,theta_theory(x(delta_t,v_0_matrix,a)),'k')
+plot(v_0_matrix,-theta_theory(x(delta_t,v_0_matrix,a)),'k')
+%%
+figure(3) ;clf
+
+hold on
+plot(v_0_matrix(2:end)*delta_t/(2*a),theta_plus_matrix,'.')
+plot(v_0_matrix(2:end)*delta_t/(2*a),theta_minus_matrix,'.')
+% plot(v_0_matrix(2:end),theta_plus_matrix,'-')
+% plot(v_0_matrix(2:end),theta_minus_matrix,'-')
+title(['Bifurcation Diagram, \delta t= ',num2str(delta_t),', T=',num2str(T)])
+xlabel('v_0*\delta t/R')
+ylabel('\theta (rad)')
+% figure(2)
+x=@(delta_t,v_0,a)2*a./(v_0*delta_t);
+theta_theory=@(x)sqrt(10-sqrt(x.^6/42+120*x-20));
+theta_theory(x(delta_t,v_0_matrix,a))
+plot(v_0_matrix*delta_t/(2*a),theta_theory(x(delta_t,v_0_matrix,a)),'k')
+plot(v_0_matrix*delta_t/(2*a),-theta_theory(x(delta_t,v_0_matrix,a)),'k')
+
+%%
+figure(4)
+plot(v_0_matrix(2:end),num_transitions_matrix,'-')
+title('Data points')
+figure(5)
+plot(v_0_matrix(2:end),num_transitions_matrix,'-')
+title('Data points')
+% hold off
+
+F = @(para,data)para(1)*exp(-para(2)*3/2*(data/(2*a)*delta_t-1).^2/(D*delta_t));
+F_log= @(para,data)log(para(1)*exp(-para(2)*3/2*(data/(2*a)*delta_t-1).^2/(D*delta_t)));
+x0 = [1 1];
+[para,resnorm,~,exitflag,output] = lsqcurvefit(F,x0,v_0_matrix(2:end),num_transitions_matrix);
+[para_log,resnorm,~,exitflag,output] = lsqcurvefit(F_log,x0,v_0_matrix(2:end),log(num_transitions_matrix));
+
+figure(4)
+hold on
+plot(v_0_matrix(2:end),F(para,v_0_matrix(2:end)))
+hold off
+axis([3.5 7 0 inf])
+
+set(gca, 'YScale', 'linear')
+
+figure(5)
+hold on
+plot(v_0_matrix(2:end),exp(F_log(para_log,v_0_matrix(2:end))))
+hold off
+set(gca, 'YScale', 'linear')
+axis([3.5 7 0 inf])
+
 
 

@@ -7,10 +7,10 @@ nth_take=7
 % v_0_matrix=[0.01 0.1 1 10]
 delta_t_matrix=[2]
 T_matrix=[1]
-v_0_matrix=[3.5:0.1:7]
-% v_0_matrix=6
+% v_0_matrix=[3.5:0.1:7]
+v_0_matrix=6
 dt=10^-2; % ms 
-intrinsic_delay=0 % Intrinsic delay
+intrinsic_delay=1 % Intrinsic delay
 for delta_t_index=1:length(delta_t_matrix)
     for T_index=1:length(T_matrix)
         for v_0_index=1:length(v_0_matrix)
@@ -19,8 +19,8 @@ for delta_t_index=1:length(delta_t_matrix)
 close all
 %% Output File Name
 % movie_name=['2020.11.19,dt=',num2str(dt),' take ',num2str(nth_take)];
-movie_name=['2020.11.20,dt=',num2str(dt),' take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
-% movie_name=['test3']
+% movie_name=['2020.11.23,dt=',num2str(dt),' take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
+movie_name=['test3']
 warning('Have you modified the file name?')
 
 %% Setup for Running the program
@@ -35,9 +35,10 @@ fixed_flag(1:N)=0;
 fixed_flag(1)=1; % particle 1 is fixed
 % fixed_flag(2)=1;
 %% For hardcore interaction
-hard_collision='method_2' % or 'off'
+% hard_collision='method_2' % or 'off'
+hard_collision='test_no_elastic'
 a=5 % Particle radius, typically 1 micrometer
-b= 0.55 % 0.5 is the least possible value, but would converge very slowly
+b= 0.1 % 0.5 is the least possible value, but would converge very slowly
 %% Coefficients and parameters
 v_0= v_0_matrix(v_0_index); % mm/ms
 T=T_matrix(T_index); % Kelvin 
@@ -134,7 +135,7 @@ end
     making_movies=tic;
     magnify=1000    ;
     control_animation_interval=10^3*0.5    ; % Record one frame in every ____ frame
-    movie_create='off'   ;
+    movie_create='on'   ;
     ghost='off'      ;
     force_tracks='off';
     axis_choice='lab'; %'cm' or 'lab'

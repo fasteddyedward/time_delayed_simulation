@@ -2,8 +2,8 @@
 
 function [x,y,F_x,F_y,v_x,v_y,delta_x,delta_y,time]=second_stage_delayed_int(N,delta_t,dt,partition_time_steps,v_0,T,x_temp,y_temp,lth_partition,gamma,k_B,D,hard_collision,a,b,int_delay,fixed_flag)
 %% Introducing the intrinsic delay feature
-
-frac=0.5;
+epsilon=0.01*a; % 
+% frac=0.5;
 d= 0.7754*a; % Distance from the center of the particle where the laser would shine on for maximum velocity. See laser_reduction.m and Martin_exp.m
 %%
 x=x_temp;
@@ -152,7 +152,7 @@ for k=1:partition_time_steps
         
         %% What if the particles still overlap after the previous subsection?
         switch hard_collision
-            case {'method_1', 'method_2'}
+            case {'method_1', 'method_2','test_no_elastic'}
                 while 1==1
                     
                     check_relax(1:N,1:N)=0;
@@ -162,22 +162,22 @@ for k=1:partition_time_steps
                                 diff_x=x(j,k+1+delta_t/dt)-x(i,k+1+delta_t/dt);
                                 diff_y=y(j,k+1+delta_t/dt)-y(i,k+1+delta_t/dt);
                                 diff_r_sqr=diff_x^2+diff_y^2;
-                                if diff_r_sqr < (2*a)^2
-                                    %% Note that here we comment out the fixed_flag(i)==0 condition or else the calculations will take forever.
-                                    %                             if fixed_flag(i)==0
-                                    x(i,k+1+delta_t/dt)=x(i,k+1+delta_t/dt)-b*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the ith particle at k+1+delta_t/dt (hitting j) goes backwards half its way
-                                    y(i,k+1+delta_t/dt)=y(i,k+1+delta_t/dt)-b*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
-                                    %                             elseif fixed_flag(i)==1
-                                    %                                 x(i,1+k+delta_t/dt)=x(i,k+delta_t/dt);
-                                    %                                 y(i,1+k+delta_t/dt)=y(i,k+delta_t/dt);
-                                    %                             end
-                                    %                             if fixed_flag(j)==0
-                                    x(j,k+1+delta_t/dt)=x(j,k+1+delta_t/dt)+b*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the jth particle at k+1+delta_t/dt (being hitted by i) goes forward half i's way
-                                    y(j,k+1+delta_t/dt)=y(j,k+1+delta_t/dt)+b*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
-                                    %                             elseif fixed_flag(j)==1
-                                    %                                 x(j,1+k+delta_t/dt)=x(j,k+delta_t/dt);
-                                    %                                 y(j,1+k+delta_t/dt)=y(j,k+delta_t/dt);
-                                    %                             end
+                                if diff_r_sqr < (2*a)^2-epsilon % The epsilon is an allowed error for the particles to overlap; if we don't set this, (2*a-sqrt(diff_r_sqr)) will be too increasingly small and the simulation will get stuck at some k.
+%                                     %% Note that here we comment out the fixed_flag(i)==0 condition or else the calculations will take forever.
+                                    if fixed_flag(i)==0
+                                        x(i,k+1+delta_t/dt)=x(i,k+1+delta_t/dt)-b*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the ith particle at k+1+delta_t/dt (hitting j) goes backwards half its way
+                                        y(i,k+1+delta_t/dt)=y(i,k+1+delta_t/dt)-b*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
+                                    elseif fixed_flag(i)==1
+                                        x(i,1+k+delta_t/dt)=x(i,k+delta_t/dt);
+                                        y(i,1+k+delta_t/dt)=y(i,k+delta_t/dt);
+                                    end
+                                    if fixed_flag(j)==0
+                                        x(j,k+1+delta_t/dt)=x(j,k+1+delta_t/dt)+b*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the jth particle at k+1+delta_t/dt (being hitted by i) goes forward half i's way
+                                        y(j,k+1+delta_t/dt)=y(j,k+1+delta_t/dt)+b*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
+                                    elseif fixed_flag(j)==1
+                                        x(j,1+k+delta_t/dt)=x(j,k+delta_t/dt);
+                                        y(j,1+k+delta_t/dt)=y(j,k+delta_t/dt);
+                                    end
                                 else
                                     check_relax(i,j)=1;
                                 end
@@ -194,9 +194,21 @@ for k=1:partition_time_steps
                         end
                         break
                     else
+                        % Debug tools.
+                        
                         %                 diff_r_sqr-(2*a)^2
                         %                 sum(sum(check_relax,2))
-%                         k
+                        %                         check_relax
+                                                k
+                        %                         figure(1);
+                        %
+                        %
+                        %                         for i=1:N
+                        %                             hold on
+                        %                             plot(x(i,1+k+delta_t/dt),y(i,1+k+delta_t/dt),'o')
+                        %                         end
+                        %                         A=[x(1,1+k+delta_t/dt)-x(2,1+k+delta_t/dt),y(1,1+k+delta_t/dt)-y(2,1+k+delta_t/dt)];
+                        %                         norm(A)
                     end
                 end
         end
