@@ -38,7 +38,7 @@ fixed_flag(1)=1; % particle 1 is fixed
 % hard_collision='method_2' % or 'off'
 hard_collision='test_no_elastic'
 a=5 % Particle radius, typically 1 micrometer
-b= 0.1 % 0.5 is the least possible value, but would converge very slowly
+b= 0.5 % for particle retreat during relaxation period
 %% Coefficients and parameters
 v_0= v_0_matrix(v_0_index); % mm/ms
 T=T_matrix(T_index); % Kelvin 
