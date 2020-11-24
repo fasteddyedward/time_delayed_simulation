@@ -33,14 +33,18 @@ end
 
 if length(theta_plus_index)==1 
     theta_plus=bin_loc(theta_plus_index)+0.5*bin_interval;
-else 
+elseif isempty(theta_plus_index)
+    theta_plus=0;
+else
     theta_plus=mean(bin_loc(theta_plus_index))+0.5*bin_interval;
     warning('There is more than one maximum for theta_plus')
 end
 if  length(theta_minus_index)==1
     theta_minus=bin_loc(theta_minus_index)+0.5*bin_interval;
-else 
-    theta_plus=mean(bin_loc(theta_minus_index))+0.5*bin_interval;
+elseif isempty(theta_minus_index)
+    theta_minus=0;
+else
+    theta_minus=mean(bin_loc(theta_minus_index))+0.5*bin_interval;
     warning('There is more than one maximum for theta_minus')
 end
 
@@ -78,15 +82,4 @@ for k=1:Obs_time_steps+delta_t/dt
     
 end
 clear theta
-
-%% Fitting with polynomial (not used at the moment)
-% bins=h.BinEdges(1:end-1)+0.5*h.BinWidth;
-% f=polyfit(bins,h.Values,6);
-% fitted_hist=polyval(f,bins);
-% figure(82);clf;
-% plot(bins,h.Values)
-% hold on
-% plot(bins,fitted_hist)
-% %     f=polyfit(delta_t(flag_not_NaN),log(transition_rate(flag_not_NaN)),2);
-% h.Values(end/2+1)
 end
