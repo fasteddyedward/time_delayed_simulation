@@ -47,10 +47,6 @@ load([movie_name,'.mat'])
     set(gca, 'YScale', 'linear')
     saveas(gcf,[movie_name,' (hist).png'])    
 
-%%
-v_0_matrix(1)=[];
-
-
 %% Appending the matrices
 num_transitions_matrix=[num_transitions_matrix num_transitions];
 theta_plus_matrix=[theta_plus_matrix, theta_plus];
@@ -63,7 +59,8 @@ theta_minus_matrix=[theta_minus_matrix, theta_minus];
     end
     nth_take=nth_take+1
 end
-
+%%
+v_0_matrix(1)=[];
 %%
 close all 
 figure(1);clf

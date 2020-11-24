@@ -149,6 +149,12 @@ for k=1:partition_time_steps
                     y(i,1+k+delta_t/dt)=y(i,k+delta_t/dt);
                 end
         end
+        switch hard_collision
+            case 'method_3' % Elastic collision
+                while 1
+                end
+        end
+        
         
         %% What if the particles still overlap after the previous subsection?
         switch hard_collision

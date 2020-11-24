@@ -3,6 +3,7 @@ function Theta_Analysis_Fixed_Center(movie_name,partition_movie,N,v_0,Obs_time_s
 % clf
 % theta(1:Obs_time_steps)=0;
 theta(1:N,1:Obs_time_steps+delta_t/dt)=0;
+R(1:N,1:Obs_time_steps+delta_t/dt)=0;
 switch partition_movie
     case 'no'
         load([movie_name,'.mat'],'x','y')
@@ -15,11 +16,12 @@ switch partition_movie
                 %% Determining Sign of theta
                 R1_cross_diff_x=cross(R1,diff_x);
                 theta(i,k+delta_t/dt)=sign(R1_cross_diff_x(3))*acos(((norm(R1)^2+norm(R2)^2-norm(diff_x)^2)/(2*norm(R1)*norm(R2))));
+                R(i,k)=norm(R1);
             end
         end
-
+        R_mean=mean(R,2);
         %% Saving theta
-        save([movie_name,'.mat'],'theta','-append')
+        save([movie_name,'.mat'],'theta','R_mean','-append')
         clear  theta x y v_x v_y time
         
         
