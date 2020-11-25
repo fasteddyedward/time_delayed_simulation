@@ -1,7 +1,7 @@
 %% 1st stage subfunction of simulation.m
 
 function [x,y,v_x,v_y,time]=first_stage_pure_diffusion(N,delta_t,dt,T,x_init,y_init,gamma,k_B,D,hard_collision,a,b,fixed_flag)
-
+epsilon=0.0001*a;
 %% Start solving equation of motion
 x(1:N,1:delta_t/dt+1)=0;
 y(1:N,1:delta_t/dt+1)=0;
@@ -112,7 +112,7 @@ for k=1:delta_t/dt
     
     %% Relaxation: What if the particles still overlap after the previous subsection?
     switch hard_collision
-        case {'method_1', 'method_2'}
+        case {'method_1', 'method_2','test_no_elastic'}
             while 1==1
                 check_relax(1:N,1:N)=0;
                 for i=1:N-1
@@ -121,7 +121,7 @@ for k=1:delta_t/dt
                             Diff_x=x(j,k+1)-x(i,k+1);
                             Diff_y=y(j,k+1)-y(i,k+1);
                             diff_r_sqr=Diff_x^2+Diff_y^2;
-                            if diff_r_sqr < (2*a)^2
+                            if diff_r_sqr < (2*a-epsilon)^2
                                 %                         if fixed_flag(i)==0 % i is mobile
                                 x(i,k+1)=x(i,k+1)-b*Diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the ith particle at k+1+delta_t/dt (hitting j) goes backwards half its way
                                 y(i,k+1)=y(i,k+1)-b*Diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
