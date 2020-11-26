@@ -1,14 +1,13 @@
 clear;
-nth_take=1
-Date='2020.11.20'
+Date='2020.11.24'
 nth_take=7
 delta_t_matrix=2
 T_matrix=[1]
-v_0_matrix=[3.5:0.1:7]
+v_0_matrix=[3.5:0.1:10]
 dt=10^-2
 
 % intrinsic_delay=0 % Intrinsic delay
-recalculate_R='no'
+recalculate_R='yes'
 
 %%
 R_matrix=[];
@@ -43,7 +42,7 @@ switch recalculate_R
         Theta_Analysis_Fixed_Center(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
         time_analyze_theta=toc(Analyze_theta)
     case 'no'
-%         load([movie_name,'.mat'],'R_mean')
+        load([movie_name,'.mat'],'R_mean')
 end
     %% Plotting histogram
 %     num_bins=100  ;
@@ -59,13 +58,8 @@ end
 
 
 %% Appending the matrices
-% R_orbit=R_mean(2);
-load([movie_name,'.mat'],'R_mean');
+% load([movie_name,'.mat'],'R_mean');
 R_matrix=[R_matrix R_mean(2)];
-
-% num_transitions_matrix=[num_transitions_matrix num_transitions];
-% theta_plus_matrix=[theta_plus_matrix, theta_plus];
-% theta_minus_matrix=[theta_minus_matrix, theta_minus];
 
             end
             nth_take=nth_take+1
