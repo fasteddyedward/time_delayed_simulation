@@ -1,21 +1,14 @@
 %% This file runs modulized_time_delay_proto
 %% 2020.10.14 to make the videos with several tries
 clearvars -except nth_take
-% nth_take=7
-% nth_take=73
-% nth_take=200;
-nth_take=100;
-% delta_t_matrix=[0.01 0.1 1 5 10]
-% T_matrix=[0.01 0.1 1 10]
-% v_0_matrix=[0.01 0.1 1 10]
-% delta_t_matrix=[2]
-delta_t_matrix=[0.5:0.5:16]
+Date='2020.11.20'
+nth_take=7
+delta_t_matrix=[2]
 T_matrix=[1]
-% v_0_matrix=[3.5:0.1:10]
-% v_0_matrix=[0.5:0.5:20]
-v_0_matrix=5
-dt=10^-2; % ms 
+v_0_matrix=[3.5:0.1:7]
+dt=10^-3; % ms 
 intrinsic_delay=0 % Intrinsic delay
+
 for delta_t_index=1:length(delta_t_matrix)
     for T_index=1:length(T_matrix)
         for v_0_index=1:length(v_0_matrix)
@@ -24,24 +17,26 @@ for delta_t_index=1:length(delta_t_matrix)
 close all
 %% Output File Name
 % movie_name=['2020.11.19,dt=',num2str(dt),' take ',num2str(nth_take)];
-movie_name=['2020.11.25,dt=',num2str(dt),' take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
-% movie_name=['test3']
+% movie_name=['2020.11.26,dt=',num2str(dt),' take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
+movie_name=[Date,',dt=',num2str(dt),' take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
+movie_name=['test3']
 warning('Have you modified the file name?')
 
 %% Setup for Running the program
-N=2; % total number of particles in the simulation
+N=3; % total number of particles in the simulation
 delta_t=delta_t_matrix(delta_t_index); % ms
 % Obs_time=Obs_time_steps*dt;
-Obs_time_steps=10^6;
+Obs_time_steps=10^5;
 partition_time_steps=Obs_time_steps;
 partition_movie='no';
 %% State if the particles are fixed, 0 for mobile, 1 for fixed
 fixed_flag(1:N)=0;
-fixed_flag(1)=1; % particle 1 is fixed
+% fixed_flag(1)=1; % particle 1 is fixed
 % fixed_flag(2)=1;
 %% For hardcore interaction
 % hard_collision='method_2' % or 'off'
 hard_collision='test_no_elastic';
+% hard_collision='method_3';
 a=5 ;% Particle radius, typically 1 micrometer
 b= 0.5 ;% for particle retreat during relaxation period
 %% Coefficients and parameters
@@ -69,11 +64,12 @@ end%if
 %% Initial positions
 x_init(1:N)=0;
 y_init(1:N)=0;
-c=1;
+c=5;
 for i=1:N
     x_init(i)=i*2*a*c;
     y_init(i)=i*2*a*c;
 end
+% y_init(3)=1*10^1;
 y_init(3)=2*10^1;
 
 
@@ -139,8 +135,8 @@ end
     %% Parameters for making the movies
     making_movies=tic;
     magnify=1000    ;
-    control_animation_interval=10^2*0.5    ; % Record one frame in every ____ frame
-    movie_create='off'   ;
+    control_animation_interval=10^4*0.5    ; % Record one frame in every ____ frame
+    movie_create='on'   ;
     ghost='off'      ;
     force_tracks='off';
     axis_choice='lab'; %'cm' or 'lab'

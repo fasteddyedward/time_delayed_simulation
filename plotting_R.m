@@ -1,19 +1,16 @@
 clear;
 nth_take=1
-% delta_t_matrix=[0.01 0.1 1 5 10]
-% T_matrix=[0.01 0.1 1 10]
-% v_0_matrix=[0.01 0.1 1 10]
-% delta_t_matrix=[2]
-delta_t_matrix=[0.5:0.5:16]
+Date='2020.11.20'
+nth_take=7
+delta_t_matrix=2
 T_matrix=[1]
-% v_0_matrix=[3.5:0.1:7]
-% v_0_matrix=[0.5:0.5:20]
-v_0_matrix=2.5
+v_0_matrix=[3.5:0.1:7]
 dt=10^-2
-intrinsic_delay=0 % Intrinsic delay
-% num_transitions_matrix=[];
-% theta_plus_matrix=[];
-% theta_minus_matrix=[];
+
+% intrinsic_delay=0 % Intrinsic delay
+recalculate_R='no'
+
+%%
 R_matrix=[];
 for delta_t_index=1:length(delta_t_matrix)
     for T_index=1:length(T_matrix)
@@ -23,12 +20,12 @@ for delta_t_index=1:length(delta_t_matrix)
             if 1
                 %             if ismember(nth_take,nth_interest)
 close all
-%% Output File Name
+%% Input File Name
 % movie_name=['2020.11.19,dt=10e-3 take ',num2str(nth_take)];
 % movie_name=['2020.11.20,dt=10e-3 take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
 % movie_name=['test3']
-movie_name=['2020.11.25,dt=',num2str(dt),' take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
-
+% movie_name=['2020.11.25,dt=',num2str(dt),' take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
+movie_name=[Date,',dt=',num2str(dt),' take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
 [movie_name,'.mat'];
 % load([movie_name,'.mat'],'num_transitions','theta_plus','theta_minus')
 load([movie_name,'.mat'])
@@ -36,13 +33,18 @@ load([movie_name,'.mat'])
 % partition_movie='off';
 % N=2;
 % v_0=v_0_matrix(v_0_index);
-%% Calculating the histograms and stuff
-    theta=0;
-    Analyze_theta=tic;
-    moving_avg=1 ;
-    plot_rot='no';
-    Theta_Analysis_Fixed_Center(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
-    time_analyze_theta=toc(Analyze_theta)
+switch recalculate_R
+    case 'yes'
+        %% Calculating the histograms and stuff
+        theta=0;
+        Analyze_theta=tic;
+        moving_avg=1 ;
+        plot_rot='no';
+        Theta_Analysis_Fixed_Center(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
+        time_analyze_theta=toc(Analyze_theta)
+    case 'no'
+%         load([movie_name,'.mat'],'R_mean')
+end
     %% Plotting histogram
 %     num_bins=100  ;
 %     bin_limit=2;
