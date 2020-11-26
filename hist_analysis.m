@@ -81,5 +81,6 @@ for k=1:Obs_time_steps+delta_t/dt
     sign_old=sign_current;
     
 end
+save([movie_name,'.mat'],'theta_plus','theta_minus','num_transitions','-append')
 clear theta
 end
