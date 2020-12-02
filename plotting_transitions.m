@@ -1,17 +1,18 @@
 clear;
 %% Parameters for importing mat files.
 
-Date='2020.11.25'
+Date='2020.12.1'
 nth_take=100
-delta_t_matrix=[0.5:0.5:16]
+Delta_t_matrix=[2]
 T_matrix=[1]
-v_0_matrix=5
-dt=10^-2
+V_0_matrix=[3.5:0.1:6.4]
+dt=10^-2; % ms 
+intrinsic_delay=0.1 % Intrinsic delay
 
 
 %% Execution Parameters
 recalculate_theta='no' % normally just set to no
-recalculate_hist='yes' %
+recalculate_hist='no' %
 recalculate_R='no' % normally just set to no; R is calculated in hist already.
 draw_hist='no'
 
@@ -21,9 +22,9 @@ num_transitions_matrix=[];
 theta_plus_matrix=[];
 theta_minus_matrix=[];
 R_matrix=[];
-for delta_t_index=1:length(delta_t_matrix)
+for delta_t_index=1:length(Delta_t_matrix)
     for T_index=1:length(T_matrix)
-        for v_0_index=1:length(v_0_matrix)
+        for v_0_index=1:length(V_0_matrix)
             %             if  nth_take~=7
             if 1
                 %             if ismember(nth_take,nth_interest)
@@ -31,7 +32,7 @@ close all
 %% Input File Name
 % movie_name=['test3']
 % movie_name=['2020.11.25,dt=',num2str(dt),' take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
-movie_name=[Date,',dt=',num2str(dt),' take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
+movie_name=[Date,',dt=',num2str(dt),' take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(V_0_matrix(v_0_index)),', delta_t=',num2str(Delta_t_matrix(delta_t_index))];
 % movie_name=[Date,',dt=10e-3 take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
 
 [movie_name,'.mat'];
@@ -99,7 +100,7 @@ end
 %% Saving results
 clear theta time v_omega v_x v_y x y
 % save(['plotting transitions v_0_matrix=3.5 0.1 10.mat'])
-save(['plotting transitions delta_t_matrix=0.5 0.5 16.mat'])
+% save(['plotting transitions delta_t_matrix=0.5 0.5 16.mat'])
 
 
 
@@ -107,50 +108,56 @@ save(['plotting transitions delta_t_matrix=0.5 0.5 16.mat'])
 if 1
 % v_0_matrix(1)=[];
     %% Delta_t
-    if length(delta_t_matrix)>1
+    if length(Delta_t_matrix)>1
         close all
         %% Bifurcation Diagram
             %% Bifurcation Diagram (Original)
             figure(1);clf
             hold on
-            plot(delta_t_matrix,theta_plus_matrix,'.')
-            plot(delta_t_matrix,theta_minus_matrix,'.')
+            plot(Delta_t_matrix,theta_plus_matrix,'.')
+            plot(Delta_t_matrix,theta_minus_matrix,'.')
             title(['Bifurcation Diagram, v_0= ',num2str(v_0),', T=',num2str(T)])
             xlabel('delta t')
             ylabel('\theta (rad)')
             % figure(2)
             x=@(delta_t,v_0,a)2*a./(v_0*delta_t);
+            fraction_in_theory=@(delta_t,v_0,a)2*a./(v_0*delta_t);
             theta_theory=@(x)sqrt(10-sqrt(x.^6/42+120*x-20));
-            theta_theory(x(delta_t_matrix,v_0,a))
-            plot(delta_t_matrix,+theta_theory(x(delta_t_matrix,v_0,a)),'k')
-            plot(delta_t_matrix,-theta_theory(x(delta_t_matrix,v_0,a)),'k')
+            theta_theory(x(Delta_t_matrix,v_0,a))
+            x_line=0:Delta_t_matrix(end)/1000:Delta_t_matrix(end);
+            plot(x_line,+theta_theory(fraction_in_theory(x_line,V_0_matrix,a)),'k')
+            plot(x_line,-theta_theory(fraction_in_theory(x_line,V_0_matrix,a)),'k')
+            %             plot(delta_t_matrix,+theta_theory(x(delta_t_matrix,v_0,a)),'k')
+            %             plot(delta_t_matrix,-theta_theory(x(delta_t_matrix,v_0,a)),'k')
             saveas(gcf,['Bifurcation Diagram, v_0= ',num2str(v_0),', T=',num2str(T),'.png'])
             %% Bifurcation Diagram (Normalized)
             figure(2) ;clf
 
             hold on
-            plot(v_0*delta_t_matrix/(2*a),theta_plus_matrix,'.')
-            plot(v_0*delta_t_matrix/(2*a),theta_minus_matrix,'.')
+            plot(v_0*Delta_t_matrix/(2*a),theta_plus_matrix,'.')
+            plot(v_0*Delta_t_matrix/(2*a),theta_minus_matrix,'.')
             title(['Bifurcation Diagram, v_0= ',num2str(v_0),', T=',num2str(T)])
             xlabel('v_0*\delta t/(2a)')
             ylabel('\theta (rad)')
             % figure(2)
             x=@(delta_t,v_0,a)2*a./(v_0*delta_t);
             theta_theory=@(x)sqrt(10-sqrt(x.^6/42+120*x-20));
-            theta_theory(x(delta_t_matrix,v_0,a))
-            plot(v_0*delta_t_matrix/(2*a),+theta_theory(x(delta_t_matrix,v_0,a)),'k')
-            plot(v_0*delta_t_matrix/(2*a),-theta_theory(x(delta_t_matrix,v_0,a)),'k')
+            theta_theory(x(Delta_t_matrix,v_0,a))
+            plot(V_0_matrix*x_line/(2*a),+theta_theory(fraction_in_theory(x_line,V_0_matrix,a)),'k')
+            plot(V_0_matrix*x_line/(2*a),-theta_theory(fraction_in_theory(x_line,V_0_matrix,a)),'k')
+            %             plot(v_0*delta_t_matrix/(2*a),+theta_theory(x(delta_t_matrix,v_0,a)),'k')
+            %             plot(v_0*delta_t_matrix/(2*a),-theta_theory(x(delta_t_matrix,v_0,a)),'k')
             saveas(gcf,['Bifurcation Diagram, v_0= ',num2str(v_0),', T=',num2str(T),'.png'])
         %% Transition Rates (modified from v_0)
             % Plotting original Data
-            interest_flag=delta_t_matrix>4
-            delta_t_interest=delta_t_matrix(interest_flag);
+            interest_flag=Delta_t_matrix>4
+            delta_t_interest=Delta_t_matrix(interest_flag);
             num_transitions_interest=num_transitions_matrix(interest_flag);
             
             figure(3);clf
             hold on
             plot(delta_t_interest,num_transitions_interest,'.')
-            plot(delta_t_matrix(logical(1-interest_flag)),num_transitions_matrix(logical(1-interest_flag)),'x')
+            plot(Delta_t_matrix(logical(1-interest_flag)),num_transitions_matrix(logical(1-interest_flag)),'x')
             xlabel('\delta t')
             ylabel('Number of Transitions')
 
@@ -167,7 +174,7 @@ if 1
             R_interest=R_matrix(interest_flag);
             omega_0_interest=delta_t_interest./(R_interest);
             plot(v_0*omega_0_interest,num_transitions_interest,'.')
-            plot(v_0*delta_t_matrix(logical(1-interest_flag))./R_matrix(logical(1-interest_flag)),num_transitions_matrix(logical(1-interest_flag)),'x')
+            plot(v_0*Delta_t_matrix(logical(1-interest_flag))./R_matrix(logical(1-interest_flag)),num_transitions_matrix(logical(1-interest_flag)),'x')
             xlabel('v_0 \delta t/R')
             ylabel('Number of Transitions')
 
@@ -183,50 +190,58 @@ if 1
 
 
     %% V_0
-    if length(v_0_matrix)>1
+    if length(V_0_matrix)>1
+        close all
         %% Bifurcation Diagram
             % Original
             figure(1) ;clf
 
             hold on
-            plot(v_0_matrix,theta_plus_matrix,'.')
-            plot(v_0_matrix,theta_minus_matrix,'.')
+            plot(V_0_matrix,theta_plus_matrix,'.')
+            plot(V_0_matrix,theta_minus_matrix,'.')
             title(['Bifurcation Diagram, \delta t= ',num2str(delta_t),', T=',num2str(T)])
             xlabel('v_0')
             ylabel('\theta (rad)')
             x=@(delta_t,v_0,a)2*a./(v_0*delta_t);
+            fraction_in_theory=@(delta_t,v_0,a)2*a./(v_0*delta_t);
             theta_theory=@(x)sqrt(10-sqrt(x.^6/42+120*x-20));
-            theta_theory(x(delta_t,v_0_matrix,a))
-            plot(v_0_matrix,theta_theory(x(delta_t,v_0_matrix,a)),'k')
-            plot(v_0_matrix,-theta_theory(x(delta_t,v_0_matrix,a)),'k')
+            theta_theory(x(delta_t,V_0_matrix,a))
+            %             plot(v_0_matrix,theta_theory(x(delta_t,v_0_matrix,a)),'k')
+            %             plot(v_0_matrix,-theta_theory(x(delta_t,v_0_matrix,a)),'k')
+            x_line=0:V_0_matrix(end)/1000:V_0_matrix(end);
+            plot(x_line,+theta_theory(fraction_in_theory(delta_t,x_line,a)),'k')
+            plot(x_line,-theta_theory(fraction_in_theory(delta_t,x_line,a)),'k')
+            %             plot(delta_t_matrix,+theta_theory(x(delta_t_matrix,v_0,a)),'k')
+            %             plot(delta_t_matrix,-theta_theory(x(delta_t_matrix,v_0,a)),'k')
             
-            
-            % Normalized 
+            % Normalized
             figure(2) ;clf
-
+            
             hold on
-            plot(v_0_matrix*delta_t/(2*a),theta_plus_matrix,'.')
-            plot(v_0_matrix*delta_t/(2*a),theta_minus_matrix,'.')
+            plot(V_0_matrix*delta_t/(2*a),theta_plus_matrix,'.')
+            plot(V_0_matrix*delta_t/(2*a),theta_minus_matrix,'.')
             title(['Bifurcation Diagram, \delta t= ',num2str(delta_t),', T=',num2str(T)])
             xlabel('v_0*\delta t/(2a)')
             ylabel('\theta (rad)')
             x=@(delta_t,v_0,a)2*a./(v_0*delta_t);
             theta_theory=@(x)sqrt(10-sqrt(x.^6/42+120*x-20));
-            theta_theory(x(delta_t,v_0_matrix,a))
-            plot(v_0_matrix*delta_t/(2*a),theta_theory(x(delta_t,v_0_matrix,a)),'k')
-            plot(v_0_matrix*delta_t/(2*a),-theta_theory(x(delta_t,v_0_matrix,a)),'k')
+            theta_theory(x(delta_t,V_0_matrix,a))
+            plot(x_line*delta_t/(2*a),theta_theory(fraction_in_theory(delta_t,x_line,a)),'k')
+            plot(x_line*delta_t/(2*a),-theta_theory(fraction_in_theory(delta_t,x_line,a)),'k')
+            %             plot(v_0_matrix*delta_t/(2*a),theta_theory(x(delta_t,v_0_matrix,a)),'k')
+            %             plot(v_0_matrix*delta_t/(2*a),-theta_theory(x(delta_t,v_0_matrix,a)),'k')
 
         %% Transition Rates
 
         % Plotting original Data
-        interest_flag=v_0_matrix>5.5
-        v_0_interest=v_0_matrix(interest_flag);
+        interest_flag=V_0_matrix>5.5
+        v_0_interest=V_0_matrix(interest_flag);
         num_transitions_interest=num_transitions_matrix(interest_flag);
         
         figure(3);clf
         hold on
         plot(v_0_interest,num_transitions_interest,'.')
-        plot(v_0_matrix(logical(1-interest_flag)),num_transitions_matrix(logical(1-interest_flag)),'x')
+        plot(V_0_matrix(logical(1-interest_flag)),num_transitions_matrix(logical(1-interest_flag)),'x')
         xlabel('v_0')
         ylabel('Number of Transitions')
         
@@ -235,7 +250,7 @@ if 1
         [fitresult, gof] = fit_trans_v_0(v_0_interest, num_transitions_interest)
         xlabel('v_0')
         ylabel('Number of Transitions')
-        fitresult.b
+%         fitresult.b
         
         % Transition Rates with normalized variables
         figure(5);clf
@@ -243,7 +258,7 @@ if 1
         R_interest=R_matrix(interest_flag);
         omega_0_interest=v_0_interest./(R_interest);
         plot(delta_t*omega_0_interest,num_transitions_interest,'.')
-        plot(delta_t*v_0_matrix(logical(1-interest_flag))./R_matrix(logical(1-interest_flag)),num_transitions_matrix(logical(1-interest_flag)),'x')
+        plot(delta_t*V_0_matrix(logical(1-interest_flag))./R_matrix(logical(1-interest_flag)),num_transitions_matrix(logical(1-interest_flag)),'x')
         xlabel('v_0 \delta t/R')
         ylabel('Number of Transitions')
         
@@ -254,9 +269,11 @@ if 1
         [fitresult_norm, gof_norm] = fit_trans_v_0_norm(omega_delta_t_interest, num_transitions_interest)
         xlabel('v_0 \delta t/R')
         ylabel('Number of Transitions')
-        fitresult_norm.b/5
+%         fitresult_norm.b/50
         
-
+        
+        fitresult.b
+        fitresult_norm.b/50
     end
 end
 

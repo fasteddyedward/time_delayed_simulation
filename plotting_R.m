@@ -1,19 +1,18 @@
 clear;
-Date='2020.11.24'
-nth_take=7
-delta_t_matrix=2
+Date='2020.12.1'
+nth_take=100
+Delta_t_matrix=[2]
 T_matrix=[1]
-v_0_matrix=[3.5:0.1:10]
-dt=10^-2
-
-% intrinsic_delay=0 % Intrinsic delay
-recalculate_R='yes'
+V_0_matrix=[3.5:0.1:6.4]
+dt=10^-2; % ms 
+intrinsic_delay=0.1 % Intrinsic delay
+recalculate_R='no'
 
 %%
 R_matrix=[];
-for delta_t_index=1:length(delta_t_matrix)
+for delta_t_index=1:length(Delta_t_matrix)
     for T_index=1:length(T_matrix)
-        for v_0_index=1:length(v_0_matrix)
+        for v_0_index=1:length(V_0_matrix)
             %             if  nth_take~=7
             
             if 1
@@ -24,7 +23,7 @@ close all
 % movie_name=['2020.11.20,dt=10e-3 take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
 % movie_name=['test3']
 % movie_name=['2020.11.25,dt=',num2str(dt),' take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
-movie_name=[Date,',dt=',num2str(dt),' take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
+movie_name=[Date,',dt=',num2str(dt),' take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(V_0_matrix(v_0_index)),', delta_t=',num2str(Delta_t_matrix(delta_t_index))];
 [movie_name,'.mat'];
 % load([movie_name,'.mat'],'num_transitions','theta_plus','theta_minus')
 load([movie_name,'.mat'])
@@ -70,11 +69,11 @@ R_matrix=[R_matrix R_mean(2)];
 end
 %%
 % v_0_matrix(1)=[];
-if length(delta_t_matrix)>1
+if length(Delta_t_matrix)>1
     figure(1);clf;
     hold on
-    plot(v_0*delta_t_matrix/(2*a),R_matrix/(2*a))
-    plot(v_0*delta_t_matrix/(2*a),v_0*delta_t_matrix* 2/ pi/(2*a))
+    plot(v_0*Delta_t_matrix/(2*a),R_matrix/(2*a))
+    plot(v_0*Delta_t_matrix/(2*a),v_0*Delta_t_matrix* 2/ pi/(2*a))
     xlabel('v_0*\delta t/(2a)')
     ylabel('R/(2a)')
     title(['Orbit Radius v.s. \delta t, v_0= ',num2str(v_0),', T=',num2str(T)])
@@ -86,8 +85,8 @@ if length(delta_t_matrix)>1
     %%
     figure(2);clf;
     hold on
-    plot(v_0*delta_t_matrix/(2*a),R_matrix/(2*a))
-    plot(v_0*delta_t_matrix/(2*a),v_0*delta_t_matrix* 2/ pi/(2*a))
+    plot(v_0*Delta_t_matrix/(2*a),R_matrix/(2*a))
+    plot(v_0*Delta_t_matrix/(2*a),v_0*Delta_t_matrix* 2/ pi/(2*a))
     xlabel('v_0*\delta t/(2a)')
     ylabel('R/(2a)')
     title(['Orbit Radius v.s. \delta t, v_0= ',num2str(v_0),', T=',num2str(T)])
@@ -104,11 +103,11 @@ end
 
 
 %%
-if length(v_0_matrix)>1
+if length(V_0_matrix)>1
     figure(1);clf;
     hold on
-    plot(v_0_matrix*delta_t/(2*a),R_matrix/(2*a))
-    plot(v_0_matrix*delta_t/(2*a),v_0_matrix*delta_t* 2/ pi/(2*a))
+    plot(V_0_matrix*delta_t/(2*a),R_matrix/(2*a))
+    plot(V_0_matrix*delta_t/(2*a),V_0_matrix*delta_t* 2/ pi/(2*a))
     xlabel('v_0*\delta t/(2a)')
     ylabel('R/(2a)')
     title(['Orbit Radius v.s. v_0, \delta t= ',num2str(delta_t),', T=',num2str(T)])
@@ -121,8 +120,8 @@ if length(v_0_matrix)>1
     %%
     figure(2);clf;
     hold on
-    plot(v_0_matrix*delta_t/(2*a),R_matrix/(2*a))
-    plot(v_0_matrix*delta_t/(2*a),v_0_matrix*delta_t* 2/ pi/(2*a))
+    plot(V_0_matrix*delta_t/(2*a),R_matrix/(2*a))
+    plot(V_0_matrix*delta_t/(2*a),V_0_matrix*delta_t* 2/ pi/(2*a))
     xlabel('v_0*\delta t/(2a)')
     ylabel('R/(2a)')
     title(['Orbit Radius v.s. v_0, \delta t= ',num2str(delta_t),', T=',num2str(T)])

@@ -121,7 +121,7 @@ if 1
             theta_theory=@(x)sqrt(10-sqrt(x.^6/42+120*x-20));
             V_0_matrix=2.1
             theta_theory(fraction_in_theory(Delta_t_matrix,V_0_matrix,a))
-            x_line=0:Delta_t_matrix(end)/100:Delta_t_matrix(end);
+            x_line=0:Delta_t_matrix(end)/1000:Delta_t_matrix(end);
             plot(x_line,+theta_theory(fraction_in_theory(x_line,V_0_matrix,a)),'k')
             plot(x_line,-theta_theory(fraction_in_theory(x_line,V_0_matrix,a)),'k')
 %             plot(Delta_t_matrix,+theta_theory(x(Delta_t_matrix,V_0_matrix,a)),'k')
