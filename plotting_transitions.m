@@ -1,13 +1,13 @@
 clear;
 %% Parameters for importing mat files.
 
-Date='2020.12.1'
-nth_take=100
+Date='2020.11.24'
+nth_take=7
 Delta_t_matrix=[2]
 T_matrix=[1]
-V_0_matrix=[3.5:0.1:6.4]
+V_0_matrix=[3.5:0.1:10]
 dt=10^-2; % ms 
-intrinsic_delay=0.1 % Intrinsic delay
+% intrinsic_delay=0.1 % Intrinsic delay
 
 
 %% Execution Parameters
@@ -193,7 +193,7 @@ if 1
     if length(V_0_matrix)>1
         close all
         %% Bifurcation Diagram
-            % Original
+            %% Original
             figure(1) ;clf
 
             hold on
@@ -205,16 +205,18 @@ if 1
             x=@(delta_t,v_0,a)2*a./(v_0*delta_t);
             fraction_in_theory=@(delta_t,v_0,a)2*a./(v_0*delta_t);
             theta_theory=@(x)sqrt(10-sqrt(x.^6/42+120*x-20));
+%             theta_pl=@(x)sqrt(6./x.*(x-1));
             theta_theory(x(delta_t,V_0_matrix,a))
             %             plot(v_0_matrix,theta_theory(x(delta_t,v_0_matrix,a)),'k')
             %             plot(v_0_matrix,-theta_theory(x(delta_t,v_0_matrix,a)),'k')
             x_line=0:V_0_matrix(end)/1000:V_0_matrix(end);
             plot(x_line,+theta_theory(fraction_in_theory(delta_t,x_line,a)),'k')
             plot(x_line,-theta_theory(fraction_in_theory(delta_t,x_line,a)),'k')
+%             plot(x_line,theta_pl(x_line))
             %             plot(delta_t_matrix,+theta_theory(x(delta_t_matrix,v_0,a)),'k')
             %             plot(delta_t_matrix,-theta_theory(x(delta_t_matrix,v_0,a)),'k')
             
-            % Normalized
+            %% Normalized
             figure(2) ;clf
             
             hold on
@@ -225,9 +227,13 @@ if 1
             ylabel('\theta (rad)')
             x=@(delta_t,v_0,a)2*a./(v_0*delta_t);
             theta_theory=@(x)sqrt(10-sqrt(x.^6/42+120*x-20));
+            theta_pl=@(x)sqrt(6./x.*(x-1))
             theta_theory(x(delta_t,V_0_matrix,a))
             plot(x_line*delta_t/(2*a),theta_theory(fraction_in_theory(delta_t,x_line,a)),'k')
             plot(x_line*delta_t/(2*a),-theta_theory(fraction_in_theory(delta_t,x_line,a)),'k')
+            plot(x_line*delta_t/(2*a),theta_pl(x_line*delta_t/(2*a)),'g')
+            plot(x_line*delta_t/(2*a),-theta_pl(x_line*delta_t/(2*a)),'g')
+            legend('delta_+','delta_-','$\theta=\sqrt{10-\sqrt{\frac{1}{42\omega_0 \delta t}+\frac{120}{\omega_0 \delta t }-20}}$','','$\theta=\sqrt{\frac{6}{\omega_0 \delta t}(\omega_0 \delta t-1)}$','interpreter','latex')
             %             plot(v_0_matrix*delta_t/(2*a),theta_theory(x(delta_t,v_0_matrix,a)),'k')
             %             plot(v_0_matrix*delta_t/(2*a),-theta_theory(x(delta_t,v_0_matrix,a)),'k')
 

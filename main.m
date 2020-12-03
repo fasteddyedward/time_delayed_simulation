@@ -135,7 +135,7 @@ end
     making_movies=tic;
     magnify=1000    ;
     control_animation_interval=10^2*0.5    ; % Record one frame in every ____ frame
-    movie_create='off'   ;
+    movie_create='on'   ;
     ghost='off'      ;
     force_tracks='off';
     axis_choice='lab'; %'cm' or 'lab'
