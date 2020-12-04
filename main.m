@@ -1,13 +1,13 @@
 %% This file runs modulized_time_delay_proto
 %% 2020.10.14 to make the videos with several tries
 clearvars -except nth_take
-Date='2020.12.1'
-nth_take=130
+Date='2020.12.4'
+nth_take=15
 delta_t_matrix=[2]
 T_matrix=[1]
-v_0_matrix=[6.5:0.1:10]
+v_0_matrix=[4.9:0.1:10]
 dt=10^-2; % ms 
-intrinsic_delay=0.1 % Intrinsic delay
+intrinsic_delay=0.01 % Intrinsic delay
 
 for delta_t_index=1:length(delta_t_matrix)
     for T_index=1:length(T_matrix)
@@ -26,7 +26,7 @@ warning('Have you modified the file name?')
 N=2; % total number of particles in the simulation
 delta_t=delta_t_matrix(delta_t_index); % ms
 % Obs_time=Obs_time_steps*dt;
-Obs_time_steps=10^6;
+Obs_time_steps=10^7;
 partition_time_steps=Obs_time_steps;
 partition_movie='no';
 %% State if the particles are fixed, 0 for mobile, 1 for fixed
@@ -106,7 +106,8 @@ switch partition_movie
         clear x y v_x v_y time
         time_combine_data_partitions=toc(combine_data_partitions_start)
 end
-
+%% Removing folder; these files are useless anyway.
+if (exist(movie_name, 'dir')); rmdir(movie_name,'s'); end
 %% Finding axis_scale  =   [movie_x_min  movie_x_max  movie_y_min  movie_y_max]
 if (~exist('movie_x_max','var'))
     movie_x_max=0;movie_x_min=0;movie_y_max=0;movie_y_min=0;
@@ -135,7 +136,7 @@ end
     making_movies=tic;
     magnify=1000    ;
     control_animation_interval=10^2*0.5    ; % Record one frame in every ____ frame
-    movie_create='on'   ;
+    movie_create='off'   ;
     ghost='off'      ;
     force_tracks='off';
     axis_choice='lab'; %'cm' or 'lab'
@@ -199,19 +200,19 @@ if N==2 && fixed_flag(1)==1
     
 end
 %% Rotational Analysis: calculates and plots v_omega
-Analyze_rot=tic;
-moving_avg=1000 ;
-plot_rot='no';
-Rotational_Analysis(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
-time_analyze_rot=toc(Analyze_rot)
+% Analyze_rot=tic;
+% moving_avg=1000 ;
+% plot_rot='no';
+% Rotational_Analysis(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
+% time_analyze_rot=toc(Analyze_rot)
 %% Plotting v_omega
-moving_avg=10000;
-figure(98); clf %% Would be same as figure(99) if partition movie='no'
-plot_v_omega(N,delta_t,movie_name,moving_avg)
-title(['Normalized Rotation Speed, v_0 = ',num2str(v_0),', \delta t = ',num2str(delta_t),', T = ',num2str(T)])
-% subtitle(['v_0=',num2str(v_0),', delta_t=',num2str(delta_t),', T=',num2str(T)])
-
-% saveas(gcf,[movie_name,'.png'])
+% moving_avg=10000;
+% figure(98); clf %% Would be same as figure(99) if partition movie='no'
+% plot_v_omega(N,delta_t,movie_name,moving_avg)
+% title(['Normalized Rotation Speed, v_0 = ',num2str(v_0),', \delta t = ',num2str(delta_t),', T = ',num2str(T)])
+% % subtitle(['v_0=',num2str(v_0),', delta_t=',num2str(delta_t),', T=',num2str(T)])
+% 
+% % saveas(gcf,[movie_name,'.png'])
 
 %% Clearing Unwanted Timing Variables
 clear Analyze_rot combine_data_partitions_start making_movies time_simulation_start
