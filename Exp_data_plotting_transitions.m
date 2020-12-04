@@ -6,7 +6,7 @@ clear;
 Temp=0.01
 Delta_t_matrix=[ 0 0.3 0.6 0.9 1.05 1.2 1.5 1.8]
 % T_matrix=[1]
-V_0_matrix=1
+V_0_matrix=2.1 % This value is guessed
 % dt=10^-2
 file_name_matrix=[
     'dt=0.000.tdms_angle';
@@ -106,8 +106,6 @@ if 1
     if length(Delta_t_matrix)>1
         close all
         %% Bifurcation Diagram
-%         theta_plus_matrix=theta_plus_matrix*pi/180;
-%         theta_minus_matrix=theta_minus_matrix*pi/180;
             %% Bifurcation Diagram (Original)
             figure(1);clf
             hold on
@@ -116,16 +114,15 @@ if 1
             title(['Bifurcation Diagram, v_0= ',num2str(V_0_matrix)])
             xlabel('\delta t')
             ylabel('\theta (rad)')
-            % figure(2)
-            fraction_in_theory=@(delta_t,v_0,a)2*a./(v_0*delta_t);
-            theta_theory=@(x)sqrt(10-sqrt(x.^6/42+120*x-20));
-            V_0_matrix=2.1
-            theta_theory(fraction_in_theory(Delta_t_matrix,V_0_matrix,a))
+            x=@(delta_t,v_0,a)(v_0*delta_t)./(2*a);
+            theta_theory=@(x)sqrt(10-sqrt(1/42./x.^6+120./x-20));
+            theta_pl=@(x)sqrt(6./x.*(x-1));
             x_line=0:Delta_t_matrix(end)/1000:Delta_t_matrix(end);
-            plot(x_line,+theta_theory(fraction_in_theory(x_line,V_0_matrix,a)),'k')
-            plot(x_line,-theta_theory(fraction_in_theory(x_line,V_0_matrix,a)),'k')
-%             plot(Delta_t_matrix,+theta_theory(x(Delta_t_matrix,V_0_matrix,a)),'k')
-%             plot(Delta_t_matrix,-theta_theory(x(Delta_t_matrix,V_0_matrix,a)),'k')
+            plot(x_line,+theta_theory(x(x_line,V_0_matrix,a)),'k')
+            plot(x_line,-theta_theory(x(x_line,V_0_matrix,a)),'k')
+            plot(x_line,theta_pl(x(x_line,V_0_matrix,a)),'g')
+            plot(x_line,-theta_pl(x(x_line,V_0_matrix,a)),'g')
+            legend('$\theta_+$','$\theta_-$','$\theta=\sqrt{10-\sqrt{\frac{1}{42\omega_0 \delta t}+\frac{120}{\omega_0 \delta t }-20}}$','','$\theta=\sqrt{\frac{6}{\omega_0 \delta t}(\omega_0 \delta t-1)}$','interpreter','latex','Location','northwest')
             saveas(gcf,['Bifurcation Diagram, v_0= ',num2str(V_0_matrix),'.png'])
             %% Bifurcation Diagram (Normalized)
             figure(2) ;clf
@@ -136,15 +133,17 @@ if 1
             title(['Bifurcation Diagram, v_0= ',num2str(V_0_matrix)])
             xlabel('v_0*\delta t/(2a)')
             ylabel('\theta (rad)')
-            % figure(2)
-            fraction_in_theory=@(delta_t,v_0,a)2*a./(v_0*delta_t);
-            theta_theory=@(x)sqrt(10-sqrt(x.^6/42+120*x-20));
-            theta_theory(fraction_in_theory(Delta_t_matrix,V_0_matrix,a))
-            plot(V_0_matrix*x_line/(2*a),+theta_theory(fraction_in_theory(x_line,V_0_matrix,a)),'k')
-            plot(V_0_matrix*x_line/(2*a),-theta_theory(fraction_in_theory(x_line,V_0_matrix,a)),'k')
-%             plot(V_0_matrix*Delta_t_matrix/(2*a),+theta_theory(x(Delta_t_matrix,V_0_matrix,a)),'k')
-%             plot(V_0_matrix*Delta_t_matrix/(2*a),-theta_theory(x(Delta_t_matrix,V_0_matrix,a)),'k')
+            x_line=0:Delta_t_matrix(end)/1000:Delta_t_matrix(end);
+            x=@(delta_t,v_0,a)(v_0*delta_t)./(2*a);
+            theta_theory=@(x)sqrt(10-sqrt(1/42./x.^6+120./x-20));
+            theta_pl=@(x)sqrt(6./x.*(x-1));
+            plot(x(x_line,V_0_matrix,a),+theta_theory(x(x_line,V_0_matrix,a)),'k')
+            plot(x(x_line,V_0_matrix,a),-theta_theory(x(x_line,V_0_matrix,a)),'k')
+            plot(x(x_line,V_0_matrix,a),theta_pl(x(x_line,V_0_matrix,a)),'g')
+            plot(x(x_line,V_0_matrix,a),-theta_pl(x(x_line,V_0_matrix,a)),'g')
+            legend('$\theta_+$','$\theta_-$','$\theta=\sqrt{10-\sqrt{\frac{1}{42\omega_0 \delta t}+\frac{120}{\omega_0 \delta t }-20}}$','','$\theta=\sqrt{\frac{6}{\omega_0 \delta t}(\omega_0 \delta t-1)}$','interpreter','latex','Location','northwest')
             saveas(gcf,['Bifurcation Diagram (Dimensionless), v_0= ',num2str(V_0_matrix),'.png'])
+
         %% Transition Rates (Original)
             % Plotting original Data
             interest_flag=Delta_t_matrix>1
@@ -209,12 +208,16 @@ if 1
             title(['Bifurcation Diagram, \delta t= ',num2str(delta_t),', T=',num2str(Temp)])
             xlabel('v_0')
             ylabel('\theta (rad)')
-            fraction_in_theory=@(delta_t,v_0,a)2*a./(v_0*delta_t);
-            theta_theory=@(x)sqrt(10-sqrt(x.^6/42+120*x-20));
-            theta_theory(fraction_in_theory(delta_t,V_0_matrix,a))
-            plot(V_0_matrix,theta_theory(fraction_in_theory(delta_t,V_0_matrix,a)),'k')
-            plot(V_0_matrix,-theta_theory(fraction_in_theory(delta_t,V_0_matrix,a)),'k')
-            
+            x=@(delta_t,v_0,a)  (v_0*delta_t)./(2*a);
+            theta_theory=@(x)sqrt(10-sqrt(1/42./x.^6+120./x-20));
+            theta_pl=@(x)sqrt(6./x.*(x-1));
+            x_line=0:V_0_matrix(end)/1000:V_0_matrix(end);
+            plot(x_line,+theta_theory(x(delta_t,x_line,a)),'k')
+            plot(x_line,-theta_theory(x(delta_t,x_line,a)),'k')
+            plot(x_line,theta_pl(x(delta_t,x_line,a)),'g')
+            plot(x_line,-theta_pl(x(delta_t,x_line,a)),'g')
+            legend('$\theta_+$','$\theta_-$','$\theta=\sqrt{10-\sqrt{\frac{1}{42\omega_0 \delta t}+\frac{120}{\omega_0 \delta t }-20}}$','','$\theta=\sqrt{\frac{6}{\omega_0 \delta t}(\omega_0 \delta t-1)}$','interpreter','latex','Location','northwest')
+         
             
             % Normalized 
             figure(2) ;clf
@@ -225,11 +228,14 @@ if 1
             title(['Bifurcation Diagram, \delta t= ',num2str(delta_t),', T=',num2str(Temp)])
             xlabel('v_0*\delta t/(2a)')
             ylabel('\theta (rad)')
-            fraction_in_theory=@(delta_t,v_0,a)2*a./(v_0*delta_t);
-            theta_theory=@(x)sqrt(10-sqrt(x.^6/42+120*x-20));
-            theta_theory(fraction_in_theory(delta_t,V_0_matrix,a))
-            plot(V_0_matrix*delta_t/(2*a),theta_theory(fraction_in_theory(delta_t,V_0_matrix,a)),'k')
-            plot(V_0_matrix*delta_t/(2*a),-theta_theory(fraction_in_theory(delta_t,V_0_matrix,a)),'k')
+            x=@(delta_t,v_0,a)(v_0*delta_t)./(2*a);
+            theta_theory=@(x)sqrt(10-sqrt(1/42./x.^6+120./x-20));
+            theta_pl=@(x)sqrt(6./x.*(x-1))
+            plot(x(delta_t,x_line,a),theta_theory(x(delta_t,x_line,a)),'k')
+            plot(x(delta_t,x_line,a),-theta_theory(x(delta_t,x_line,a)),'k')
+            plot(x(delta_t,x_line,a),theta_pl(x(delta_t,x_line,a)),'g')
+            plot(x(delta_t,x_line,a),-theta_pl(x(delta_t,x_line,a)),'g')
+            legend('$\theta_+$','$\theta_-$','$\theta=\sqrt{10-\sqrt{\frac{1}{42\omega_0 \delta t}+\frac{120}{\omega_0 \delta t }-20}}$','','$\theta=\sqrt{\frac{6}{\omega_0 \delta t}(\omega_0 \delta t-1)}$','interpreter','latex','Location','northwest')
 
         %% Transition Rates
 
