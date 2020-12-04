@@ -3,9 +3,9 @@ clear;
 
 Date='2020.11.24'
 nth_take=7
-Delta_t_matrix=[2]
+delta_t_matrix=[2]
 T_matrix=[1]
-V_0_matrix=[3.5:0.1:10]
+v_0_matrix=[3.5:0.1:10]
 dt=10^-2; % ms 
 % intrinsic_delay=0.1 % Intrinsic delay
 
