@@ -18,7 +18,7 @@ draw_hist='no'
 
 %%
 V_0_matrix=v_0_matrix;
-Delta_t_matrix=delta_t_matrix
+Delta_t_matrix=delta_t_matrix;
 %%
 num_transitions_matrix=[];
 theta_plus_matrix=[];
