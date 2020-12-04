@@ -24,6 +24,7 @@ recalculate_theta='no' % normally just set to no
 recalculate_hist='no' %
 recalculate_R='no' % normally just set to no; R is calculated in hist already.
 draw_hist='no'
+autocorrelation='yes'
 %%
 num_transitions_matrix=[];
 theta_plus_matrix=[];
@@ -85,6 +86,19 @@ switch recalculate_R
         time_analyze_theta=toc(Analyze_theta)
     case 'no'
         load([movie_name,'.mat'],'R_mean')
+end
+%% Autocorrelation
+switch autocorrelation
+    case 'yes'
+        close all
+        num_lag=20;
+        [acf,lags,bounds] =autocorr(diff(theta(2,:)),'NumLags',num_lag);
+        plot(0:dt:(num_lag)*dt,acf)
+        xline(delta_t,'g')
+        xlabel('\tau')
+        ylabel('g(\tau)')
+        title('Autocorrelation function of \Delta\theta')
+        legend('g(\tau)',['\delta t=',num2str(delta_t)])
 end
 %% Appending the matrices
 num_transitions_matrix=[num_transitions_matrix num_transitions];
