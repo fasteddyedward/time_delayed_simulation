@@ -1,13 +1,13 @@
 %% This file runs modulized_time_delay_proto
 %% 2020.10.14 to make the videos with several tries
 clearvars -except nth_take
-Date='2020.12.4'
-nth_take=15
-delta_t_matrix=[2]
+Date='2020.12.10'
+nth_take=1
+delta_t_matrix=[0.5:0.5:16]
 T_matrix=[1]
-v_0_matrix=[4.9:0.1:10]
-dt=10^-2; % ms 
-intrinsic_delay=0.01 % Intrinsic delay
+v_0_matrix=5
+dt=10^-1; % ms 
+intrinsic_delay=0.0 % Intrinsic delay
 
 for delta_t_index=1:length(delta_t_matrix)
     for T_index=1:length(T_matrix)
@@ -26,7 +26,7 @@ warning('Have you modified the file name?')
 N=2; % total number of particles in the simulation
 delta_t=delta_t_matrix(delta_t_index); % ms
 % Obs_time=Obs_time_steps*dt;
-Obs_time_steps=10^7;
+Obs_time_steps=10^6;
 partition_time_steps=Obs_time_steps;
 partition_movie='no';
 %% State if the particles are fixed, 0 for mobile, 1 for fixed

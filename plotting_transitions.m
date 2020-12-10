@@ -1,5 +1,12 @@
 clear;
 %% Parameters for importing mat files.
+% Date='2020.12.10'
+% nth_take=1
+% delta_t_matrix=[0.5:0.5:16]
+% T_matrix=[1]
+% v_0_matrix=5
+% dt=10^-1; % ms 
+% % intrinsic_delay=0.0 % Intrinsic delay
 
 Date='2020.11.24'
 nth_take=7
@@ -7,8 +14,6 @@ delta_t_matrix=2
 T_matrix=[1]
 v_0_matrix=[3.5:0.1:10]
 dt=10^-2
-% Don't run v_0=0, it's not runnable and take for ever
-
 
 %% Execution Parameters
 recalculate_theta='no' % normally just set to no
@@ -110,10 +115,11 @@ clear theta time v_omega v_x v_y x y
 
 %% Transition Rates
 omega_0_matrix=v_0_matrix/(2*a);
-transition_rate_theory=sqrt(2)./(pi.*omega_0_matrix.*delta_t_matrix.^2).*(omega_0_matrix.*delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*delta_t_matrix-1).^2./(k_B.*T_eff_matrix.*delta_t_matrix.^3));
+transition_rate_theory=sqrt(2)./(pi.*omega_0_matrix.*delta_t_matrix.^2).*(omega_0_matrix.*delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*delta_t_matrix-1).^2./(omega_0_matrix.*k_B.*T_eff_matrix.*delta_t_matrix.^3));
 
 %% Plotting and Analyzing
-if 1
+for rrrr=1
+if 1==1
 % v_0_matrix(1)=[];
     %% Delta_t
     if length(Delta_t_matrix)>1
@@ -283,7 +289,7 @@ if 1
         fitresult_norm.b/50
     end
 end
-
+end
 
 %% Save Variables for Viktor
 % save('For_Viktor.mat','a','D','delta_t','dt','k_B','num_transitions_matrix','T','R_matrix','v_0_matrix')
@@ -299,7 +305,7 @@ ylabel('Transition Rates (1/s)')
 
 
 figure(8);clf;hold on;
-flag=(x0>1.2);
+flag=(x0>1.1);
 plot(x0(flag),transition_rate_theory(flag),'o')
 plot(x0(flag),num_transitions_matrix(flag)/time_duration,'x')
 xlabel('\omega_0 \delta t')

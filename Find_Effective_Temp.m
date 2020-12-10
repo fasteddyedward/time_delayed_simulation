@@ -35,12 +35,12 @@ movie_name=[Date,',dt=',num2str(dt),' take ',num2str(nth_take),', T=',num2str(T_
 load([movie_name,'.mat'])
 
 %% Finding the sigma of the omega (effective temperature)
-f=figure(1),clf;
+f=figure(1);clf;
 switch plot_hist_fit
     case 'no'
         f.Visible='off';
 end
-h=histogram(diff(theta(2,:)));
+h=histogram(diff(theta(2,:))/delta_t);
 y=h.Values;
 x=h.BinEdges(1:end-1)+0.5*h.BinWidth;
 % plot(x,y);
@@ -51,7 +51,7 @@ sigma=fitresult.c1/sqrt(2);
 
 %% Calculating the D_eff and T_eff
 D_eff=sigma^2/(4*dt);
-T_eff=(v_0/(2*a)*delta_t^2*sigma^2)/(8*k_B*dt);
+T_eff=(v_0/(2*a)*delta_t^2*sigma^2)/(4*k_B*dt);
 
 save([movie_name,'.mat'],'D_eff','T_eff','-append')
 %% Appending the matrices
@@ -69,7 +69,7 @@ nth_take
 end
 %% Transition Rates
 omega_0_matrix=v_0_matrix/(2*a);
-transition_rate_theory=sqrt(2)./(pi.*omega_0_matrix.*delta_t_matrix.^2).*(omega_0_matrix.*delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*delta_t_matrix-1).^2./(k_B.*T_eff_matrix.*delta_t_matrix.^3));
+transition_rate_theory=sqrt(2)./(pi.*omega_0_matrix.*delta_t_matrix.^2).*(omega_0_matrix.*delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*delta_t_matrix-1).^2./(omega_0_matrix.*k_B.*T_eff_matrix.*delta_t_matrix.^3));
 
 %% For delta_t_matrix
 if length(delta_t_matrix)>1
@@ -107,7 +107,7 @@ xlabel('\delta t')
 ylabel('D_{eff}')
 
 figure(7)
-plot(delta_matrix,transition_rate_theory,'o')
+plot(delta_t_matrix,transition_rate_theory,'o')
 end
 %% For v_0_matrix
 if length(v_0_matrix)>1
