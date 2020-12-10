@@ -1,3 +1,13 @@
+
+
+close all
+% histogram(theta(2,:));
+h=histogram(diff(theta(2,:)));
+y=h.Values
+% x=movmean(h.BinEdges,2)
+x=h.BinLimits(1):h.BinWidth:h.BinLimits(2)
+plot(x,y)
+%%
 clear;
 close all
 theta=@(x)sqrt(10-sqrt(1./(42.*x.^6)+120./x-20));

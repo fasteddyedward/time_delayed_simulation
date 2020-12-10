@@ -176,7 +176,7 @@ if N==2 && fixed_flag(1)==1
     theta=0;
     Analyze_theta=tic;
     moving_avg=1 ;
-    plot_rot='no';
+    plot_rot='yes';
     Theta_Analysis_Fixed_Center(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
     time_analyze_theta=toc(Analyze_theta)
     %% Plotting histogram
