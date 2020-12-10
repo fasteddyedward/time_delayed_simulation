@@ -4,11 +4,12 @@ close all;
 
 %%
 Date='2020.11.24'
-nth_take=73
+nth_take=7
 delta_t_matrix=2
 T_matrix=[1]
-v_0_matrix=[10.1:0.1:20]
+v_0_matrix=[3.5:0.1:10]
 dt=10^-2
+
 
 
 
@@ -66,6 +67,9 @@ nth_take
     end
     nth_take=nth_take+1;
 end
+%% Transition Rates
+omega_0_matrix=v_0_matrix/(2*a);
+transition_rate_theory=sqrt(2)./(pi.*omega_0_matrix.*delta_t_matrix.^2).*(omega_0_matrix.*delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*delta_t_matrix-1).^2./(k_B.*T_eff_matrix.*delta_t_matrix.^3));
 
 %% For delta_t_matrix
 if length(delta_t_matrix)>1
@@ -101,6 +105,9 @@ plot(delta_t_matrix,D_eff_matrix,'o')
 title(['D_{eff} vs \delta t, v_0= ',num2str(v_0),', T=',num2str(T)])
 xlabel('\delta t')
 ylabel('D_{eff}')
+
+figure(7)
+plot(delta_matrix,transition_rate_theory,'o')
 end
 %% For v_0_matrix
 if length(v_0_matrix)>1
@@ -136,6 +143,11 @@ plot(v_0_matrix,D_eff_matrix,'o')
 title(['D_{eff} vs v_0, \delta t= ',num2str(delta_t),', T=',num2str(T)])
 xlabel('v_0')
 ylabel('D_{eff}')
+
+figure(7)
+plot(v_0_matrix,transition_rate_theory,'o')
+plot(omega_0_matrix.*delta_t_matrix,transition_rate_theory,'o')
 end
+
 
 

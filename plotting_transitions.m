@@ -3,11 +3,11 @@ clear;
 
 Date='2020.11.24'
 nth_take=7
-delta_t_matrix=[2]
+delta_t_matrix=2
 T_matrix=[1]
 v_0_matrix=[3.5:0.1:10]
-dt=10^-2; % ms 
-% intrinsic_delay=0.1 % Intrinsic delay
+dt=10^-2
+% Don't run v_0=0, it's not runnable and take for ever
 
 
 %% Execution Parameters
@@ -24,6 +24,7 @@ num_transitions_matrix=[];
 theta_plus_matrix=[];
 theta_minus_matrix=[];
 R_matrix=[];
+T_eff_matrix=[];
 for delta_t_index=1:length(Delta_t_matrix)
     for T_index=1:length(T_matrix)
         for v_0_index=1:length(V_0_matrix)
@@ -90,6 +91,7 @@ num_transitions_matrix=[num_transitions_matrix num_transitions];
 theta_plus_matrix=[theta_plus_matrix, theta_plus];
 theta_minus_matrix=[theta_minus_matrix, theta_minus];
 R_matrix=[R_matrix R_mean(2)];
+T_eff_matrix=[T_eff_matrix T_eff];
 nth_take
 
             end
@@ -100,11 +102,15 @@ nth_take
     nth_take=nth_take+1;
 end
 %% Saving results
+time_duration=time(end);
 clear theta time v_omega v_x v_y x y
 % save(['plotting transitions v_0_matrix=3.5 0.1 10.mat'])
 % save(['plotting transitions delta_t_matrix=0.5 0.5 16.mat'])
 
 
+%% Transition Rates
+omega_0_matrix=v_0_matrix/(2*a);
+transition_rate_theory=sqrt(2)./(pi.*omega_0_matrix.*delta_t_matrix.^2).*(omega_0_matrix.*delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*delta_t_matrix-1).^2./(k_B.*T_eff_matrix.*delta_t_matrix.^3));
 
 %% Plotting and Analyzing
 if 1
@@ -282,6 +288,19 @@ end
 %% Save Variables for Viktor
 % save('For_Viktor.mat','a','D','delta_t','dt','k_B','num_transitions_matrix','T','R_matrix','v_0_matrix')
 
+%% 2020.12.10 這邊繼續看要怎麼做
+% time_duration=Obs_time_steps*dt+delta_t;
+x0=omega_0_matrix.*delta_t_matrix;
+figure(7);clf;hold on;
+plot(x0,transition_rate_theory,'o')
+plot(x0,num_transitions_matrix/time_duration,'x')
+xlabel('\omega_0 \delta t')
+ylabel('Transition Rates (1/s)')
 
 
-
+figure(8);clf;hold on;
+flag=(x0>1.2);
+plot(x0(flag),transition_rate_theory(flag),'o')
+plot(x0(flag),num_transitions_matrix(flag)/time_duration,'x')
+xlabel('\omega_0 \delta t')
+ylabel('Transition Rates (1/s)')
