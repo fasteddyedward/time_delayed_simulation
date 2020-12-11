@@ -3,13 +3,13 @@ close all;
 
 
 %%
-Date='2020.11.24'
-nth_take=7
+Date='2020.12.11'
+nth_take=1
 delta_t_matrix=2
 T_matrix=[1]
 v_0_matrix=[3.5:0.1:10]
-dt=10^-2
-
+dt=10^0
+intrinsic_delay=0.0 % Intrinsic delay
 
 
 
@@ -50,7 +50,7 @@ mu=fitresult.b1;
 sigma=fitresult.c1/sqrt(2);
 
 %% Calculating the D_eff and T_eff
-D_eff=sigma^2/(4*dt);
+D_eff=sigma^2/(2*dt);
 T_eff=(v_0/(2*a)*delta_t^2*sigma^2)/(4*k_B*dt);
 
 save([movie_name,'.mat'],'D_eff','T_eff','-append')

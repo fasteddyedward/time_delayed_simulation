@@ -8,6 +8,14 @@ clear;
 % dt=10^-1; % ms 
 % % intrinsic_delay=0.0 % Intrinsic delay
 
+% Date='2020.12.11'
+% nth_take=1
+% delta_t_matrix=2
+% T_matrix=[1]
+% v_0_matrix=[3.5:0.1:10]
+% dt=10^0
+% intrinsic_delay=0.0 % Intrinsic delay
+
 Date='2020.11.24'
 nth_take=7
 delta_t_matrix=2
@@ -113,13 +121,10 @@ clear theta time v_omega v_x v_y x y
 % save(['plotting transitions delta_t_matrix=0.5 0.5 16.mat'])
 
 
-%% Transition Rates
-omega_0_matrix=v_0_matrix/(2*a);
-transition_rate_theory=sqrt(2)./(pi.*omega_0_matrix.*delta_t_matrix.^2).*(omega_0_matrix.*delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*delta_t_matrix-1).^2./(omega_0_matrix.*k_B.*T_eff_matrix.*delta_t_matrix.^3));
 
 %% Plotting and Analyzing
 for rrrr=1
-if 1==1
+if 1==0
 % v_0_matrix(1)=[];
     %% Delta_t
     if length(Delta_t_matrix)>1
@@ -293,6 +298,9 @@ end
 
 %% Save Variables for Viktor
 % save('For_Viktor.mat','a','D','delta_t','dt','k_B','num_transitions_matrix','T','R_matrix','v_0_matrix')
+%% Transition Rates
+omega_0_matrix=v_0_matrix/(2*a);
+transition_rate_theory=sqrt(2)./(pi.*omega_0_matrix.*delta_t_matrix.^2).*(omega_0_matrix.*delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*delta_t_matrix-1).^2./(omega_0_matrix.*k_B.*T_eff_matrix.*delta_t_matrix.^3));
 
 %% 2020.12.10 這邊繼續看要怎麼做
 % time_duration=Obs_time_steps*dt+delta_t;

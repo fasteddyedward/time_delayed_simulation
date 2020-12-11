@@ -1,13 +1,14 @@
 %% This file runs modulized_time_delay_proto
 %% 2020.10.14 to make the videos with several tries
 clearvars -except nth_take
-Date='2020.12.10'
-nth_take=1
-delta_t_matrix=[0.5:0.5:16]
+Date='2020.12.11'
+nth_take=7
+delta_t_matrix=2
 T_matrix=[1]
-v_0_matrix=5
-dt=10^-1; % ms 
-intrinsic_delay=0.0 % Intrinsic delay
+v_0_matrix=[3.5:0.1:10]
+dt=10^-2
+intrinsic_delay=0;
+
 
 for delta_t_index=1:length(delta_t_matrix)
     for T_index=1:length(T_matrix)
@@ -163,7 +164,7 @@ end
     clear Movie_Vector
     time_making_movies=toc(making_movies)
     %% Plotting x and y of the N particles
-    plot_x_y(movie_name)
+%     plot_x_y(movie_name)
 
 
 %% check point to make sure time is not wrong, or %% Drawing v_omega will break
@@ -176,20 +177,20 @@ if N==2 && fixed_flag(1)==1
     theta=0;
     Analyze_theta=tic;
     moving_avg=1 ;
-    plot_rot='yes';
+    plot_rot='no';
     Theta_Analysis_Fixed_Center(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
     time_analyze_theta=toc(Analyze_theta)
     %% Plotting histogram
     num_bins=100  ;
     bin_limit=2;
-    figure(81),clf % Note that hist_analysis only works for one particle orbitting a fixed particle at the moment
+    temp=figure(81);temp.Visible='off';clf; % Note that hist_analysis only works for one particle orbitting a fixed particle at the moment
     
     [k_trans,theta_plus,theta_minus,num_transitions]=hist_analysis(movie_name,moving_avg,num_bins,bin_limit,Obs_time_steps,delta_t,dt);
     set(gca, 'YScale', 'linear')
     saveas(gcf,[movie_name,' (hist).png'])    
     %% Plotting Theta
     moving_avg=1;
-    figure(80);clf;
+    temp=figure(80);clf;temp.Visible='off';
     show_transitions='off';
     plot_theta(N,delta_t,movie_name,moving_avg,theta_plus,theta_minus,k_trans,show_transitions)
     title(['Theta (Time Delay Angle), v_0 = ',num2str(v_0),', \delta t = ',num2str(delta_t),', T = ',num2str(T)])

@@ -7,6 +7,7 @@ bin_interval=2*bin_limit/num_bins;
 bin_loc=-bin_limit:bin_interval:bin_limit;
 %     h=histogram(movmean(theta(2,:),moving_avg),1000)
 h=histogram(movmean(theta(2,:),moving_avg),bin_loc);
+% h.Visible='off';
 
 %%% Note that before reaching steady state, theta=0, and that is not the
 %%% part we are interested in.
@@ -50,6 +51,8 @@ end
 
 %%
 hold on
+% temp2=gcf;
+% temp2.Visible='off';
 xline(theta_plus)
 xline(theta_minus)
 legend('Entries',['\theta_+=',num2str(theta_plus)],['\theta_-=',num2str(theta_minus)])
@@ -61,6 +64,7 @@ ylabel('Entries')
     
 %% Start Calculating Transition Rates
 theta_sing=theta(2,:);
+
 
 
 sign_old=0; % Initial 'order parameter' for the orbit. +1 for stable orbit with theta_plus, -1 for stable orbit with theta_miunus

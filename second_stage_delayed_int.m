@@ -64,8 +64,8 @@ for k=1:partition_time_steps
                 end
                 
                 %% Storing the particle's displacement (including the fluctuation)
-                delta_x(i)=F_x(i)*dt+normrnd(0,sqrt(4*D*dt));
-                delta_y(i)=F_y(i)*dt+normrnd(0,sqrt(4*D*dt));
+                delta_x(i)=F_x(i)*dt+normrnd(0,sqrt(2*D*dt));
+                delta_y(i)=F_y(i)*dt+normrnd(0,sqrt(2*D*dt));
                 %% Updating particle position with Particle Interaction and Diffusion
                 x(i,1+k+delta_t/dt)=x(i,k+delta_t/dt)+delta_x(i);
                 y(i,1+k+delta_t/dt)=y(i,k+delta_t/dt)+delta_y(i);

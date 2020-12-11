@@ -22,8 +22,8 @@ for k=1:delta_t/dt
 %             x(i,k+1)=x(i,k);
 %             y(i,k+1)=y(i,k);
 %         elseif fixed_flag(i)==0 %% particle is mobile
-            x(i,k+1)=x(i,k)+normrnd(0,sqrt(4*D*dt));
-            y(i,k+1)=y(i,k)+normrnd(0,sqrt(4*D*dt));           
+            x(i,k+1)=x(i,k)+normrnd(0,sqrt(2*D*dt));
+            y(i,k+1)=y(i,k)+normrnd(0,sqrt(2*D*dt));           
             %% Including hard core interaction
             %             if hard_collision=='on'
             switch hard_collision
