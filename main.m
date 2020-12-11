@@ -4,11 +4,13 @@ clearvars -except nth_take
 Date='2020.12.11'
 nth_take=100
 delta_t_matrix=[1.8:0.1:4]
+% delta_t_matrix=2.3
 T_matrix=[1]
 v_0_matrix=5
-dt=10^-2
+dt=10^-1
 intrinsic_delay=0.0 % Intrinsic delay
-Obs_time_steps=5*10^5
+% Obs_time_steps=10^6
+Obs_time_steps=10^5
 
 
 
