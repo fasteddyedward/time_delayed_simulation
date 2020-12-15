@@ -13,19 +13,19 @@ for file_name_index=1:size(file_name_matrix,1)
     clearvars -except file_name_index file_name_matrix
 %% Read Variables
 file_name=file_name_matrix(file_name_index,:);
-T = readmatrix([file_name,'.csv']);
-frame=T(:,1);
-particle=T(:,2);
-vel_para=T(:,3);
-vel_perp=T(:,4);
-op=T(:,5);
-angle=T(:,6)*pi/180; % theta was recorded in degrees
-cs=T(:,7);
-omega=T(:,8);
-up=T(:,9);
-vp=T(:,10);
-x(2,:)=T(:,11);
-y(2,:)=T(:,12);
+Table_read = readmatrix([file_name,'.csv']);
+frame=Table_read(:,1);
+particle=Table_read(:,2);
+vel_para=Table_read(:,3);
+vel_perp=Table_read(:,4);
+op=Table_read(:,5);
+angle=Table_read(:,6)*pi/180; % theta was recorded in degrees
+cs=Table_read(:,7);
+omega=Table_read(:,8);
+up=Table_read(:,9);
+vp=Table_read(:,10);
+x(2,:)=Table_read(:,11);
+y(2,:)=Table_read(:,12);
 
 %% Other parameters and variables
 x(1,1:length(frame))=0;

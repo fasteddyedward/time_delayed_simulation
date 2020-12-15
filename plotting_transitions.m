@@ -24,13 +24,8 @@ clear;
 % v_0_matrix=[3.5:0.1:10]
 % dt=10^-2
 
-% Date='2020.12.11'
-% nth_take=7
-% delta_t_matrix=2
-% T_matrix=[1]
-% v_0_matrix=[3.5:0.1:10]
-% dt=10^-2
-% intrinsic_delay=0;
+
+
 
 % Date='2020.12.11'
 % nth_take=1
@@ -41,14 +36,48 @@ clear;
 % intrinsic_delay=0.0 % Intrinsic delay
 % Obs_time_steps=10^5
 
-Date='2020.12.11'
-nth_take=100
-delta_t_matrix=[2:0.2:4]
+
+
+% Date='2020.12.11'
+% nth_take=7
+% delta_t_matrix=2
+% T_matrix=[1]
+% v_0_matrix=[3.5:0.1:10]
+% dt=10^-2
+% intrinsic_delay=0;
+
+% 
+% Date='2020.12.11'
+% nth_take=100
+% delta_t_matrix=[1.8:0.1:4]
+% % delta_t_matrix=2.3
+% T_matrix=[1]
+% v_0_matrix=5
+% dt=10^-1
+% intrinsic_delay=0.0 % Intrinsic delay
+% Obs_time_steps=10^5
+
+% Date='2020.12.11'
+% nth_take=200
+% delta_t_matrix=[18:1:40]
+% % delta_t_matrix=2.3
+% T_matrix=[1]
+% v_0_matrix=0.5
+% dt=10^0
+% intrinsic_delay=0.0 % Intrinsic delay
+% % Obs_time_steps=10^6
+% Obs_time_steps=10^5
+
+Date='2020.12.15'
+nth_take=1
+delta_t_matrix=[18:1:40]
+% delta_t_matrix=2.3
+% delta_t_matrix=2
 T_matrix=[1]
-v_0_matrix=5
-dt=10^-2
+v_0_matrix=0.5
+dt=10^-1
 intrinsic_delay=0.0 % Intrinsic delay
-Obs_time_steps=5*10^5
+Obs_time_steps=10^6
 
 
 %% Execution Parameters
@@ -56,9 +85,11 @@ recalculate_theta='no' % normally just set to no
 recalculate_hist='no' %
 recalculate_R='no' % normally just set to no; R is calculated in hist already.
 draw_hist='no'
-recalculate_T_eff='yes'
+recalculate_T_eff='no'
+    plot_hist_fit_T_eff='no';
 fit_Viktor_method='no'
-%%
+
+%% 
 V_0_matrix=v_0_matrix;
 Delta_t_matrix=delta_t_matrix;
 %%
@@ -133,12 +164,14 @@ switch recalculate_R
 end
 
 %% Calculating Effective Temperature
-plot_hist_fit='no';
+if exist('T_eff')==0
+    recalculate_T_eff='yes'
+end
 switch recalculate_T_eff
     case 'yes'
         %% Finding the sigma of the omega (effective temperature)
         f=figure(80);clf;
-        switch plot_hist_fit
+        switch plot_hist_fit_T_eff
             case 'no'
                 f.Visible='off';
         end
@@ -146,7 +179,7 @@ switch recalculate_T_eff
         y=h.Values;
         x=h.BinEdges(1:end-1)+0.5*h.BinWidth;
         % plot(x,y);
-        [fitresult,gof]=fit_Gaussian(x,y,plot_hist_fit);
+        [fitresult,gof]=fit_Gaussian(x,y,plot_hist_fit_T_eff);
         % a1*exp(-((x-b1)/c1)^2)
         mu=fitresult.b1;
         sigma=fitresult.c1/sqrt(2);
@@ -187,7 +220,7 @@ clear theta time v_omega v_x v_y x y
 
 
 %% Plotting and Analyzing
-for rrrr=1
+
 switch fit_Viktor_method
     case 'yes'
 % v_0_matrix(1)=[];
@@ -359,15 +392,15 @@ switch fit_Viktor_method
         fitresult_norm.b/50
     end
 end
-end
+
 
 %% Save Variables for Viktor
 % save('For_Viktor.mat','a','D','delta_t','dt','k_B','num_transitions_matrix','T','R_matrix','v_0_matrix')
 %% Transition Rates
-omega_0_matrix=v_0_matrix/(2*a);
-% omega_0_matrix=v_0_matrix./R_matrix;
-transition_rate_theory=sqrt(2)./(pi.*omega_0_matrix.*delta_t_matrix.^2).*(omega_0_matrix.*delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*delta_t_matrix-1).^2./(omega_0_matrix.*k_B.*T_eff_matrix.*delta_t_matrix.^3));
+% omega_0_matrix=v_0_matrix/(2*a);
 % transition_rate_theory=sqrt(2)./(pi.*omega_0_matrix.*delta_t_matrix.^2).*(omega_0_matrix.*delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*delta_t_matrix-1).^2./(D_eff_matrix.*omega_0_matrix.*delta_t_matrix.^2/2.*omega_0_matrix.*delta_t_matrix.^3));
+omega_0_matrix=v_0_matrix./R_matrix;
+transition_rate_theory=sqrt(2)./(pi.*omega_0_matrix.*delta_t_matrix.^2).*(omega_0_matrix.*delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*delta_t_matrix-1).^2./(omega_0_matrix.*k_B.*T_eff_matrix.*delta_t_matrix.^3));
 
 %% 2020.12.10 這邊繼續看要怎麼做
 % time_duration=Obs_time_steps*dt+delta_t;
@@ -385,34 +418,61 @@ plot(x0(flag),transition_rate_theory(flag),'o')
 plot(x0(flag),num_transitions_matrix(flag)/time_duration,'x')
 xlabel('\omega_0 \delta t')
 ylabel('Transition Rates (1/s)')
-%%
-% figure
-% plot(3/2./(k_B.*T_eff_matrix.*omega_0_matrix.*delta_t_matrix.^3))
-% figure
-% plot(omega_0_matrix)
-%% 看看2a 還是R 比較好
-% Transition Rates
-omega_0_matrix=v_0_matrix/(2*a);
+
+%% Plotting R vs omega_0 delta_t
+figure(10);clf;
+plot(delta_t_matrix,R_matrix/(2*a))
+% xlabel('\omega_0 \delta t')
+xlabel('\delta t')
+ylabel('R/(2a)')
+axis([-inf inf 0 inf])
+
+%% Plotting inverse transition rate
+% time_duration=Obs_time_steps*dt+delta_t;
+% omega_0_matrix=v_0_matrix./(2*a);
 % omega_0_matrix=v_0_matrix./R_matrix;
-transition_rate_theory=sqrt(2)./(pi.*omega_0_matrix.*delta_t_matrix.^2).*(omega_0_matrix.*delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*delta_t_matrix-1).^2./(omega_0_matrix.*k_B.*T_eff_matrix.*delta_t_matrix.^3));
+% transition_rate_theory=sqrt(2)./(pi.*omega_0_matrix.*delta_t_matrix.^2).*(omega_0_matrix.*delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*delta_t_matrix-1).^2./(omega_0_matrix.*k_B.*T_eff_matrix.*delta_t_matrix.^3));
 
-figure(8);clf;hold on;
-flag=(x0>1.);
-plot(x0(flag),transition_rate_theory(flag),'o')
-plot(x0(flag),num_transitions_matrix(flag)/time_duration,'x')
+% x0=omega_0_matrix.*delta_t_matrix;
+
+figure(11);clf;hold on;
+plot(x0,1./transition_rate_theory,'o')
+plot(x0,1./(num_transitions_matrix/time_duration),'x')
 xlabel('\omega_0 \delta t')
-ylabel('Transition Rates (1/s)')
-title('2a')
-%
+ylabel('1/Transition Rates (s)')
 
+
+figure(12);clf;hold on;
+flag=(x0>1 );
+plot(x0(flag),1./transition_rate_theory(flag),'o')
+plot(x0(flag),1./(num_transitions_matrix(flag)/time_duration),'x')
+xlabel('\omega_0 \delta t')
+ylabel('1/Transition Rates (s)')
+%% 看看2a 還是R 比較好
+%% Viktor 說 R比較好
+% % Transition Rates
 % omega_0_matrix=v_0_matrix/(2*a);
-omega_0_matrix=v_0_matrix./R_matrix;
-transition_rate_theory=sqrt(2)./(pi.*omega_0_matrix.*delta_t_matrix.^2).*(omega_0_matrix.*delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*delta_t_matrix-1).^2./(omega_0_matrix.*k_B.*T_eff_matrix.*delta_t_matrix.^3));
+% % omega_0_matrix=v_0_matrix./R_matrix;
+% transition_rate_theory=sqrt(2)./(pi.*omega_0_matrix.*delta_t_matrix.^2).*(omega_0_matrix.*delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*delta_t_matrix-1).^2./(omega_0_matrix.*k_B.*T_eff_matrix.*delta_t_matrix.^3));
+% 
+% figure(8);clf;hold on;
+% flag=(x0>1.);
+% plot(x0(flag),transition_rate_theory(flag),'o')
+% plot(x0(flag),num_transitions_matrix(flag)/time_duration,'x')
+% xlabel('\omega_0 \delta t')
+% ylabel('Transition Rates (1/s)')
+% title('2a')
+% %
+% 
+% % omega_0_matrix=v_0_matrix/(2*a);
+% omega_0_matrix=v_0_matrix./R_matrix;
+% transition_rate_theory=sqrt(2)./(pi.*omega_0_matrix.*delta_t_matrix.^2).*(omega_0_matrix.*delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*delta_t_matrix-1).^2./(omega_0_matrix.*k_B.*T_eff_matrix.*delta_t_matrix.^3));
+% 
+% figure(9);clf;hold on;
+% flag=(x0>1.);
+% plot(x0(flag),transition_rate_theory(flag),'o')
+% plot(x0(flag),num_transitions_matrix(flag)/time_duration,'x')
+% xlabel('\omega_0 \delta t')
+% ylabel('Transition Rates (1/s)')
+% title('R')
 
-figure(9);clf;hold on;
-flag=(x0>1.);
-plot(x0(flag),transition_rate_theory(flag),'o')
-plot(x0(flag),num_transitions_matrix(flag)/time_duration,'x')
-xlabel('\omega_0 \delta t')
-ylabel('Transition Rates (1/s)')
-title('R')
