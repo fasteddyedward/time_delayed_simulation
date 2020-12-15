@@ -68,17 +68,38 @@ clear;
 % % Obs_time_steps=10^6
 % Obs_time_steps=10^5
 
+% Date='2020.12.15'
+% nth_take=1
+% delta_t_matrix=[18:1:40]
+% % delta_t_matrix=2.3
+% % delta_t_matrix=2
+% T_matrix=[1]
+% v_0_matrix=0.5
+% dt=10^-1
+% intrinsic_delay=0.0 % Intrinsic delay
+% Obs_time_steps=10^6
+
 Date='2020.12.15'
-nth_take=1
-delta_t_matrix=[18:1:40]
+nth_take=100
+delta_t_matrix=[1.8:0.1:4.0]
 % delta_t_matrix=2.3
 % delta_t_matrix=2
 T_matrix=[1]
-v_0_matrix=0.5
+v_0_matrix=5
 dt=10^-1
 intrinsic_delay=0.0 % Intrinsic delay
 Obs_time_steps=10^6
 
+% Date='2020.12.15'
+% nth_take=200
+% delta_t_matrix=[1.8:0.1:4.0]
+% % delta_t_matrix=2.3
+% % delta_t_matrix=2
+% T_matrix=[1]
+% v_0_matrix=5
+% dt=10^0
+% intrinsic_delay=0.0 % Intrinsic delay
+% Obs_time_steps=10^6
 
 %% Execution Parameters
 recalculate_theta='no' % normally just set to no
@@ -86,8 +107,8 @@ recalculate_hist='no' %
 recalculate_R='no' % normally just set to no; R is calculated in hist already.
 draw_hist='no'
 recalculate_T_eff='no'
-    plot_hist_fit_T_eff='no';
-fit_Viktor_method='no'
+    plot_hist_fit_T_eff='no'
+fit_Viktor_method='yes'
 
 %% 
 V_0_matrix=v_0_matrix;
@@ -153,7 +174,7 @@ end
 switch recalculate_R
     case 'yes'
         %% Calculating the histograms and stuff
-        theta=0;
+%         theta=0; % 這個會把下面要用的theta蓋掉
         Analyze_theta=tic;
         moving_avg=1 ;
         plot_rot='no';

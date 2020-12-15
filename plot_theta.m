@@ -3,7 +3,7 @@ function plot_theta(N,delta_t,movie_name,moving_avg,theta_plus,theta_minus,k_tra
 load([movie_name,'.mat'],'theta','time')
 hold on
 for i=2:N
-    plot(time,movmean(theta(i,:),moving_avg))
+    plot(time,movmean(theta(i,1:length(time)),moving_avg))
 end
 xline(delta_t)
 yline(theta_plus)

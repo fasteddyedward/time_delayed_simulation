@@ -2,7 +2,7 @@
 %% 2020.10.14 to make the videos with several tries
 clearvars -except nth_take
 Date='2020.12.15'
-nth_take=100
+nth_take=300
 delta_t_matrix=[1.8:0.1:4.0]
 % delta_t_matrix=2.3
 % delta_t_matrix=2
@@ -10,7 +10,7 @@ T_matrix=[1]
 v_0_matrix=5
 dt=10^-1
 intrinsic_delay=0.0 % Intrinsic delay
-Obs_time_steps=10^6
+Obs_time_steps=10^7
 % Obs_time_steps=10^5
 
 
