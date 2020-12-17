@@ -1,7 +1,6 @@
+%% The funciton of this filed has been included in plotting_transitions.m 
 clear;
 close all;
-
-
 %%
 Date='2020.12.11'
 nth_take=1
@@ -10,9 +9,6 @@ T_matrix=[1]
 v_0_matrix=[3.5:0.1:10]
 dt=10^0
 intrinsic_delay=0.0 % Intrinsic delay
-
-
-
 %%
 plot_hist_fit='no';
 %%
