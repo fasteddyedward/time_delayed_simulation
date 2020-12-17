@@ -38,7 +38,7 @@ clear;
 
 
 
-% Date='2020.12.11'% T_eff has been recalculated
+% Date='2020.12.11'% T_eff has been recalculated % Matches Pretty well
 % nth_take=7
 % delta_t_matrix=2
 % T_matrix=[1]
@@ -47,17 +47,16 @@ clear;
 % intrinsic_delay=0;
 
 % 
-% Date='2020.12.11'
+% Date='2020.12.11' % T_eff recalucluated, fits pretty well
 % nth_take=100
 % delta_t_matrix=[1.8:0.1:4]
-% % Delta_t_matrix=2.3
 % T_matrix=[1]
 % v_0_matrix=5
 % dt=10^-1
 % intrinsic_delay=0.0 % Intrinsic delay
 % Obs_time_steps=10^5
 
-% Date='2020.12.11'
+% Date='2020.12.11' % T_eff recalucluated, fits not well
 % nth_take=200
 % Delta_t_matrix=[18:1:40]
 % % Delta_t_matrix=2.3
@@ -68,7 +67,7 @@ clear;
 % % Obs_time_steps=10^6
 % Obs_time_steps=10^5
 
-% Date='2020.12.15'
+% Date='2020.12.15' %T_eff recalucluated, fits not well
 % nth_take=1
 % delta_t_matrix=[18:1:40]
 % % Delta_t_matrix=2.3
@@ -79,14 +78,14 @@ clear;
 % intrinsic_delay=0.0 % Intrinsic delay
 % Obs_time_steps=10^6
 
-% Date='2020.12.15' % T_eff has been recalculated
-% nth_take=100
-% delta_t_matrix=[1.8:0.1:4.0]
-% T_matrix=[1]
-% v_0_matrix=5
-% dt=10^-1
-% intrinsic_delay=0.0 % Intrinsic delay
-% Obs_time_steps=10^6
+Date='2020.12.15' % T_eff has been recalculated
+nth_take=100
+delta_t_matrix=[1.8:0.1:4.0]
+T_matrix=[1]
+v_0_matrix=5
+dt=10^-1
+intrinsic_delay=0.0 % Intrinsic delay
+Obs_time_steps=10^6
 
 % Date='2020.12.15' % T_eff has been recalculated 
 % The data look like a mess don't use
@@ -116,14 +115,14 @@ clear;
 % intrinsic_delay=0.0 % Intrinsic delay
 % Obs_time_steps=10^5
 
-Date='2020.12.16'
-nth_take=100
-delta_t_matrix=2
-T_matrix=[1]
-V_0_matrix=[3.5:0.1:10]
-dt=10^-1
-intrinsic_delay=0.0 % Intrinsic delay
-Obs_time_steps=10^6
+% Date='2020.12.16'
+% nth_take=100
+% delta_t_matrix=2
+% T_matrix=[1]
+% V_0_matrix=[3.5:0.1:10]
+% dt=10^-1
+% intrinsic_delay=0.0 % Intrinsic delay
+% Obs_time_steps=10^6
 
 %% 
 % if length(Delta_t_matrix)>1
@@ -137,9 +136,9 @@ recalculate_theta='no' % normally just set to no
 recalculate_hist='no' %
 recalculate_R='no' % normally just set to no; R is calculated in hist already.
 draw_hist='no'
-recalculate_T_eff='no'
+recalculate_T_eff='yes'
     plot_hist_fit_T_eff='no'
-fit_Viktor_method='yes'
+fit_Viktor_method='no'
 
 %%
 if exist('V_0_matrix','var')==0
@@ -552,8 +551,8 @@ legend('T_{eff}','D_{eff}','R/(2a)/300','Location','northwest')
 
 %% Storing Mat File
 if length(Delta_t_matrix)>1
-save([Date,', delta_t_matrix, Obs_time=',num2str(Obs_time_steps),'.mat'])
+save(['Transitions, ',Date,', delta_t_matrix, Obs_time=',num2str(Obs_time_steps),'.mat'])
 elseif length(V_0_matrix)>1
-save([Date,', v_0_matrix, Obs_time=',num2str(Obs_time_steps),'.mat'])
+save(['Transitions, ',Date,', v_0_matrix, Obs_time=',num2str(Obs_time_steps),'.mat'])
 end
 
