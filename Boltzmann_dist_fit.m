@@ -49,14 +49,32 @@ x_line=-1:0.01:1;
 plot(x_line,U(x_line))
 legend('sim','theory')
 
-%%
+%% 2020.12.17 fit attempt
+ln_p=log(p/dx);
+% x(1)=T;
+% x(2)=-ln(Z)
+fun = @(u)(-1./(k_B*u(1)).*(omega_0*delta_t^3/24.*(omega.^2-2*omega_plus^2).*omega.^2)-u(1));
+x0=[0.006 log(8)];
+lb=[0.003 3]
+ub=[0.02  1]
+non_result = lsqnonlin(fun,x0)
+    %% Comparing in terms of Probability with fitted result using non-linear fitting
+    x_line=-bin_limit:0.01:bin_limit;
+    figure(3); clf; hold on
+    title('Comparing p(\omega) of Simulation and Theory')
+    %     plot(x_line,p_omega(x_line)/Z*dx)
+    p_omega_fitted=@(omega)exp(-U(omega)/(k_B*non_result(1)));
+    plot(x_line,p_omega_fitted(x_line)/non_result(2)*dx)
+    plot(x,p)
+%     legend('sim','theory')
+%% 2020.12.16 fit attempt
 ln_p=log(p/dx);
 [fitresult, gof] =createFit(x,ln_p);
 
 T_fit=1/(k_B*fitresult.a)*omega_0*delta_t^3/24
 omega_plus_fit=sqrt(fitresult.b/2)
 Z_fit=exp(-fitresult.c)
-%% Error
+    %% Error
 (T_fit-T_eff)/T_eff
 (omega_plus_fit-omega_plus)/omega_plus
 (Z_fit-Z)/Z

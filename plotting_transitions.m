@@ -78,16 +78,16 @@ clear;
 % intrinsic_delay=0.0 % Intrinsic delay
 % Obs_time_steps=10^6
 
-Date='2020.12.15' % T_eff has been recalculated
-nth_take=100
-delta_t_matrix=[1.8:0.1:4.0]
-T_matrix=[1]
-v_0_matrix=5
-dt=10^-1
-intrinsic_delay=0.0 % Intrinsic delay
-Obs_time_steps=10^6
+% Date='2020.12.15' % T_eff has been recalculated % Fits really well
+% nth_take=100
+% delta_t_matrix=[1.8:0.1:4.0]
+% T_matrix=[1]
+% v_0_matrix=5
+% dt=10^-1
+% intrinsic_delay=0.0 % Intrinsic delay
+% Obs_time_steps=10^6
 
-% Date='2020.12.15' % T_eff has been recalculated 
+% Date='2020.12.15' % T_eff has been recalculated % Fits badly
 % The data look like a mess don't use
 % nth_take=200
 % delta_t_matrix=[1.8:0.1:4.0]
@@ -97,7 +97,7 @@ Obs_time_steps=10^6
 % intrinsic_delay=0.0 % Intrinsic delay
 % Obs_time_steps=10^6
 
-% Date='2020.12.15'% T_eff has been recalculated
+% Date='2020.12.15'% T_eff has been recalculated % Fits excellent
 % nth_take=300
 % delta_t_matrix=[1.8:0.1:4.0]
 % T_matrix=[1]
@@ -106,7 +106,7 @@ Obs_time_steps=10^6
 % intrinsic_delay=0.0 % Intrinsic delay
 % Obs_time_steps=10^7
 
-% Date='2020.12.16'
+% Date='2020.12.16' %T_eff has been recalculated % Fits good
 % nth_take=1
 % delta_t_matrix=2
 % T_matrix=[1]
@@ -115,14 +115,14 @@ Obs_time_steps=10^6
 % intrinsic_delay=0.0 % Intrinsic delay
 % Obs_time_steps=10^5
 
-% Date='2020.12.16'
-% nth_take=100
-% delta_t_matrix=2
-% T_matrix=[1]
-% V_0_matrix=[3.5:0.1:10]
-% dt=10^-1
-% intrinsic_delay=0.0 % Intrinsic delay
-% Obs_time_steps=10^6
+Date='2020.12.16' %T_eff has been recalculated % Fits okay (not as good as the one above)
+nth_take=100
+delta_t_matrix=2
+T_matrix=[1]
+V_0_matrix=[3.5:0.1:10]
+dt=10^-1
+intrinsic_delay=0.0 % Intrinsic delay
+Obs_time_steps=10^6
 
 %% 
 % if length(Delta_t_matrix)>1
@@ -219,7 +219,7 @@ switch recalculate_R
 end
 
 %% Calculating Effective Temperature
-if exist('T_eff')==0
+if exist('T_eff','var')==0
     recalculate_T_eff='yes'
 end
 switch recalculate_T_eff
@@ -241,8 +241,9 @@ switch recalculate_T_eff
         
         %% Calculating the D_eff and T_eff
         D_eff=sigma^2/(2*dt);
-%         T_eff=(v_0/(2*a)*delta_t^2*sigma^2)/(4*k_B*dt);
+%         D_eff=sigma^2/(dt); Wrong
         T_eff=(v_0/R_mean(2))*delta_t^2*sigma^2/(4*k_B*dt);
+%         T_eff=(v_0/R_mean(2))*delta_t^2*sigma^2/(2*k_B*dt); Wrong
         
         save([movie_name,'.mat'],'D_eff','T_eff','sigma','mu','-append')
     case 'no'
