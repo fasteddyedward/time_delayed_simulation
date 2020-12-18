@@ -83,9 +83,9 @@ function [fitresult, gof] = createFit(x, ln_p)
 
 %% Fit: 'untitled fit 1'.
 [xData, yData] = prepareCurveData( x, ln_p );
-
+v=2
 % Set up fittype and options.
-ft = fittype( '-a*(x.^2-b).*x.^2+c', 'independent', 'x', 'dependent', 'y' );
+ft = fittype( ['-a*(x.^',num2str(v),'-b).*x.^2+c'], 'independent', 'x', 'dependent', 'y' );
 opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
 opts.Display = 'Off';
 opts.StartPoint = [0.754686681982361 0.276025076998578 0.679702676853675];
