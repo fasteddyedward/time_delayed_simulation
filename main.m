@@ -1,14 +1,14 @@
 %% This file runs modulized_time_delay_proto
 %% 2020.10.14 to make the videos with several tries
 clearvars -except nth_take
-Date='2020.12.16'
-nth_take=136
+Date='2020.12.18'
+nth_take=1
 delta_t_matrix=2
 T_matrix=[1]
-v_0_matrix=[7.1:0.1:10]
+v_0_matrix=[5.2:5.3]
 dt=10^-1
 intrinsic_delay=0.0 % Intrinsic delay
-Obs_time_steps=10^6
+Obs_time_steps=10^5
 
 
 
