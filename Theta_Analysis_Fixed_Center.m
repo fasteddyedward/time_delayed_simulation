@@ -23,7 +23,7 @@ switch partition_movie
         
         %% Saving theta
         save([movie_name,'.mat'],'R','theta','R_mean','-append')
-        clear   theta x y v_x v_y time
+        clear  R theta x y v_x v_y time
         
         
 

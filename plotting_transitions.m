@@ -98,14 +98,14 @@ clear;
 % intrinsic_delay=0.0 % Intrinsic delay
 % Obs_time_steps=10^6
 
-% Date='2020.12.15'% T_eff has been recalculated
-% nth_take=300
-% delta_t_matrix=[1.8:0.1:4.0]
-% T_matrix=[1]
-% v_0_matrix=5
-% dt=10^-1
-% intrinsic_delay=0.0 % Intrinsic delay
-% Obs_time_steps=10^7
+Date='2020.12.15'% T_eff has been recalculated
+nth_take=300
+delta_t_matrix=[1.8:0.1:4.0]
+T_matrix=[1]
+v_0_matrix=5
+dt=10^-1
+intrinsic_delay=0.0 % Intrinsic delay
+Obs_time_steps=10^7
 
 % Date='2020.12.16'
 % nth_take=1
@@ -116,16 +116,16 @@ clear;
 % intrinsic_delay=0.0 % Intrinsic delay
 % Obs_time_steps=10^5
 
-Date='2020.12.16'
-nth_take=100
-delta_t_matrix=2
-T_matrix=[1]
-V_0_matrix=[3.5:0.1:10]
-dt=10^-1
-intrinsic_delay=0.0 % Intrinsic delay
-Obs_time_steps=10^6
+% Date='2020.12.16'
+% nth_take=100
+% delta_t_matrix=2
+% T_matrix=[1]
+% V_0_matrix=[3.5:0.1:10]
+% dt=10^-1
+% intrinsic_delay=0.0 % Intrinsic delay
+% Obs_time_steps=10^6
 
-% 
+%  Not in Laptop
 % Date='2020.12.17'
 % nth_take=1
 % delta_t_matrix=2
@@ -144,7 +144,7 @@ Obs_time_steps=10^6
 %% Execution Parameters
 recalculate_theta='no' % normally just set to no
 recalculate_hist='no' %
-recalculate_R='no' % normally just set to no; R is calculated in hist already.
+recalculate_R='yes' % normally just set to no; R is calculated in hist already.
 draw_hist='no'
 recalculate_T_eff='no'
     plot_hist_fit_T_eff='no'
@@ -619,10 +619,7 @@ title('D_{eff} v.s. D_0')
 plot(x0,D_eff_matrix./(D./R_matrix.^2))
 legend('D_{eff}/(D/R^2)','Location','northwest')
 xlabel('\omega_0 \delta t')
-% xlabel'
-% plot(x0,D./R_matrix.^2)
-% plot(x0,R_matrix/(2*a)/300)
-% legend('T_{eff}','D_{eff}','R/(2a)/300','Location','northwest')
+axis([-inf inf 0 inf])
 %% Storing Mat File
 if length(Delta_t_matrix)>1
 % save(['Transitions, ',Date,', delta_t_matrix, Obs_time=',num2str(Obs_time_steps),'.mat'])
