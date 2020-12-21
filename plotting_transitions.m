@@ -578,22 +578,21 @@ plot(x0,-3/2*(omega_0_matrix.*Delta_t_matrix-1).^2./(omega_0_matrix.*k_B.*T_eff_
 xlabel('\omega_0 \delta_t')
 ylabel('E_b/k_B T')
 %% Plotting R vs omega_0 delta_t
-% figure(20);clf;
-% plot(V_0_matrix,R_matrix/(2*a))
-% % plot(Delta_t_matrix,R_matrix/(2*a))
-% % xlabel('\omega_0 \delta t')
-% xlabel('\delta t')
-% ylabel('R/(2a)')
-% axis([-inf inf 0 inf])
-
 figure(10);clf;hold on;
-plot(Delta_t_matrix*V_0_matrix./R_matrix,R_matrix/(2*a))
+errorbar(Delta_t_matrix*V_0_matrix./R_matrix , R_matrix/(2*a), std_dR_matrix/(2*a));
 yline(1)
-% plot(Delta_t_matrix,R_matrix/(2*a))
-% xlabel('\omega_0 \delta t')
 xlabel('\omega_0 \delta t ')
 ylabel('R/(2a)')
 axis([-inf inf 0 inf])
+legend('(std of R)/2a','R=2a','Location','northwest')
+%% Plotting std_R and std_dR
+figure(22); clf; hold on;
+title('Fluctuations on the Radial Direction')
+plot(x0,std_R_matrix)
+plot(x0,std_dR_matrix)
+xlabel('omega_0 \delta t')
+legend('r', 'dr')
+
 %% Plotting T_eff and D_eff
 figure(15);clf;
 plot(x0,T_eff_matrix)
@@ -607,19 +606,23 @@ ylabel('D_{eff}')
 %% Plotting T_eff and D_eff & R vs omega_0 * delta_t
 figure(21);clf;hold on
 % title('fixed \delta t')
-title('fixed \omega_0')
+% title('fixed \omega_0')
 plot(x0,T_eff_matrix)
 plot(x0,D_eff_matrix)
 plot(x0,R_matrix/(2*a)/300)
+xlabel('\omega_0 \delta t')
 legend('T_{eff}','D_{eff}','R/(2a)/300','Location','northwest')
 
-%% Plotting std_R and std_dR
-figure(22); clf; hold on;
-title('Fluctuations on the Radial Direction')
-plot(x0,std_R_matrix)
-plot(x0,std_dR_matrix)
-xlabel('omega_0 \delta t')
-legend('r', 'dr')
+%% Plotting D_eff v.s D/R^2
+figure(23);clf;hold on
+title('D_{eff} v.s. D_0')
+plot(x0,D_eff_matrix./(D./R_matrix.^2))
+legend('D_{eff}/(D/R^2)','Location','northwest')
+xlabel('\omega_0 \delta t')
+% xlabel'
+% plot(x0,D./R_matrix.^2)
+% plot(x0,R_matrix/(2*a)/300)
+% legend('T_{eff}','D_{eff}','R/(2a)/300','Location','northwest')
 %% Storing Mat File
 if length(Delta_t_matrix)>1
 % save(['Transitions, ',Date,', delta_t_matrix, Obs_time=',num2str(Obs_time_steps),'.mat'])
