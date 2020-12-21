@@ -116,14 +116,14 @@ clear;
 % intrinsic_delay=0.0 % Intrinsic delay
 % Obs_time_steps=10^5
 
-% Date='2020.12.16'
-% nth_take=100
-% delta_t_matrix=2
-% T_matrix=[1]
-% V_0_matrix=[3.5:0.1:10]
-% dt=10^-1
-% intrinsic_delay=0.0 % Intrinsic delay
-% Obs_time_steps=10^6
+Date='2020.12.16'
+nth_take=100
+delta_t_matrix=2
+T_matrix=[1]
+V_0_matrix=[3.5:0.1:10]
+dt=10^-1
+intrinsic_delay=0.0 % Intrinsic delay
+Obs_time_steps=10^6
 
 % 
 % Date='2020.12.17'
@@ -146,11 +146,12 @@ recalculate_theta='no' % normally just set to no
 recalculate_hist='no' %
 recalculate_R='no' % normally just set to no; R is calculated in hist already.
 draw_hist='no'
-recalculate_T_eff='yes'
+recalculate_T_eff='no'
     plot_hist_fit_T_eff='no'
 fit_Viktor_method='no'
 recalculate_T_Boltz='no'
-    plot_Boltz_fit='on'
+    omega_plus_type='full_sine' % 'approximate'
+    plot_Boltz_fit='off'
 %%
 if exist('V_0_matrix','var')==0
     V_0_matrix=v_0_matrix;
@@ -170,6 +171,9 @@ T_eff_matrix=[];
 D_eff_matrix=[];
 
 T_Boltz_matrix=[];
+
+std_R_matrix=[];
+std_dR_matrix=[];
 for delta_t_index=1:length(Delta_t_matrix)
     for T_index=1:length(T_matrix)
         for v_0_index=1:length(V_0_matrix)
@@ -227,9 +231,12 @@ switch recalculate_R
         plot_rot='no';
         Theta_Analysis_Fixed_Center(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
         time_analyze_theta=toc(Analyze_theta)
+        load([movie_name,'.mat'],'R_mean','R')
     case 'no'
-        load([movie_name,'.mat'],'R_mean')
+        load([movie_name,'.mat'],'R_mean','R')
 end
+std_R=std(R(2,:));
+std_dR=std(diff(R(2,:)));
 
 %% Calculating Effective Temperature by fitting the histograwm of omega^dot
 if exist('T_eff','var')==0
@@ -287,11 +294,12 @@ switch recalculate_T_Boltz % Modified from Boltzmann_dist_fit.m
         p=omega_count/length(omega); % Probability of the statistics
         ln_p=log(p/dx);
         omega_plus=sqrt(6/(omega_0*delta_t^3)*(omega_0*delta_t-1));
+%         omega_plus_exact=sqrt(10-sqrt(1/42/(omega_0*delta_t)^6+120/(omega_0*delta_t)-20))/delta_t;
         U=@(omega) omega_0*delta_t^3/24*(omega.^2-2*omega_plus.^2).*omega.^2;
         
         f=figure(83);f.Visible=plot_Boltz_fit;
         
-        [fitresult, gof] =Find_Boltzmann_Temp(omega_bin,ln_p,omega_0,delta_t,k_B);
+        [fitresult, gof] =Find_Boltzmann_Temp(omega_bin,ln_p,omega_0,delta_t,k_B,omega_plus_type);
         T_Boltz=fitresult.T;
         Z_fit=exp(fitresult.lnZ);
         xlabel('\omega')
@@ -317,6 +325,10 @@ sigma_matrix=[sigma_matrix sigma];
 mu_matrix=[mu_matrix mu];
 
 T_Boltz_matrix=[T_Boltz_matrix T_Boltz];
+
+std_R_matrix=[std_R_matrix std_R];
+std_dR_matrix=[std_dR_matrix std_dR];
+
 nth_take
 
             end
@@ -328,7 +340,7 @@ nth_take
 end
 %% Saving results
 time_duration=time(end);
-clear theta time v_omega v_x v_y x y
+clear R theta time v_omega v_x v_y x y 
 % save(['plotting transitions v_0_matrix=3.5 0.1 10.mat'])
 % save(['plotting transitions Delta_t_matrix=0.5 0.5 16.mat'])
 
@@ -517,7 +529,7 @@ omega_0_matrix=V_0_matrix./R_matrix;
 % T_eff_matrix=T_Boltz_matrix
 transition_rate_theory=2*sqrt(2)./(pi.*omega_0_matrix.*Delta_t_matrix.^2).*(omega_0_matrix.*Delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*Delta_t_matrix-1).^2./(omega_0_matrix.*k_B.*T_eff_matrix.*Delta_t_matrix.^3));
 
-%% 2020.12.10 Plotting Transition Rates
+%% 2020.12.10 Plotting Transition Rates 
 % time_duration=Obs_time_steps*dt+delta_t;
 x0=omega_0_matrix.*Delta_t_matrix;
 figure(7);clf;hold on;
@@ -535,13 +547,6 @@ xlabel('\omega_0 \delta t')
 ylabel('Transition Rates (1/s)')
 
 %% Plotting inverse transition rate
-% time_duration=Obs_time_steps*dt+delta_t;
-% omega_0_matrix=v_0_matrix./(2*a);
-% omega_0_matrix=v_0_matrix./R_matrix;
-% transition_rate_theory=sqrt(2)./(pi.*omega_0_matrix.*Delta_t_matrix.^2).*(omega_0_matrix.*Delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*Delta_t_matrix-1).^2./(omega_0_matrix.*k_B.*T_eff_matrix.*Delta_t_matrix.^3));
-
-% x0=omega_0_matrix.*Delta_t_matrix;
-
 figure(11);clf;hold on;
 plot(x0,1./transition_rate_theory,'o')
 plot(x0,1./(num_transitions_matrix/time_duration),'x')
@@ -558,7 +563,7 @@ ylabel('1/Transition Rates (s)')
 
 %% Comparing between 1-D and 2-D % It's the same, so just for check actually
 figure(13);clf;hold on;
-title('R vs 2a')
+% title('R vs 2a')
 % omega_0_matrix=V_0_matrix./(R_matrix);
 gamma_eff_matrix=omega_0_matrix.*Delta_t_matrix.^2/2;
 T_eff_1dim=gamma_eff_matrix.*D_eff_matrix/k_B;
@@ -569,7 +574,6 @@ ylabel('T_eff/')
 
 %% Comparing E_b and k_B*T
 figure(14);clf;
-% plot(x0,omega_0_matrix.*k_B.*T_eff_matrix.*Delta_t_matrix.^3)
 plot(x0,-3/2*(omega_0_matrix.*Delta_t_matrix-1).^2./(omega_0_matrix.*k_B.*T_eff_matrix.*Delta_t_matrix.^3))
 xlabel('\omega_0 \delta_t')
 ylabel('E_b/k_B T')
@@ -609,6 +613,13 @@ plot(x0,D_eff_matrix)
 plot(x0,R_matrix/(2*a)/300)
 legend('T_{eff}','D_{eff}','R/(2a)/300','Location','northwest')
 
+%% Plotting std_R and std_dR
+figure(22); clf; hold on;
+title('Fluctuations on the Radial Direction')
+plot(x0,std_R_matrix)
+plot(x0,std_dR_matrix)
+xlabel('omega_0 \delta t')
+legend('r', 'dr')
 %% Storing Mat File
 if length(Delta_t_matrix)>1
 % save(['Transitions, ',Date,', delta_t_matrix, Obs_time=',num2str(Obs_time_steps),'.mat'])

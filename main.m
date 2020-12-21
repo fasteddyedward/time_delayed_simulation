@@ -1,4 +1,4 @@
-function main()
+function main(testparameter1,testparameter2)
 %% This file runs modulized_time_delay_proto
 %% 2020.10.14 to make the videos with several tries
 clearvars -except nth_take
@@ -9,7 +9,7 @@ T_matrix=[1]
 v_0_matrix=[5.2 5.3]
 dt=10^-1
 intrinsic_delay=0.0 % Intrinsic delay
-Obs_time_steps=10^4
+Obs_time_steps=10^5
 
 
 

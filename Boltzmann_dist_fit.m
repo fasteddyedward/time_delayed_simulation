@@ -7,7 +7,7 @@ v_0_matrix=[3.5:0.1:7]
 dt=10^-1
 intrinsic_delay=0.0 % Intrinsic delay
 Obs_time_steps=10^5
-
+omega_plus_type='full_sine' % 'approximate'
 %%
 if exist('V_0_matrix','var')==0
     V_0_matrix=v_0_matrix;
@@ -61,7 +61,10 @@ xline(theta_minus/delta_t)
 f=figure(2);clf;hold on;f.Visible='off';
 title('p(\omega) of theory')
 omega_0=v_0/R_mean(2);
+    %% Omega_plus for approximate theory
 omega_plus=sqrt(6/(omega_0*delta_t^3)*(omega_0*delta_t-1));
+    %% Omega_plus_exact for expansion to 7th power in the original sin
+% omega_plus_exact=sqrt(10-sqrt(1/42/(omega_0*delta_t)^6+120/(omega_0*delta_t)-20))/delta_t;
 U=@(omega) omega_0*delta_t^3/24*(omega.^2-2*omega_plus.^2).*omega.^2;
 p_omega=@(omega)exp(-U(omega)/(k_B*T_eff));
 x_line=-bin_limit:0.01:bin_limit;
@@ -95,7 +98,7 @@ ylabel('U(\omega)')
 %% Fitting U=k_B*T*ln(p)+ln(Z)
 ln_p=log(p/dx);
 figure(5);clf;hold on;
-[fitresult, gof] =Find_Boltzmann_Temp(omega_bin,ln_p,omega_0,delta_t,k_B);
+[fitresult, gof] =Find_Boltzmann_Temp(omega_bin,ln_p,omega_0,delta_t,k_B,omega_plus_type);
 T_Boltz=fitresult.T
 Z_fit=exp(fitresult.lnZ)
 xlabel('\omega')
@@ -105,14 +108,15 @@ title(['\omega_0 \deltat=',num2str(omega_0*delta_t),', T_{Boltzmann}/T_{eff}=',n
 % possible that the Z doens't give a completely normalized p(omega)
 %% Fitting U=k_B*T*ln(p)+ln(Z) with only a small range
 ln_p=log(p/dx);
-figure(5);clf;hold on;
+figure(6);clf;hold on;
 % interest_flag=(ln_p>ln_p(end/2));
 threshold=0.5
 interest_flag=(abs(omega_bin)<threshold)
+
 % allowed_half_width=0.2
 % interest_flag=(omega_plus-allowed_half_width<abs(omega_bin) & abs(omega_bin)<omega_plus+allowed_half_width)
 
-[fitresult, gof] =Find_Boltzmann_Temp(omega_bin(interest_flag),ln_p(interest_flag),omega_0,delta_t,k_B);
+[fitresult, gof] =Find_Boltzmann_Temp(omega_bin(interest_flag),ln_p(interest_flag),omega_0,delta_t,k_B,omega_plus_type);
 plot(omega_bin(end/2),ln_p(end/2),'og')
 T_Boltz=fitresult.T
 Z_fit=exp(fitresult.lnZ)
@@ -122,7 +126,7 @@ title(['\omega_0 \deltat=',num2str(omega_0*delta_t),', T_{Boltzmann}/T_{eff}=',n
 % Z_fit is because this is fitted with the fitting function, and it is
 % possible that the Z doens't give a completely normalized p(omega)
     %% extending fitted line
-    figure(6);clf;hold on;
+    figure(7);clf;hold on;
     plot(omega_bin,ln_p,'.')
     plot(x_line,-U(x_line)/(k_B*T_Boltz)-fitresult.lnZ);
     xline(real(omega_plus))
