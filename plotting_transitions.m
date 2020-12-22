@@ -79,14 +79,14 @@ clear;
 % Obs_time_steps=10^6
 
 
-% Date='2020.12.15' % T_eff has been recalculated
-% nth_take=100
-% delta_t_matrix=[1.8:0.1:4.0]
-% T_matrix=[1]
-% v_0_matrix=5
-% dt=10^-1
-% intrinsic_delay=0.0 % Intrinsic delay
-% Obs_time_steps=10^6
+Date='2020.12.15' % T_eff has been recalculated
+nth_take=100
+delta_t_matrix=[1.8:0.1:4.0]
+T_matrix=[1]
+v_0_matrix=5
+dt=10^-1
+intrinsic_delay=0.0 % Intrinsic delay
+Obs_time_steps=10^6
 
 % Date='2020.12.15' % T_eff has been recalculated 
 % The data look like a mess don't use
@@ -98,14 +98,14 @@ clear;
 % intrinsic_delay=0.0 % Intrinsic delay
 % Obs_time_steps=10^6
 
-Date='2020.12.15'% T_eff has been recalculated
-nth_take=300
-delta_t_matrix=[1.8:0.1:4.0]
-T_matrix=[1]
-v_0_matrix=5
-dt=10^-1
-intrinsic_delay=0.0 % Intrinsic delay
-Obs_time_steps=10^7
+% Date='2020.12.15'% T_eff has been recalculated
+% nth_take=300
+% delta_t_matrix=[1.8:0.1:4.0]
+% T_matrix=[1]
+% v_0_matrix=5
+% dt=10^-1
+% intrinsic_delay=0.0 % Intrinsic delay
+% Obs_time_steps=10^7
 
 % Date='2020.12.16'
 % nth_take=1
@@ -146,7 +146,7 @@ recalculate_theta='no' % normally just set to no
 recalculate_hist='no' %
 recalculate_R='yes' % normally just set to no; R is calculated in hist already.
 draw_hist='no'
-recalculate_T_eff='no'
+recalculate_T_eff='yes'
     plot_hist_fit_T_eff='no'
 fit_Viktor_method='no'
 recalculate_T_Boltz='no'

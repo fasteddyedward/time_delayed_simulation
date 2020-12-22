@@ -16,6 +16,7 @@ Delta_t_matrix=delta_t_matrix;
 
 %%
 auto_exp_matrix=[];
+R_matrix=[];
 %%
 for delta_t_index=1:length(Delta_t_matrix)
     for T_index=1:length(T_matrix)
@@ -40,6 +41,7 @@ legend('g(\tau)',['\delta t=',num2str(delta_t)])
 %% Fitting the Autocorrelation Functions
 [fitresult, gof] = fit_exp(time_lags, acf);
 auto_exp_matrix=[auto_exp_matrix -fitresult.b];
+R_matrix=[R_matrix R_mean(2)];
             end
             nth_take=nth_take+1;
         end
@@ -47,11 +49,13 @@ auto_exp_matrix=[auto_exp_matrix -fitresult.b];
     end
     nth_take=nth_take+1;
 end
-
+%%
+omega_0_matrix=v_0_matrix./R_matrix;
+x0=omega_0_matrix.*delta_t_matrix;
 %% Plotting the exponenets  % These can be changed into omega_0*delta_t if we import R_matrix as well
 figure
-plot(v_0_matrix,1./auto_exp_matrix)
-xlabel('v_0')
+plot(x0,1./auto_exp_matrix)
+xlabel('x0')
 ylabel('Correlation exponent time scale ')
 
 function [fitresult, gof] = fit_exp(time_lags, acf)
