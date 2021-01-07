@@ -6,7 +6,7 @@ Date='2020.12.21'
 nth_take=1
 delta_t_matrix=2
 T_matrix=[1]
-v_0_matrix=[5.2 5.3]
+v_0_matrix=[5.2]
 dt=10^-1
 intrinsic_delay=0.0 % Intrinsic delay
 Obs_time_steps=10^5
@@ -36,7 +36,7 @@ partition_time_steps=Obs_time_steps;
 partition_movie='no';
 %% State if the particles are fixed, 0 for mobile, 1 for fixed
 fixed_flag(1:N)=0;
-fixed_flag(1)=1; % particle 1 is fixed
+% fixed_flag(1)=1; % particle 1 is fixed
 %% For hardcore interaction
 % hard_collision='method_2' % or 'off'
 hard_collision='test_no_elastic';

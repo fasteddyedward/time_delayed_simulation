@@ -38,7 +38,7 @@ time=1:length(frame);
 delta_t_matrix=0
 % T_matrix=[1]
 % v_0_matrix=1
-dt=10^-3; % ms 
+dt=10^-3; 
 
 close all
 %% Output File Name

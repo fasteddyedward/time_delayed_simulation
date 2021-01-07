@@ -27,14 +27,14 @@ clear;
 
 
 
-Date='2020.12.11' % T_eff has been recalculated
-nth_take=1
-delta_t_matrix=[0.5:0.5:16]
-T_matrix=[1]
-v_0_matrix=5
-dt=5*10^-1
-intrinsic_delay=0.0 % Intrinsic delay
-Obs_time_steps=10^5
+% Date='2020.12.11' % T_eff has been recalculated
+% nth_take=1
+% delta_t_matrix=[0.5:0.5:16]
+% T_matrix=[1]
+% v_0_matrix=5
+% dt=5*10^-1
+% intrinsic_delay=0.0 % Intrinsic delay
+% Obs_time_steps=10^5
 
 
 
@@ -138,14 +138,14 @@ Obs_time_steps=10^5
 % Obs_time_steps=10^7
 % 
 
-% Date='2021.1.6' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
-% nth_take=1
-% delta_t_matrix=2
-% T_matrix=[1]
-% v_0_matrix=[0.5:0.5:7.0]
-% dt=10^-1
-% intrinsic_delay=0.0 % Intrinsic delay
-% Obs_time_steps=10^5
+Date='2021.1.6' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
+nth_take=1
+delta_t_matrix=2
+T_matrix=[1]
+v_0_matrix=[0.5:0.5:7.0]
+dt=10^-1
+intrinsic_delay=0.0 % Intrinsic delay
+Obs_time_steps=10^5
 
 
 % Date='2021.1.6'
@@ -165,13 +165,13 @@ Obs_time_steps=10^5
 % end
 
 %% Execution Parameters
-recalculate_theta='no' % normally just set to no
+recalculate_theta='yes' % normally just set to no
 recalculate_hist='no' %
-recalculate_R='yes' % normally just set to no; R is calculated in hist already.
+recalculate_R='no' % normally just set to no; R is calculated in hist already.
 draw_hist='no'
 recalculate_T_eff='yes'
     plot_hist_fit_T_eff='no'
-fit_Viktor_method='yes'
+fit_Viktor_method='no'
 recalculate_T_Boltz='no'
     omega_plus_type='full_sine' % 'approximate'
     plot_Boltz_fit='off'
@@ -228,6 +228,9 @@ switch recalculate_theta
         load([movie_name,'.mat'],'theta')
         nth_take
 end
+%% Delete later
+load([movie_name,'.mat'],'theta')
+histogram(theta(2,:))
 %% Plotting histogram
 switch recalculate_hist
     case 'yes'

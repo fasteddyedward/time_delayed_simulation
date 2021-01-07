@@ -30,6 +30,7 @@ autocorrelation='no'
 recalculate_T_eff='yes'
     plot_hist_fit_T_eff='yes';
 fit_Viktor_method='yes'
+notation='theta'
 %%
 num_transitions_matrix=[];
 theta_plus_matrix=[];
@@ -113,34 +114,68 @@ switch autocorrelation
         legend('g(\tau)',['\delta t=',num2str(delta_t)])
 end
 %% Calculating Effective Temperature
+% switch recalculate_T_eff
+%     case 'yes'
+%         if Delta_t_matrix(file_name_index)==0
+%             D_eff=0;T_eff=0;sigma=0;mu=0;
+%         else
+%         %% Finding the sigma of the omega (effective temperature)
+%         f=figure(80);clf;
+%         switch plot_hist_fit_T_eff
+%             case 'no'
+%                 f.Visible='off';
+%         end
+%         h=histogram(diff(theta(2,:))/Delta_t_matrix(file_name_index));
+%         y=h.Values;
+%         x=h.BinEdges(1:end-1)+0.5*h.BinWidth;
+%         % plot(x,y);
+%         [fitresult,gof]=fit_Gaussian(x,y,plot_hist_fit_T_eff);
+%         % a1*exp(-((x-b1)/c1)^2)
+%         mu=fitresult.b1;
+%         sigma=fitresult.c1/sqrt(2);
+%         
+%         %% Calculating the D_eff and T_eff
+%         D_eff=sigma^2/(2*dt);
+%         T_eff=(V_0_matrix/(R_mean(2))*Delta_t_matrix(file_name_index)^2*sigma^2)/(4*k_B*dt);
+%         end
+%         save([movie_name,'.mat'],'D_eff','T_eff','sigma','mu','-append')
+%     case 'no'
+%         load([movie_name,'.mat'],'D_eff','T_eff','sigma','mu')
+% end
+%% (2021.1.7 New method)
 switch recalculate_T_eff
     case 'yes'
-        if Delta_t_matrix(file_name_index)==0
-            D_eff=0;T_eff=0;sigma=0;mu=0;
-        else
-        %% Finding the sigma of the omega (effective temperature)
+        %% Finding the sigma of the omega (effective temperature) 
         f=figure(80);clf;
         switch plot_hist_fit_T_eff
             case 'no'
                 f.Visible='off';
         end
-        h=histogram(diff(theta(2,:))/Delta_t_matrix(file_name_index));
-        y=h.Values;
-        x=h.BinEdges(1:end-1)+0.5*h.BinWidth;
+        switch notation
+            case 'omega'
+                h=histogram(diff(theta(2,:))/delta_t);  % This is for measuring sigma with histogram(diff(omega))
+            case 'theta'
+                h=histogram(diff(theta(2,:))); % This is for measuring sigma with histogram(diff(theta))
+        end
+        Values=h.Values;
+        Bins=h.BinEdges(1:end-1)+0.5*h.BinWidth;
         % plot(x,y);
-        [fitresult,gof]=fit_Gaussian(x,y,plot_hist_fit_T_eff);
+        [fitresult,gof]=fit_Gaussian(Bins,Values,plot_hist_fit_T_eff);
         % a1*exp(-((x-b1)/c1)^2)
         mu=fitresult.b1;
         sigma=fitresult.c1/sqrt(2);
         
         %% Calculating the D_eff and T_eff
         D_eff=sigma^2/(2*dt);
-        T_eff=(V_0_matrix/(R_mean(2))*Delta_t_matrix(file_name_index)^2*sigma^2)/(4*k_B*dt);
-        end
+        T_eff=D_eff;
+%                 T_eff=(v_0/R_mean(2))*delta_t^2*sigma^2/(4*k_B*dt); % This is for measuring sigma with histogram(diff(theta)/delta_t)=histogram(diff(omega))
+%         D_eff=sigma^2*(v_0/R_mean(2)*delta_t)^2/(8*k_B*dt); % This is for measuring sigma with histogram(diff(theta))
+%         T_eff=0;
         save([movie_name,'.mat'],'D_eff','T_eff','sigma','mu','-append')
     case 'no'
         load([movie_name,'.mat'],'D_eff','T_eff','sigma','mu')
 end
+
 %% Calculating time_duration
 time_duration=(frame(end)-frame(1))*30*10^-3; % 50 ms/ frame
 %% Appending the matrices
@@ -178,14 +213,14 @@ if 1==0
             title(['Bifurcation Diagram, v_0= ',num2str(V_0_matrix)])
             xlabel('\delta t')
             ylabel('\theta (rad)')
-            x=@(delta_t,v_0,a)(v_0*delta_t)./(2*a);
+            Bins=@(delta_t,v_0,a)(v_0*delta_t)./(2*a);
             theta_theory=@(x)sqrt(10-sqrt(1/42./x.^6+120./x-20));
             theta_pl=@(x)sqrt(6./x.*(x-1));
             x_line=0:Delta_t_matrix(end)/1000:Delta_t_matrix(end);
-            plot(x_line,+theta_theory(x(x_line,V_0_matrix,a)),'k')
-            plot(x_line,-theta_theory(x(x_line,V_0_matrix,a)),'k')
-            plot(x_line,theta_pl(x(x_line,V_0_matrix,a)),'g')
-            plot(x_line,-theta_pl(x(x_line,V_0_matrix,a)),'g')
+            plot(x_line,+theta_theory(Bins(x_line,V_0_matrix,a)),'k')
+            plot(x_line,-theta_theory(Bins(x_line,V_0_matrix,a)),'k')
+            plot(x_line,theta_pl(Bins(x_line,V_0_matrix,a)),'g')
+            plot(x_line,-theta_pl(Bins(x_line,V_0_matrix,a)),'g')
             legend('$\theta_+$','$\theta_-$','$\theta=\sqrt{10-\sqrt{\frac{1}{42\omega_0 \delta t}+\frac{120}{\omega_0 \delta t }-20}}$','','$\theta=\sqrt{\frac{6}{\omega_0 \delta t}(\omega_0 \delta t-1)}$','interpreter','latex','Location','northwest')
             saveas(gcf,['Bifurcation Diagram, v_0= ',num2str(V_0_matrix),'.png'])
             %% Bifurcation Diagram (Normalized)
@@ -198,13 +233,13 @@ if 1==0
             xlabel('v_0*\delta t/(2a)')
             ylabel('\theta (rad)')
             x_line=0:Delta_t_matrix(end)/1000:Delta_t_matrix(end);
-            x=@(delta_t,v_0,a)(v_0*delta_t)./(2*a);
+            Bins=@(delta_t,v_0,a)(v_0*delta_t)./(2*a);
             theta_theory=@(x)sqrt(10-sqrt(1/42./x.^6+120./x-20));
             theta_pl=@(x)sqrt(6./x.*(x-1));
-            plot(x(x_line,V_0_matrix,a),+theta_theory(x(x_line,V_0_matrix,a)),'k')
-            plot(x(x_line,V_0_matrix,a),-theta_theory(x(x_line,V_0_matrix,a)),'k')
-            plot(x(x_line,V_0_matrix,a),theta_pl(x(x_line,V_0_matrix,a)),'g')
-            plot(x(x_line,V_0_matrix,a),-theta_pl(x(x_line,V_0_matrix,a)),'g')
+            plot(Bins(x_line,V_0_matrix,a),+theta_theory(Bins(x_line,V_0_matrix,a)),'k')
+            plot(Bins(x_line,V_0_matrix,a),-theta_theory(Bins(x_line,V_0_matrix,a)),'k')
+            plot(Bins(x_line,V_0_matrix,a),theta_pl(Bins(x_line,V_0_matrix,a)),'g')
+            plot(Bins(x_line,V_0_matrix,a),-theta_pl(Bins(x_line,V_0_matrix,a)),'g')
             legend('$\theta_+$','$\theta_-$','$\theta=\sqrt{10-\sqrt{\frac{1}{42\omega_0 \delta t}+\frac{120}{\omega_0 \delta t }-20}}$','','$\theta=\sqrt{\frac{6}{\omega_0 \delta t}(\omega_0 \delta t-1)}$','interpreter','latex','Location','northwest')
             saveas(gcf,['Bifurcation Diagram (Dimensionless), v_0= ',num2str(V_0_matrix),'.png'])
 
@@ -272,14 +307,14 @@ if 1==0
             title(['Bifurcation Diagram, \delta t= ',num2str(delta_t),', T=',num2str(Temp)])
             xlabel('v_0')
             ylabel('\theta (rad)')
-            x=@(delta_t,v_0,a)  (v_0*delta_t)./(2*a);
+            Bins=@(delta_t,v_0,a)  (v_0*delta_t)./(2*a);
             theta_theory=@(x)sqrt(10-sqrt(1/42./x.^6+120./x-20));
             theta_pl=@(x)sqrt(6./x.*(x-1));
             x_line=0:V_0_matrix(end)/1000:V_0_matrix(end);
-            plot(x_line,+theta_theory(x(delta_t,x_line,a)),'k')
-            plot(x_line,-theta_theory(x(delta_t,x_line,a)),'k')
-            plot(x_line,theta_pl(x(delta_t,x_line,a)),'g')
-            plot(x_line,-theta_pl(x(delta_t,x_line,a)),'g')
+            plot(x_line,+theta_theory(Bins(delta_t,x_line,a)),'k')
+            plot(x_line,-theta_theory(Bins(delta_t,x_line,a)),'k')
+            plot(x_line,theta_pl(Bins(delta_t,x_line,a)),'g')
+            plot(x_line,-theta_pl(Bins(delta_t,x_line,a)),'g')
             legend('$\theta_+$','$\theta_-$','$\theta=\sqrt{10-\sqrt{\frac{1}{42\omega_0 \delta t}+\frac{120}{\omega_0 \delta t }-20}}$','','$\theta=\sqrt{\frac{6}{\omega_0 \delta t}(\omega_0 \delta t-1)}$','interpreter','latex','Location','northwest')
          
             
@@ -292,13 +327,13 @@ if 1==0
             title(['Bifurcation Diagram, \delta t= ',num2str(delta_t),', T=',num2str(Temp)])
             xlabel('v_0*\delta t/(2a)')
             ylabel('\theta (rad)')
-            x=@(delta_t,v_0,a)(v_0*delta_t)./(2*a);
+            Bins=@(delta_t,v_0,a)(v_0*delta_t)./(2*a);
             theta_theory=@(x)sqrt(10-sqrt(1/42./x.^6+120./x-20));
             theta_pl=@(x)sqrt(6./x.*(x-1))
-            plot(x(delta_t,x_line,a),theta_theory(x(delta_t,x_line,a)),'k')
-            plot(x(delta_t,x_line,a),-theta_theory(x(delta_t,x_line,a)),'k')
-            plot(x(delta_t,x_line,a),theta_pl(x(delta_t,x_line,a)),'g')
-            plot(x(delta_t,x_line,a),-theta_pl(x(delta_t,x_line,a)),'g')
+            plot(Bins(delta_t,x_line,a),theta_theory(Bins(delta_t,x_line,a)),'k')
+            plot(Bins(delta_t,x_line,a),-theta_theory(Bins(delta_t,x_line,a)),'k')
+            plot(Bins(delta_t,x_line,a),theta_pl(Bins(delta_t,x_line,a)),'g')
+            plot(Bins(delta_t,x_line,a),-theta_pl(Bins(delta_t,x_line,a)),'g')
             legend('$\theta_+$','$\theta_-$','$\theta=\sqrt{10-\sqrt{\frac{1}{42\omega_0 \delta t}+\frac{120}{\omega_0 \delta t }-20}}$','','$\theta=\sqrt{\frac{6}{\omega_0 \delta t}(\omega_0 \delta t-1)}$','interpreter','latex','Location','northwest')
 
         %% Transition Rates
@@ -350,11 +385,24 @@ end
 %% Save Variables for Viktor
 % save('For_Viktor.mat','a','D','delta_t','dt','k_B','num_transitions_matrix','T','R_matrix','v_0_matrix')
 %% Transition Rates
-% omega_0_matrix=V_0_matrix/(2*a);
 % transition_rate_theory=sqrt(2)./(pi.*omega_0_matrix.*delta_t_matrix.^2).*(omega_0_matrix.*delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*delta_t_matrix-1).^2./(D_eff_matrix.*omega_0_matrix.*delta_t_matrix.^2/2.*omega_0_matrix.*delta_t_matrix.^3));
-omega_0_matrix=V_0_matrix./R_matrix;
-transition_rate_theory=2*sqrt(2)./(pi.*omega_0_matrix.*Delta_t_matrix.^2).*(omega_0_matrix.*Delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*Delta_t_matrix-1).^2./(omega_0_matrix.*k_B.*T_eff_matrix.*Delta_t_matrix.^3));
+% omega_0_matrix=V_0_matrix./R_matrix;
+% transition_rate_theory=2*sqrt(2)./(pi.*omega_0_matrix.*Delta_t_matrix.^2).*(omega_0_matrix.*Delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*Delta_t_matrix-1).^2./(omega_0_matrix.*k_B.*T_eff_matrix.*Delta_t_matrix.^3));
+%% D_eff and T_eff
 
+D_eff_matrix=sigma_matrix.^2/(2*dt);
+T_eff_matrix=D_eff_matrix;
+%% Transition Rates
+omega_0_matrix=V_0_matrix./R_matrix;
+switch notation
+    case 'omega'
+        
+        transition_rate_theory=2*sqrt(2)./(pi*omega_0_matrix.*Delta_t_matrix.^2).*(omega_0_matrix.*Delta_t_matrix-1).*exp(-3*(omega_0_matrix.*Delta_t_matrix-1).^2./(D_eff_matrix.*omega_0_matrix.^2.*Delta_t_matrix.^5));
+% transition_rate_theory=2*sqrt(2)./(pi.*omega_0_matrix.*Delta_t_matrix.^2).*(omega_0_matrix.*Delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*Delta_t_matrix-1).^2./(omega_0_matrix.*k_B.*T_eff_matrix.*Delta_t_matrix.^3));
+    case 'theta'
+        theta_0_matrix=omega_0_matrix.*Delta_t_matrix;
+        transition_rate_theory=2*sqrt(2)./(pi*theta_0_matrix.*Delta_t_matrix).*(theta_0_matrix-1).*exp(-3*(theta_0_matrix-1).^2./(D_eff_matrix.*Delta_t_matrix.*theta_0_matrix.^2));
+end
 %% 2020.12.10 這邊繼續看要怎麼做
 % time_duration=Obs_time_steps*dt+delta_t;
 x0=omega_0_matrix.*Delta_t_matrix;
@@ -435,3 +483,8 @@ plot(x0,D_eff_matrix./(D./R_matrix.^2))
 legend('D_{eff}/(D/R^2)','Location','northwest')
 xlabel('\omega_0 \delta t')
 axis([-inf inf 0 inf])
+
+
+
+
+
