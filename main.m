@@ -2,11 +2,13 @@ function main(testparameter1,testparameter2)
 %% This file runs modulized_time_delay_proto
 %% 2020.10.14 to make the videos with several tries
 clearvars -except nth_take
-Date='2020.12.21'
-nth_take=1
+Date='2021.1.7' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
+% nth_take=1 % for a=5, particle 1 fixed
+% nth_take=100 % for a=5, particle 1 not fixed
+nth_take=200 % for a=0, particle 1 not fixed
 delta_t_matrix=2
 T_matrix=[1]
-v_0_matrix=[5.2]
+v_0_matrix=[4:0.5:10]
 dt=10^-1
 intrinsic_delay=0.0 % Intrinsic delay
 Obs_time_steps=10^5
@@ -41,7 +43,7 @@ fixed_flag(1:N)=0;
 % hard_collision='method_2' % or 'off'
 hard_collision='test_no_elastic';
 % hard_collision='method_3';
-a=5 ;% Particle radius, typically 1 micrometer
+a=0 ;% Particle radius, typically 1 micrometer
 b= 0.5 ;% for particle retreat during relaxation period
 %% Coefficients and parameters
 v_0= v_0_matrix(v_0_index); % mm/ms
@@ -70,8 +72,8 @@ x_init(1:N)=0;
 y_init(1:N)=0;
 c=5;
 for i=1:N
-    x_init(i)=i*2*a*c;
-    y_init(i)=i*2*a*c;
+    x_init(i)=i*2*5*c;
+    y_init(i)=i*2*5*c;
 end
 % y_init(3)=1*10^1;
 y_init(3)=2*10^1;
@@ -177,34 +179,36 @@ save([movie_name,'.mat'],'time','-append')
 
 
 %% Rotational Analysis: calculates and plots theta
-if N==2 && fixed_flag(1)==1
-    theta=0;
-    Analyze_theta=tic;
-    moving_avg=1 ;
-    plot_rot='no';
-    Theta_Analysis_Fixed_Center(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
-    time_analyze_theta=toc(Analyze_theta)
-    %% Plotting histogram
-    num_bins=100  ;
-    bin_limit=2;
-    temp=figure(81);clf;temp.Visible='on'; % Note that hist_analysis only works for one particle orbitting a fixed particle at the moment
-    
-    [k_trans,theta_plus,theta_minus,num_transitions]=hist_analysis(movie_name,moving_avg,num_bins,bin_limit,Obs_time_steps,delta_t,dt);
-    set(gca, 'YScale', 'linear')
-    saveas(gcf,[movie_name,' (hist).png'])    
-    %% Plotting Theta
-    moving_avg=1;
-    temp=figure(80);clf;
-    temp.Visible='off';
-    show_transitions='on'; % Better turn off for omega_0*delta_t<1, or else the xline(time(k_trans)) will take forever
-    plot_theta(N,delta_t,movie_name,moving_avg,theta_plus,theta_minus,k_trans,show_transitions)
-    title(['Theta (Time Delay Angle), v_0 = ',num2str(v_0),', \delta t = ',num2str(delta_t),', T = ',num2str(T)])
-    saveas(gcf,[movie_name,' (theta).png'])    
-    
-    
-    num_transitions
-    
-end
+% if N==2 && fixed_flag(1)==1
+%     theta=0;
+%     Analyze_theta=tic;
+%     moving_avg=1 ;
+%     plot_rot='no';
+%     Theta_Analysis_Fixed_Center(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
+%     time_analyze_theta=toc(Analyze_theta)
+%     %% Plotting histogram
+%     num_bins=100  ;
+%     bin_limit=2;
+%     temp=figure(81);clf;temp.Visible='on'; % Note that hist_analysis only works for one particle orbitting a fixed particle at the moment
+%     
+%     [k_trans,theta_plus,theta_minus,num_transitions]=hist_analysis(movie_name,moving_avg,num_bins,bin_limit,Obs_time_steps,delta_t,dt);
+%     set(gca, 'YScale', 'linear')
+%     saveas(gcf,[movie_name,' (hist).png'])    
+%     %% Plotting Theta
+%     moving_avg=1;
+%     temp=figure(80);clf;
+%     temp.Visible='off';
+%     show_transitions='off'; % Better turn off for omega_0*delta_t<1, or else the xline(time(k_trans)) will take forever
+%     plot_theta(N,delta_t,movie_name,moving_avg,theta_plus,theta_minus,k_trans,show_transitions)
+%     title(['Theta (Time Delay Angle), v_0 = ',num2str(v_0),', \delta t = ',num2str(delta_t),', T = ',num2str(T)])
+%     saveas(gcf,[movie_name,' (theta).png'])    
+%     
+%     
+%     num_transitions
+%     
+% end
+
+
 %% Rotational Analysis: calculates and plots v_omega
 % Analyze_rot=tic;
 % moving_avg=1000 ;

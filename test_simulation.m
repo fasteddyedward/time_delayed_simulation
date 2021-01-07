@@ -4,9 +4,9 @@ clear
 close all
 
 Date='2021.1.7' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
-% nth_take=1 % for a=5, particle 1 fixed
+nth_take=1 % for a=5, particle 1 fixed
 % nth_take=100 % for a=5, particle 1 not fixed
-nth_take=200 % for a=0, particle 1 not fixed
+% nth_take=200 % for a=0, particle 1 not fixed
 delta_t_matrix=2
 T_matrix=[1]
 v_0_matrix=[4:0.5:10]
@@ -15,6 +15,7 @@ intrinsic_delay=0.0 % Intrinsic delay
 Obs_time_steps=10^5
 
 D_eff_ratio_matrix=[];
+theta_0_matrix=[];
 for delta_t_index=1:length(delta_t_matrix)
     for T_index=1:length(T_matrix)
         for v_0_index=1:length(v_0_matrix)
@@ -29,7 +30,8 @@ load([movie_name,'.mat'])
 
 %% Calculating angle
 theta=[];
-R=[]
+R=[];
+
 for k=1:Obs_time_steps
     %% Method one
 %     R1=[x(2,k)-x(1,k),y(2,k)-y(1,k),0];
@@ -57,8 +59,8 @@ for k=1:Obs_time_steps
     end
 end
 
-plot(theta)
-pause
+% plot(theta)
+% pause
 %% Calculating D_eff
 recalculate_T_eff='yes'
     plot_hist_fit_T_eff='yes'
@@ -98,8 +100,11 @@ switch recalculate_T_eff
 end
 % D_eff
 % D_eff/(D/mean(R)^2)
-D_eff_ratio_matrix=[D_eff_ratio_matrix D_eff/(D/mean(R)^2)];
-            
+
+theta_0=v_0*delta_t/mean(R);
+theta_0_matrix=[theta_0_matrix theta_0];
+D_eff_ratio_matrix=[D_eff_ratio_matrix D_eff/(4*D/(theta_0^2*mean(R)^2))];
+            D_eff
             nth_take=nth_take+1;
         end
         nth_take=nth_take+1;
@@ -107,6 +112,7 @@ D_eff_ratio_matrix=[D_eff_ratio_matrix D_eff/(D/mean(R)^2)];
     nth_take=nth_take+1;
 end
 %%
+
 close all
 save(['nth_take=',num2str(nth_take),'.mat']);
 
