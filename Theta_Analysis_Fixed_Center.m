@@ -15,7 +15,16 @@ switch partition_movie
                 diff_x=[x(i,k+round(delta_t/dt))-x(i,k),y(i,k+round(delta_t/dt))-y(i,k),0];
                 %% Determining Sign of theta
                 R1_cross_diff_x=cross(R1,diff_x);
-                theta(i,k+round(delta_t/dt))=sign(R1_cross_diff_x(3))*acos(((norm(R1)^2+norm(R2)^2-norm(diff_x)^2)/(2*norm(R1)*norm(R2))));
+                %                 theta(i,k+round(delta_t/dt))=sign(R1_cross_diff_x(3))*acos(((norm(R1)^2+norm(R2)^2-norm(diff_x)^2)/(2*norm(R1)*norm(R2))));
+                                
+                %                 'method 1'
+                %% 2020.1.7 Another method
+                %                 R1_cross_R2=cross(R1,R2);
+                %                 theta(i,k+round(delta_t/dt))=asin(R1_cross_R2(3)/(norm(R1)*norm(R2)));
+                %                 'method 2'
+                %% 2020.1.7 Another another method.
+                theta(i,k+round(delta_t/dt))=sign(R1_cross_diff_x(3))*acos(dot(R1,R2)/(norm(R1)*norm(R2)));
+                %% Updating R
                 R(i,k)=norm(R1);
             end
         end
