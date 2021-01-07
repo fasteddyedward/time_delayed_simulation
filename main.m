@@ -187,7 +187,7 @@ if N==2 && fixed_flag(1)==1
     %% Plotting histogram
     num_bins=100  ;
     bin_limit=2;
-    temp=figure(81);clf;temp.Visible='off'; % Note that hist_analysis only works for one particle orbitting a fixed particle at the moment
+    temp=figure(81);clf;temp.Visible='on'; % Note that hist_analysis only works for one particle orbitting a fixed particle at the moment
     
     [k_trans,theta_plus,theta_minus,num_transitions]=hist_analysis(movie_name,moving_avg,num_bins,bin_limit,Obs_time_steps,delta_t,dt);
     set(gca, 'YScale', 'linear')
@@ -196,7 +196,7 @@ if N==2 && fixed_flag(1)==1
     moving_avg=1;
     temp=figure(80);clf;
     temp.Visible='off';
-    show_transitions='off'; % Better turn off for omega_0*delta_t<1, or else the xline(time(k_trans)) will take forever
+    show_transitions='on'; % Better turn off for omega_0*delta_t<1, or else the xline(time(k_trans)) will take forever
     plot_theta(N,delta_t,movie_name,moving_avg,theta_plus,theta_minus,k_trans,show_transitions)
     title(['Theta (Time Delay Angle), v_0 = ',num2str(v_0),', \delta t = ',num2str(delta_t),', T = ',num2str(T)])
     saveas(gcf,[movie_name,' (theta).png'])    

@@ -14,8 +14,10 @@ ylabel('\theta (rad/ms) ')
 legend('particle','\deltat',['\theta_+=',num2str(theta_plus)],['\theta_-=',num2str(theta_minus)])    
 switch show_transitions
     case 'on'
-        for k=1:length(k_trans)
-            xline(time(k_trans(k)),'r')
-        end
+%         for k=1:length(k_trans)
+%             xline(time(k_trans(k)),'r')
+%         end
+        plot(time(k_trans),0,'o')
 end
+
 clear theta time

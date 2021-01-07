@@ -27,14 +27,14 @@ clear;
 
 
 
-% Date='2020.12.11' % T_eff has been recalculated
-% nth_take=1
-% delta_t_matrix=[0.5:0.5:16]
-% T_matrix=[1]
-% v_0_matrix=5
-% dt=5*10^-1
-% intrinsic_delay=0.0 % Intrinsic delay
-% Obs_time_steps=10^5
+Date='2020.12.11' % T_eff has been recalculated
+nth_take=1
+delta_t_matrix=[0.5:0.5:16]
+T_matrix=[1]
+v_0_matrix=5
+dt=5*10^-1
+intrinsic_delay=0.0 % Intrinsic delay
+Obs_time_steps=10^5
 
 
 
@@ -78,18 +78,19 @@ clear;
 % intrinsic_delay=0.0 % Intrinsic delay
 % Obs_time_steps=10^6
 
-
-Date='2020.12.15' % T_eff has been recalculated
-nth_take=100
-delta_t_matrix=[1.8:0.1:4.0]
-T_matrix=[1]
-v_0_matrix=5
-dt=10^-1
-intrinsic_delay=0.0 % Intrinsic delay
-Obs_time_steps=10^6
+%%
+% Date='2020.12.15' % T_eff has been recalculated
+% nth_take=100
+% delta_t_matrix=[1.8:0.1:4.0]
+% T_matrix=[1]
+% v_0_matrix=5
+% dt=10^-1
+% intrinsic_delay=0.0 % Intrinsic delay
+% Obs_time_steps=10^6
+%%
 
 % Date='2020.12.15' % T_eff has been recalculated 
-% The data look like a mess don't use
+% % The data look like a mess don't use
 % nth_take=200
 % delta_t_matrix=[1.8:0.1:4.0]
 % T_matrix=[1]
@@ -125,7 +126,8 @@ Obs_time_steps=10^6
 % intrinsic_delay=0.0 % Intrinsic delay
 % Obs_time_steps=10^6
 
-%  Not in Laptop
+
+%%  Not in Laptop
 % Date='2020.12.17'
 % nth_take=1
 % delta_t_matrix=2
@@ -135,6 +137,27 @@ Obs_time_steps=10^6
 % intrinsic_delay=0.0 % Intrinsic delay
 % Obs_time_steps=10^7
 % 
+
+% Date='2021.1.6' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
+% nth_take=1
+% delta_t_matrix=2
+% T_matrix=[1]
+% v_0_matrix=[0.5:0.5:7.0]
+% dt=10^-1
+% intrinsic_delay=0.0 % Intrinsic delay
+% Obs_time_steps=10^5
+
+
+% Date='2021.1.6'
+% nth_take=100
+% delta_t_matrix=2
+% T_matrix=[1]
+% v_0_matrix=[0.5:0.5:14]
+% dt=10^-1
+% intrinsic_delay=0.0 % Intrinsic delay
+% Obs_time_steps=10^5
+
+
 % if length(Delta_t_matrix)>1
 % load([Date,', delta_t_matrix, Obs_time=',num2str(Obs_time_steps),'.mat'])
 % elseif length(V_0_matrix)>1
@@ -148,10 +171,13 @@ recalculate_R='yes' % normally just set to no; R is calculated in hist already.
 draw_hist='no'
 recalculate_T_eff='yes'
     plot_hist_fit_T_eff='no'
-fit_Viktor_method='no'
+fit_Viktor_method='yes'
 recalculate_T_Boltz='no'
     omega_plus_type='full_sine' % 'approximate'
     plot_Boltz_fit='off'
+
+notation='theta';
+% notation='omega';
 %%
 if exist('V_0_matrix','var')==0
     V_0_matrix=v_0_matrix;
@@ -250,7 +276,12 @@ switch recalculate_T_eff
             case 'no'
                 f.Visible='off';
         end
-        h=histogram(diff(theta(2,:))/delta_t);
+        switch notation
+            case 'omega'
+                h=histogram(diff(theta(2,:))/delta_t);  % This is for measuring sigma with histogram(diff(omega))
+            case 'theta'
+                h=histogram(diff(theta(2,:))); % This is for measuring sigma with histogram(diff(theta))
+        end
         y=h.Values;
         x=h.BinEdges(1:end-1)+0.5*h.BinWidth;
         % plot(x,y);
@@ -261,18 +292,19 @@ switch recalculate_T_eff
         
         %% Calculating the D_eff and T_eff
         D_eff=sigma^2/(2*dt);
-%         T_eff=(v_0/(2*a)*delta_t^2*sigma^2)/(4*k_B*dt);
-        T_eff=(v_0/R_mean(2))*delta_t^2*sigma^2/(4*k_B*dt);
-        
+        T_eff=D_eff;
+%                 T_eff=(v_0/R_mean(2))*delta_t^2*sigma^2/(4*k_B*dt); % This is for measuring sigma with histogram(diff(theta)/delta_t)=histogram(diff(omega))
+%         D_eff=sigma^2*(v_0/R_mean(2)*delta_t)^2/(8*k_B*dt); % This is for measuring sigma with histogram(diff(theta))
+%         T_eff=0;
         save([movie_name,'.mat'],'D_eff','T_eff','sigma','mu','-append')
     case 'no'
         load([movie_name,'.mat'],'D_eff','T_eff','sigma','mu')
 end
 
 %% Calculating Boltzmann Temperature by fitting the histogram of omega
-if exist('T_Boltz','var')==0
-    recalculate_T_Boltz='yes'
-end
+% if exist('T_Boltz','var')==0
+%     recalculate_T_Boltz='yes'
+% end
 switch recalculate_T_Boltz % Modified from Boltzmann_dist_fit.m
     case 'yes'
         omega_0=v_0/R_mean(2);
@@ -522,12 +554,24 @@ end
 
 %% Save Variables for Viktor
 % save('For_Viktor.mat','a','D','delta_t','dt','k_B','num_transitions_matrix','T','R_matrix','v_0_matrix')
+%% D_eff and T_eff
+
+D_eff_matrix=sigma_matrix.^2/(2*dt);
+T_eff_matrix=D_eff_matrix;
 %% Transition Rates
-% omega_0_matrix=v_0_matrix/(2*a);
-% transition_rate_theory=sqrt(2)./(pi.*omega_0_matrix.*Delta_t_matrix.^2).*(omega_0_matrix.*Delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*Delta_t_matrix-1).^2./(D_eff_matrix.*omega_0_matrix.*Delta_t_matrix.^2/2.*omega_0_matrix.*Delta_t_matrix.^3));
 omega_0_matrix=V_0_matrix./R_matrix;
-% T_eff_matrix=T_Boltz_matrix
-transition_rate_theory=2*sqrt(2)./(pi.*omega_0_matrix.*Delta_t_matrix.^2).*(omega_0_matrix.*Delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*Delta_t_matrix-1).^2./(omega_0_matrix.*k_B.*T_eff_matrix.*Delta_t_matrix.^3));
+switch notation
+    case 'omega'
+        
+        transition_rate_theory=2*sqrt(2)./(pi*omega_0_matrix.*Delta_t_matrix.^2).*(omega_0_matrix.*Delta_t_matrix-1).*exp(-3*(omega_0_matrix.*Delta_t_matrix-1).^2./(D_eff_matrix.*omega_0_matrix.^2.*Delta_t_matrix.^5));
+% transition_rate_theory=2*sqrt(2)./(pi.*omega_0_matrix.*Delta_t_matrix.^2).*(omega_0_matrix.*Delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*Delta_t_matrix-1).^2./(omega_0_matrix.*k_B.*T_eff_matrix.*Delta_t_matrix.^3));
+    case 'theta'
+        theta_0_matrix=omega_0_matrix.*Delta_t_matrix;
+        transition_rate_theory=2*sqrt(2)./(pi*theta_0_matrix.*Delta_t_matrix).*(theta_0_matrix-1).*exp(-3*(theta_0_matrix-1).^2./(D_eff_matrix.*Delta_t_matrix.*theta_0_matrix.^2));
+end
+        
+        % transition_rate_theory=sqrt(2)./(pi.*omega_0_matrix.*Delta_t_matrix.^2).*(omega_0_matrix.*Delta_t_matrix-1).*exp(-3/2*(omega_0_matrix.*Delta_t_matrix-1).^2./(D_eff_matrix.*omega_0_matrix.*Delta_t_matrix.^2/2.*omega_0_matrix.*Delta_t_matrix.^3));
+
 
 %% 2020.12.10 Plotting Transition Rates 
 % time_duration=Obs_time_steps*dt+delta_t;
@@ -562,15 +606,15 @@ xlabel('\omega_0 \delta t')
 ylabel('1/Transition Rates (s)')
 
 %% Comparing between 1-D and 2-D % It's the same, so just for check actually
-figure(13);clf;hold on;
-% title('R vs 2a')
-% omega_0_matrix=V_0_matrix./(R_matrix);
-gamma_eff_matrix=omega_0_matrix.*Delta_t_matrix.^2/2;
-T_eff_1dim=gamma_eff_matrix.*D_eff_matrix/k_B;
-ratio=T_eff_matrix./T_eff_1dim;
-plot(x0,ratio)
-xlabel('\omega_0 \delta t')
-ylabel('T_eff/')
+% figure(13);clf;hold on;
+% % title('R vs 2a')
+% % omega_0_matrix=V_0_matrix./(R_matrix);
+% gamma_eff_matrix=omega_0_matrix.*Delta_t_matrix.^2/2;
+% T_eff_1dim=gamma_eff_matrix.*D_eff_matrix/k_B;
+% ratio=T_eff_matrix./T_eff_1dim;
+% plot(x0,ratio)
+% xlabel('\omega_0 \delta t')
+
 
 %% Comparing E_b and k_B*T
 figure(14);clf;

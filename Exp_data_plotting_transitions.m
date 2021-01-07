@@ -404,4 +404,34 @@ xlabel('\omega_0 \delta t')
 ylabel('1/Transition Rates (s)')
 legend('theory','experiment','Location','northeast')
 
+%% Plotting the Coefficients
 
+%% Plotting T_eff and D_eff
+figure(15);clf;
+plot(x0,T_eff_matrix)
+xlabel('\omega_0 \delta_t')
+ylabel('T_{eff}')
+figure(16);clf;
+plot(x0,D_eff_matrix)
+xlabel('\omega_0 \delta_t')
+ylabel('D_{eff}')
+
+%% Plotting T_eff and D_eff & R vs omega_0 * delta_t
+figure(21);clf;hold on
+% title('fixed \delta t')
+% title('fixed \omega_0')
+plot(x0,T_eff_matrix)
+plot(x0,D_eff_matrix)
+plot(x0,R_matrix/(2*a)/300)
+xlabel('\omega_0 \delta t')
+legend('T_{eff}','D_{eff}','R/(2a)/300','Location','northwest')
+
+%% Plotting D_eff v.s D/R^2
+    %% We don't know D for sure, set to be 1 to show 
+D=1
+figure(23);clf;hold on
+title('D_{eff} v.s. D_0')
+plot(x0,D_eff_matrix./(D./R_matrix.^2))
+legend('D_{eff}/(D/R^2)','Location','northwest')
+xlabel('\omega_0 \delta t')
+axis([-inf inf 0 inf])
