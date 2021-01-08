@@ -4,6 +4,7 @@ clear;
 close all
 load('dt=1.500.tdms_angle.mat')
 %%
+dt=0.03 % 30 ms as Xiangzun said
 notation='theta'
 recalculate_T_eff='yes'
     plot_hist_fit_T_eff='no'
@@ -76,12 +77,16 @@ end
 %     
     
     %% Plotting D_eff v.s D/R^2
-    D=(D_x+D_y)/2;
+%     D=(D_x+D_y)/2;
+    D=0.065; % Measured from Free_Diffusion.m from Xiangzun's old diffusive particle
     v_0 =2.1; % guessed
+%     delta_t=1.5
+%     theta_0=v_0/R_mean(2)*delta_t;
     D_eff;
     D/R_mean(2)^2;
     'D_eff/(D/R^2)'
     D_eff/(D/R_mean(2)^2)
+%     D_eff/(4*D/(theta_0^2*R_mean(2))^2)
 %     axis([-inf inf 0 inf])
     %% hist R
     figure(3)
