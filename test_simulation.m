@@ -14,7 +14,8 @@ dt=10^-1
 intrinsic_delay=0.0 % Intrinsic delay
 Obs_time_steps=10^5
 
-D_eff_ratio_matrix=[];
+D_eff_ratio_matrix_approx=[];
+D_eff_ratio_matrix_full=[];
 theta_0_matrix=[];
 for delta_t_index=1:length(delta_t_matrix)
     for T_index=1:length(T_matrix)
@@ -63,7 +64,7 @@ end
 % pause
 %% Calculating D_eff
 recalculate_T_eff='yes'
-    plot_hist_fit_T_eff='yes'
+    plot_hist_fit_T_eff='no'
 notation='theta'
 % D_eff=0
 switch recalculate_T_eff
@@ -103,7 +104,8 @@ end
 
 theta_0=v_0*delta_t/mean(R);
 theta_0_matrix=[theta_0_matrix theta_0];
-D_eff_ratio_matrix=[D_eff_ratio_matrix D_eff/(4*D/(theta_0^2*mean(R)^2))];
+D_eff_ratio_matrix_full=[D_eff_ratio_matrix_full D_eff/(D/(mean(R)^2))];
+D_eff_ratio_matrix_approx=[D_eff_ratio_matrix_approx D_eff/(4*D/(theta_0^2*mean(R)^2))]
             D_eff
             nth_take=nth_take+1;
         end

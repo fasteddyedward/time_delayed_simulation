@@ -19,17 +19,29 @@ a=5
 close all
 figure(1)
 hold on
+figure(2)
+hold on
+
+
 load(['nth_take=',num2str(16),'.mat']);
 figure(1)
-plot(theta_0_matrix,D_eff_ratio_matrix)
+plot(theta_0_matrix,D_eff_ratio_matrix_full)
+figure(2)
+plot(theta_0_matrix,D_eff_ratio_matrix_approx)
 
 load(['nth_take=',num2str(115),'.mat']);
 figure(1)
-plot(theta_0_matrix,D_eff_ratio_matrix)
+plot(theta_0_matrix,D_eff_ratio_matrix_full)
+figure(2)
+plot(theta_0_matrix,D_eff_ratio_matrix_approx)
+
 
 load(['nth_take=',num2str(215),'.mat']);
 figure(1)
-plot(theta_0_matrix,D_eff_ratio_matrix)
+plot(theta_0_matrix,D_eff_ratio_matrix_full)
+figure(2)
+plot(theta_0_matrix,D_eff_ratio_matrix_approx)
+
 
 legend('a=5, particle 1 fixed','a=5, particle 1 mobile','a=0, partilce 1 mobile')
 
