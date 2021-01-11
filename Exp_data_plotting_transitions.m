@@ -1,8 +1,6 @@
 clear;
 %% Parameters for importing mat files.
 
-% Date='2020.11.25'
-% nth_take=100
 Temp=0.01
 Delta_t_matrix=[ 0 0.3 0.6 0.9 1.05 1.2 1.5 1.8]
 % T_matrix=[1]

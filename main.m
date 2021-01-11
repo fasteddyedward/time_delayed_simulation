@@ -2,17 +2,35 @@ function main(testparameter1,testparameter2)
 %% This file runs modulized_time_delay_proto
 %% 2020.10.14 to make the videos with several tries
 clearvars -except nth_take
-Date='2021.1.7' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
+% Date='2021.1.8' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
 % nth_take=1 % for a=5, particle 1 fixed
 % nth_take=100 % for a=5, particle 1 not fixed
-nth_take=200 % for a=0, particle 1 not fixed
-delta_t_matrix=2
+% nth_take=200 % for a=0, particle 1 not fixed
+% delta_t_matrix=2
+% T_matrix=[1]
+% v_0_matrix=[4:0.5:10]
+% dt=10^-3
+% intrinsic_delay=0.0 % Intrinsic delay
+% Obs_time_steps=10^6
+
+
+% Date='2021.1.8' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
+% nth_take=300 % for a=5, particle 1 fixed
+% delta_t_matrix=2
+% T_matrix=[1]
+% v_0_matrix=[0.5:0.5:20]
+% dt=10^-1
+% intrinsic_delay=0.0 % Intrinsic delay
+% Obs_time_steps=10^5
+
+Date='2021.1.8' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
+nth_take=400 % for a=5, particle 1 fixed
+delta_t_matrix=[1.8:0.1:4.0]
 T_matrix=[1]
-v_0_matrix=[4:0.5:10]
+v_0_matrix=5
 dt=10^-1
 intrinsic_delay=0.0 % Intrinsic delay
 Obs_time_steps=10^5
-
 
 
 
@@ -38,12 +56,12 @@ partition_time_steps=Obs_time_steps;
 partition_movie='no';
 %% State if the particles are fixed, 0 for mobile, 1 for fixed
 fixed_flag(1:N)=0;
-% fixed_flag(1)=1; % particle 1 is fixed
+fixed_flag(1)=1; % particle 1 is fixed
 %% For hardcore interaction
 % hard_collision='method_2' % or 'off'
 hard_collision='test_no_elastic';
 % hard_collision='method_3';
-a=0 ;% Particle radius, typically 1 micrometer
+a=5 ;% Particle radius, typically 1 micrometer
 b= 0.5 ;% for particle retreat during relaxation period
 %% Coefficients and parameters
 v_0= v_0_matrix(v_0_index); % mm/ms

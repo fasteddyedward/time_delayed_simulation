@@ -21,12 +21,19 @@ vel_perp=Table_read(:,4);
 op=Table_read(:,5);
 angle=Table_read(:,6)*pi/180; % theta was recorded in degrees
 cs=Table_read(:,7);
-omega=Table_read(:,8);
+omega=Table_read(:,8)*pi/180; % omega was recorded in degrees (not sure yet)
 up=Table_read(:,9);
 vp=Table_read(:,10);
 x(2,:)=Table_read(:,11);
 y(2,:)=Table_read(:,12);
 
+
+%% 2021.1.11 omega?
+
+% omega_self=(x(2,:).*vp'-y(2,:).*up')./sqrt(x(2,:).^2+y(2,:).^2);
+% close all
+% figure; histogram(omega);
+% figure; histogram(omega_self)
 %% Other parameters and variables
 x(1,1:length(frame))=0;
 y(1,1:length(frame))=0;

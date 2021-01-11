@@ -138,14 +138,14 @@ clear;
 % Obs_time_steps=10^7
 % 
 
-Date='2021.1.6' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
-nth_take=1
-delta_t_matrix=2
-T_matrix=[1]
-v_0_matrix=[0.5:0.5:7.0]
-dt=10^-1
-intrinsic_delay=0.0 % Intrinsic delay
-Obs_time_steps=10^5
+% Date='2021.1.6' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
+% nth_take=1
+% delta_t_matrix=2
+% T_matrix=[1]
+% v_0_matrix=[0.5:0.5:7.0]
+% dt=10^-1
+% intrinsic_delay=0.0 % Intrinsic delay
+% Obs_time_steps=10^5
 
 
 % Date='2021.1.6'

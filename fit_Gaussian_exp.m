@@ -1,4 +1,4 @@
-function [fitresult, gof] = fit_Gaussian(x, y,plot_hist_fit)
+function [fitresult, gof] = fit_Gaussian_exp(x, y,plot_hist_fit)
 %CREATEFIT(X,Y)
 %  Create a fit.
 %
@@ -22,8 +22,7 @@ ft = fittype( 'gauss1' );
 opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
 opts.Display = 'Off';
 opts.Lower = [-Inf -Inf 0];
-% opts.StartPoint = [16695 1.11022302462516e-16 0.0168772845594195];
-opts.StartPoint = [10000 0 0.2];
+opts.StartPoint = [1000 0 0.5];
 
 % Fit model to data.
 [fitresult, gof] = fit( xData, yData, ft, opts );
