@@ -23,14 +23,34 @@ clearvars -except nth_take
 % intrinsic_delay=0.0 % Intrinsic delay
 % Obs_time_steps=10^5
 
+% Date='2021.1.8' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
+% nth_take=400 % for a=5, particle 1 fixed
+% delta_t_matrix=[1.8:0.1:4.0]
+% T_matrix=[1]
+% v_0_matrix=5
+% dt=10^-1
+% intrinsic_delay=0.0 % Intrinsic delay
+% Obs_time_steps=10^5
+
 Date='2021.1.8' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
-nth_take=400 % for a=5, particle 1 fixed
+nth_take=500 % for a=5, particle 1 fixed
 delta_t_matrix=[1.8:0.1:4.0]
 T_matrix=[1]
 v_0_matrix=5
-dt=10^-1
+dt=10^-2
 intrinsic_delay=0.0 % Intrinsic delay
 Obs_time_steps=10^5
+
+
+% 
+% Date='2021.1.12' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
+% nth_take=400 % for a=5, particle 1 fixed
+% delta_t_matrix=[0.5:0.5:4]
+% T_matrix=[1]
+% v_0_matrix=5
+% dt=10^-3
+% intrinsic_delay=0.0 % Intrinsic delay
+% Obs_time_steps=10^6
 
 
 

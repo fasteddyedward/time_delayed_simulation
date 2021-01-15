@@ -45,6 +45,7 @@ clear;
 % v_0_matrix=[3.5:0.1:10]
 % dt=10^-2
 % intrinsic_delay=0;
+% Obs_time_steps=10^6;
 
 % 
 % Date='2020.12.11' % T_eff recalucluated, fits pretty well
