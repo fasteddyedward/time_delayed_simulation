@@ -45,7 +45,6 @@ clear;
 % v_0_matrix=[3.5:0.1:10]
 % dt=10^-2
 % intrinsic_delay=0;
-% Obs_time_steps=10^6;
 
 % 
 % Date='2020.12.11' % T_eff recalucluated, fits pretty well
@@ -149,14 +148,14 @@ clear;
 % Obs_time_steps=10^5
 
 
-% Date='2021.1.6'
-% nth_take=100
-% delta_t_matrix=2
-% T_matrix=[1]
-% v_0_matrix=[0.5:0.5:14]
-% dt=10^-1
-% intrinsic_delay=0.0 % Intrinsic delay
-% Obs_time_steps=10^5
+Date='2021.1.6'
+nth_take=100
+delta_t_matrix=2
+T_matrix=[1]
+v_0_matrix=[0.5:0.5:14]
+dt=10^-1
+intrinsic_delay=0.0 % Intrinsic delay
+Obs_time_steps=10^5
 
 
 % if length(Delta_t_matrix)>1
@@ -166,11 +165,11 @@ clear;
 % end
 
 %% Execution Parameters
-recalculate_theta='yes' % normally just set to no
+recalculate_theta='no' % normally just set to no
 recalculate_hist='no' %
 recalculate_R='no' % normally just set to no; R is calculated in hist already.
 draw_hist='no'
-recalculate_T_eff='yes'
+recalculate_T_eff='no'
     plot_hist_fit_T_eff='no'
 fit_Viktor_method='no'
 recalculate_T_Boltz='no'
@@ -375,7 +374,7 @@ nth_take
     nth_take=nth_take+1;
 end
 %% Saving results
-time_duration=time(end);
+% time_duration=time(end);
 clear R theta time v_omega v_x v_y x y 
 % save(['plotting transitions v_0_matrix=3.5 0.1 10.mat'])
 % save(['plotting transitions Delta_t_matrix=0.5 0.5 16.mat'])
@@ -578,11 +577,11 @@ end
 
 
 %% 2020.12.10 Plotting Transition Rates 
-% time_duration=Obs_time_steps*dt+delta_t;
+time_duration=Obs_time_steps*dt+Delta_t_matrix;;
 x0=omega_0_matrix.*Delta_t_matrix;
 figure(7);clf;hold on;
 plot(x0,transition_rate_theory,'o')
-plot(x0,num_transitions_matrix/time_duration,'x')
+plot(x0,num_transitions_matrix./time_duration,'x')
 xlabel('\omega_0 \delta t')
 ylabel('Transition Rates (1/s)')
 
@@ -590,14 +589,14 @@ ylabel('Transition Rates (1/s)')
 figure(8);clf;hold on;
 flag=(x0>1.);
 plot(x0(flag),transition_rate_theory(flag),'o')
-plot(x0(flag),num_transitions_matrix(flag)/time_duration,'x')
+plot(x0(flag),num_transitions_matrix(flag)./time_duration,'x')
 xlabel('\omega_0 \delta t')
 ylabel('Transition Rates (1/s)')
 
 %% Plotting inverse transition rate
 figure(11);clf;hold on;
 plot(x0,1./transition_rate_theory,'o')
-plot(x0,1./(num_transitions_matrix/time_duration),'x')
+plot(x0,1./(num_transitions_matrix./time_duration),'x')
 xlabel('\omega_0 \delta t')
 ylabel('1/Transition Rates (s)')
 
@@ -605,7 +604,7 @@ ylabel('1/Transition Rates (s)')
 figure(12);clf;hold on;
 flag=(x0>1 );
 plot(x0(flag),1./transition_rate_theory(flag),'o')
-plot(x0(flag),1./(num_transitions_matrix(flag)/time_duration),'x')
+plot(x0(flag),1./(num_transitions_matrix(flag)./time_duration),'x')
 xlabel('\omega_0 \delta t')
 ylabel('1/Transition Rates (s)')
 

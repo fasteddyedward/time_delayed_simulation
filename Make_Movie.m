@@ -1,7 +1,7 @@
-function Movie_Vector=Make_Movie(movie_name,N,dt,Obs_time_steps,partition_time_steps,delta_t,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace,axis_scale,partition_movie,movie_x_min, movie_x_max,movie_y_min,movie_y_max,a,force_tracks)
+function Movie_Vector=Make_Movie(movie_name,N,dt,Obs_time_steps,partition_time_steps,delta_t,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace,axis_scale,partition_movie,movie_x_min, movie_x_max,movie_y_min,movie_y_max,a,force_tracks,x,y,time,save_file)
 switch partition_movie
     case 'no'
-        %% Start plotting the movies and plots
+        %% Start plotting the movies and plotsz
         load([movie_name,'.mat'],'time','x','y')
         Movie_Vector=make_movies_plots(N,delta_t,dt,Obs_time_steps+delta_t/dt,x,y,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace,axis_scale,a,force_tracks);
         clear time x y
@@ -31,7 +31,6 @@ switch partition_movie
                 clear x y v_x v_y time
             end
             Movie_Vector=[Movie_Vector Movie_Vector_Partition];
-        end
-        
-        
+        end     
+end
 end

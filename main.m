@@ -1,59 +1,39 @@
-function main(testparameter1,testparameter2)
-%% This file runs modulized_time_delay_proto
-%% 2020.10.14 to make the videos with several tries
-clearvars -except nth_take
-% Date='2021.1.8' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
+function [num_transitions_matrix,theta_plus_matrix,theta_minus_matrix,R_matrix,D_omega_matrix,D_theta_matrix,theta_0_matrix]= main(Date,nth_take,delta_t_matrix,T_matrix,v_0_matrix,dt,intrinsic_delay,Obs_time_steps)
+% Date,nth_take,delta_t_matrix,T_matrix,v_0_matrix,dt,intrinsic_delay,Obs_time_steps
+% function main(testparameter1,testparameter2)
+%% This file simulates the time-delayed interaction of active brownian particles, plots the movies, and analyzes the rotation
+% clearvars -except nth_take
+
+
+% Date='2021.1.15' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
 % nth_take=1 % for a=5, particle 1 fixed
-% nth_take=100 % for a=5, particle 1 not fixed
-% nth_take=200 % for a=0, particle 1 not fixed
-% delta_t_matrix=2
-% T_matrix=[1]
-% v_0_matrix=[4:0.5:10]
-% dt=10^-3
-% intrinsic_delay=0.0 % Intrinsic delay
-% Obs_time_steps=10^6
-
-
-% Date='2021.1.8' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
-% nth_take=300 % for a=5, particle 1 fixed
-% delta_t_matrix=2
-% T_matrix=[1]
-% v_0_matrix=[0.5:0.5:20]
-% dt=10^-1
-% intrinsic_delay=0.0 % Intrinsic delay
-% Obs_time_steps=10^5
-
-% Date='2021.1.8' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
-% nth_take=400 % for a=5, particle 1 fixed
 % delta_t_matrix=[1.8:0.1:4.0]
 % T_matrix=[1]
 % v_0_matrix=5
-% dt=10^-1
+% dt=10^-2
 % intrinsic_delay=0.0 % Intrinsic delay
 % Obs_time_steps=10^5
 
-Date='2021.1.8' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
-nth_take=500 % for a=5, particle 1 fixed
-delta_t_matrix=[1.8:0.1:4.0]
-T_matrix=[1]
-v_0_matrix=5
-dt=10^-2
-intrinsic_delay=0.0 % Intrinsic delay
-Obs_time_steps=10^5
 
-
-% 
-% Date='2021.1.12' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
-% nth_take=400 % for a=5, particle 1 fixed
-% delta_t_matrix=[0.5:0.5:4]
+% Date='2021.1.6'
+% nth_take=100
+% delta_t_matrix=2
 % T_matrix=[1]
-% v_0_matrix=5
-% dt=10^-3
+% % v_0_matrix=[0.5:0.5:14]
+% v_0_matrix=[5:0.5:8]
+% dt=10^-1
 % intrinsic_delay=0.0 % Intrinsic delay
-% Obs_time_steps=10^6
+% Obs_time_steps=10^5
+%% Matrices to append
+num_transitions_matrix=[];
+theta_plus_matrix=[];
+theta_minus_matrix=[];
+R_matrix=[];
+D_omega_matrix=[];
+D_theta_matrix=[];
+theta_0_matrix=[];
 
-
-
+%%
 for delta_t_index=1:length(delta_t_matrix)
     for T_index=1:length(T_matrix)
         for v_0_index=1:length(v_0_matrix)
@@ -66,7 +46,8 @@ close all
 movie_name=[Date,',dt=',num2str(dt),' take ',num2str(nth_take),', T=',num2str(T_matrix(T_index)),', v_0=',num2str(v_0_matrix(v_0_index)),', delta_t=',num2str(delta_t_matrix(delta_t_index))];
 % movie_name=['test3']
 warning('Have you modified the file name?')
-
+%% Save mat file? (If to run on cluster, pick 'no'
+save_file='no' ;
 %% Setup for Running the program
 N=2; % total number of particles in the simulation
 delta_t=delta_t_matrix(delta_t_index); % ms
@@ -133,35 +114,55 @@ y_init(3)=2*10^1;
 time_simulation_start=tic;
 % movie_x_max=0;movie_x_min=0;movie_y_max=0;movie_y_min=0; %% Boundary
 % for the movie
-[x,y,v_x,v_y,movie_x_min,movie_x_max,movie_y_min,movie_y_max,x_final,y_final]=simulation(movie_name,Obs_time_steps,partition_time_steps,0,0,0,0,N,delta_t,dt,v_0,T,gamma,k_B,D,x_init,y_init,hard_collision,a,b,intrinsic_delay,fixed_flag);
+[x,y,v_x,v_y,movie_x_min,movie_x_max,movie_y_min,movie_y_max,x_final,y_final]=simulation(movie_name,Obs_time_steps,partition_time_steps,0,0,0,0,N,delta_t,dt,v_0,T,gamma,k_B,D,x_init,y_init,hard_collision,a,b,intrinsic_delay,fixed_flag,save_file);
 time_simulation=toc(time_simulation_start)
 
 %% Putting all the partitioned files into one folder
-if (~exist(movie_name, 'dir')); mkdir(movie_name); end%if
-for lth_partition=1:round(Obs_time_steps/partition_time_steps)+1
-    movefile([movie_name,' partition_',num2str(lth_partition),'.mat'],movie_name);
+switch save_file
+    case 'yes'
+        if (~exist(movie_name, 'dir')); mkdir(movie_name); end%if
+        for lth_partition=1:round(Obs_time_steps/partition_time_steps)+1
+            movefile([movie_name,' partition_',num2str(lth_partition),'.mat'],movie_name);
+        end
+    case 'no'
 end
 %% Loading all the recorded positions and save to [movie_name,'.mat'](! Might cause memery overflow)
 switch partition_movie
     case 'no'
-        combine_data_partitions_start=tic;
-        [x,y,v_x,v_y,time]=combine_partitions(movie_name,Obs_time_steps,partition_time_steps,delta_t,dt);
-        % movie_x_max=max(x,[],'all');        % movie_y_max=max(y,[],'all');        % movie_x_min=min(x,[],'all');        % movie_y_min=min(y,[],'all');
-        save([movie_name,'.mat']);
-        clear x y v_x v_y time
-        time_combine_data_partitions=toc(combine_data_partitions_start)
+        %         combine_data_partitions_start=tic;
+        switch save_file
+            case 'yes'
+                [x,y,v_x,v_y,time]=combine_partitions(movie_name,Obs_time_steps,partition_time_steps,delta_t,dt);
+                % movie_x_max=max(x,[],'all');        % movie_y_max=max(y,[],'all');        % movie_x_min=min(x,[],'all');        % movie_y_min=min(y,[],'all');
+                save([movie_name,'.mat']);
+                clear x y v_x v_y time
+            case 'no'
+                time=(1:Obs_time_steps+delta_t/dt)*dt;
+        end
+%         time_combine_data_partitions=toc(combine_data_partitions_start)
 end
 %% Removing folder; these files are useless anyway.
 if (exist(movie_name, 'dir')); rmdir(movie_name,'s'); end
 %% Finding axis_scale  =   [movie_x_min  movie_x_max  movie_y_min  movie_y_max]
+
 if (~exist('movie_x_max','var'))
-    movie_x_max=0;movie_x_min=0;movie_y_max=0;movie_y_min=0;
-    cd(movie_name)
-    for lth_partition=1:round(Obs_time_steps/partition_time_steps)+1
-        load([movie_name,' partition_',num2str(lth_partition),'.mat'],'x','y')
-        movie_x_max=max([movie_x_max max(x)]);    movie_x_min=min([movie_x_min min(x)]);    movie_y_max=max([movie_y_max max(y)]);    movie_y_min=min([movie_y_min min(y)]);
+    switch save_file
+        case 'yes'
+            movie_x_max=0;movie_x_min=0;movie_y_max=0;movie_y_min=0;
+            cd(movie_name)
+            for lth_partition=1:round(Obs_time_steps/partition_time_steps)+1
+                load([movie_name,' partition_',num2str(lth_partition),'.mat'],'x','y')
+                movie_x_max=max([movie_x_max max(x)]);    movie_x_min=min([movie_x_min min(x)]);    movie_y_max=max([movie_y_max max(y)]);    movie_y_min=min([movie_y_min min(y)]);
+            end
+            cd ..
+        case 'no'
     end
-    cd ..
+else
+    switch save_file
+        case 'yes'
+        case 'no'
+            movie_x_max=max(max(x)); movie_x_min=min(min(x)); movie_y_max=max(max(y)); movie_y_min=min(min(y));
+    end
 end
     % Making the plot look square.
     movie_x_cent=(movie_x_max+movie_x_min)/2;
@@ -176,11 +177,11 @@ end
 
 
 
-%% Making Movies
+    %% Making Movies
     %% Parameters for making the movies
-    making_movies=tic;
+    %     making_movies=tic;
     magnify=1000    ;
-    control_animation_interval=10^3    ; % Record one frame in every ____ frame
+    control_animation_interval=10^4    ; % Record one frame in every ____ frame
     movie_create='off'   ;
     ghost='off'      ;
     force_tracks='off';
@@ -191,79 +192,75 @@ end
     if control_animation_interval>Obs_time_steps+dt*delta_t
         warning(['The number of movie frames is 0; Please modify control_animation_interval to a number smaller than Obs_time_steps= ',num2str(Obs_time_steps)])
     end
-        (Obs_time_steps+delta_t/dt)/control_animation_interval      ;
+    (Obs_time_steps+delta_t/dt)/control_animation_interval      ;
     if ((Obs_time_steps+delta_t/dt)/control_animation_interval>100)
         warning(['The plotting will take about ',num2str((Obs_time_steps+delta_t/dt)/control_animation_interval*0.15),' seconds. For faster time please choose different control_animation_interval'])
     end
-    % 1000 takes about 150 seconds. 
-
+    % 1000 takes about 150 seconds.
+    
     %% Start Making Movie
-    Movie_Vector=Make_Movie(movie_name,N,dt,Obs_time_steps,partition_time_steps,delta_t,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace,axis_scale,partition_movie,movie_x_min, movie_x_max,movie_y_min,movie_y_max,a,force_tracks);
+    %     if strcmp(partition_movie,'yes')
+    switch partition_movie
+        case 'yes'
+            Movie_Vector=Make_Movie(movie_name,N,dt,Obs_time_steps,partition_time_steps,delta_t,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace,axis_scale,partition_movie,movie_x_min, movie_x_max,movie_y_min,movie_y_max,a,force_tracks);
+        case 'no'
+            %             elseif strcmp(partition_movie,'no')
+            switch save_file
+                
+                %             if strcmp(save_file,'yes')
+                case 'yes'
+                    Movie_Vector=Make_Movie(movie_name,N,dt,Obs_time_steps,partition_time_steps,delta_t,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace,axis_scale,partition_movie,movie_x_min, movie_x_max,movie_y_min,movie_y_max,a,force_tracks);
+                case 'no' % Then we don't need Make_Movie to load the mat files
+                    %             elseif strcmp(save_file,'no')
+                    [Movie_Vector]=make_movies_plots(N,delta_t,dt,partition_time_steps,x,y,time,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace,axis_scale,a,force_tracks);
+            end
+    end
+    
+    %     Movie_Vector=Make_Movie(movie_name,N,dt,Obs_time_steps,partition_time_steps,delta_t,magnify,control_animation_interval,movie_create,ghost,axis_choice,leave_trace,axis_scale,partition_movie,movie_x_min, movie_x_max,movie_y_min,movie_y_max,a,force_tracks,x,y,time,save_file);
     
     %% Save movie
     frame_rate=10;
     Save_created_movie(movie_name,movie_create,control_animation_interval,Obs_time_steps,delta_t,dt,frame_rate,Movie_Vector)
     %% Saving work space for Movie
-    save([movie_name,'.mat'],'Movie_Vector','magnify','control_animation_interval','movie_create','ghost','axis_choice','leave_trace','-append')
-    clear Movie_Vector
-    time_making_movies=toc(making_movies)
+    switch save_file
+        case 'yes'
+            save([movie_name,'.mat'],'Movie_Vector','magnify','control_animation_interval','movie_create','ghost','axis_choice','leave_trace','-append')
+            clear Movie_Vector
+        case 'no'
+    end
+    %     time_making_movies=toc(making_movies)
     %% Plotting x and y of the N particles
-%     plot_x_y(movie_name)
-
-
+    %     plot_x_y(movie_name)
 %% check point to make sure time is not wrong, or %% Drawing v_omega will break
-time=(1:Obs_time_steps+delta_t/dt)*dt;
-save([movie_name,'.mat'],'time','-append')
+switch save_file
+    case 'yes'
+        time=(1:Obs_time_steps+delta_t/dt)*dt;
+        save([movie_name,'.mat'],'time','-append')
+    case 'no'
+end
 
+%% Start analyzing theta and omega for one-fixed-one-mobile-particle system
+[theta,omega,R_mean,D_theta,D_omega2,theta_0]= get_D_eff(x,y,v_x(2,:),v_y(2,:),Obs_time_steps,delta_t,dt,v_0);
+[theta_stable,k_trans_theta,theta_plus,theta_minus,num_transitions_theta]=find_theta_plus(theta,theta_0);
+% theta_0
+% theta_plus
+[omega_stable,k_trans_omega,omega_plus,omega_minus,num_transitions_omega]=find_omega_plus(omega,theta_0);
 
-%% Rotational Analysis: calculates and plots theta
-% if N==2 && fixed_flag(1)==1
-%     theta=0;
-%     Analyze_theta=tic;
-%     moving_avg=1 ;
-%     plot_rot='no';
-%     Theta_Analysis_Fixed_Center(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
-%     time_analyze_theta=toc(Analyze_theta)
-%     %% Plotting histogram
-%     num_bins=100  ;
-%     bin_limit=2;
-%     temp=figure(81);clf;temp.Visible='on'; % Note that hist_analysis only works for one particle orbitting a fixed particle at the moment
-%     
-%     [k_trans,theta_plus,theta_minus,num_transitions]=hist_analysis(movie_name,moving_avg,num_bins,bin_limit,Obs_time_steps,delta_t,dt);
-%     set(gca, 'YScale', 'linear')
-%     saveas(gcf,[movie_name,' (hist).png'])    
-%     %% Plotting Theta
-%     moving_avg=1;
-%     temp=figure(80);clf;
-%     temp.Visible='off';
-%     show_transitions='off'; % Better turn off for omega_0*delta_t<1, or else the xline(time(k_trans)) will take forever
-%     plot_theta(N,delta_t,movie_name,moving_avg,theta_plus,theta_minus,k_trans,show_transitions)
-%     title(['Theta (Time Delay Angle), v_0 = ',num2str(v_0),', \delta t = ',num2str(delta_t),', T = ',num2str(T)])
-%     saveas(gcf,[movie_name,' (theta).png'])    
-%     
-%     
-%     num_transitions
-%     
-% end
-
-
-%% Rotational Analysis: calculates and plots v_omega
-% Analyze_rot=tic;
-% moving_avg=1000 ;
-% plot_rot='no';
-% Rotational_Analysis(movie_name,partition_movie,N,v_0,Obs_time_steps,partition_time_steps,delta_t,dt,moving_avg,plot_rot);
-% time_analyze_rot=toc(Analyze_rot)
-%% Plotting v_omega
-% moving_avg=10000;
-% figure(98); clf %% Would be same as figure(99) if partition movie='no'
-% plot_v_omega(N,delta_t,movie_name,moving_avg)
-% title(['Normalized Rotation Speed, v_0 = ',num2str(v_0),', \delta t = ',num2str(delta_t),', T = ',num2str(T)])
-% % subtitle(['v_0=',num2str(v_0),', delta_t=',num2str(delta_t),', T=',num2str(T)])
-% 
-% % saveas(gcf,[movie_name,'.png'])
+%% Appending Matrices
+theta_0
+num_transitions_theta
+figure;plot(theta);
+num_transitions_matrix=[num_transitions_matrix num_transitions_theta];
+theta_plus_matrix=[theta_plus_matrix theta_plus];
+theta_minus_matrix=[theta_minus_matrix theta_minus];
+R_matrix=[R_matrix R_mean];
+D_omega_matrix=[D_omega_matrix D_omega2];
+D_theta_matrix=[D_theta_matrix D_theta];
+theta_0_matrix=[theta_0_matrix theta_0];
 
 %% Clearing Unwanted Timing Variables
 clear Analyze_rot combine_data_partitions_start making_movies time_simulation_start
+
             end
             nth_take=nth_take+1
         end
