@@ -13,30 +13,52 @@ clear;
 % intrinsic_delay=0.0 % Intrinsic delay
 % Obs_time_steps=10^6
 
-% Date='2021.1.6'
-% nth_take=100
+Date='2021.1.6'
+nth_take=100
+delta_t_matrix=2
+T_matrix=[1]
+% v_0_matrix=[0.5:0.5:14]
+v_0_matrix=[5:0.5:8]
+dt=10^-1
+intrinsic_delay=0.0 % Intrinsic delay
+Obs_time_steps=10^5
+
+% Date='2021.1.18' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
+% nth_take=1 % for a=5, particle 1 fixed
+% delta_t_matrix=[0.5:0.5:4.0]
+% % delta_t_matrix=[10]
+% T_matrix=[1]
+% v_0_matrix=5
+% dt=10^-2
+% intrinsic_delay=0.0 % Intrinsic delay
+% Obs_time_steps=10^6
+
+% Date='2021.1.18'
+% nth_take=1
 % delta_t_matrix=2
 % T_matrix=[1]
 % % v_0_matrix=[0.5:0.5:14]
-% v_0_matrix=[5:0.5:8]
-% dt=10^-1
+% v_0_matrix=[5:0.1:8]
+% dt=10^-2
 % intrinsic_delay=0.0 % Intrinsic delay
-% Obs_time_steps=10^5
+% Obs_time_steps=10^8
 
-Date='2021.1.18' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
-nth_take=1 % for a=5, particle 1 fixed
-delta_t_matrix=[0.5:0.5:4.0]
-% delta_t_matrix=[10]
-T_matrix=[1]
-v_0_matrix=5
-dt=10^-2
-intrinsic_delay=0.0 % Intrinsic delay
-Obs_time_steps=10^6
+
+% Date='2021.1.18' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
+% nth_take=1 % for a=5, particle 1 fixed
+% delta_t_matrix=[0.5:0.1:4.0]
+% % delta_t_matrix=[10]
+% T_matrix=[1]
+% v_0_matrix=5
+% dt=10^-2
+% intrinsic_delay=0.0 % Intrinsic delay
+% Obs_time_steps=10^8
+
 %% File_name
 save_file_name=['Date=',Date,', delta_t=',num2str(min(delta_t_matrix)),':',num2str(max(delta_t_matrix)),', v_0=',num2str(min(v_0_matrix)),':',num2str(max(v_0_matrix)),', dt=',num2str(dt),', time=',num2str(Obs_time_steps),'.mat']
-% load(save_file_name)
+load(save_file_name)
 %% Running main.m
-[num_transitions_matrix,theta_plus_matrix,theta_minus_matrix,R_matrix,D_omega_matrix,D_theta_matrix,theta_0_matrix]= main(Date,nth_take,delta_t_matrix,T_matrix,v_0_matrix,dt,intrinsic_delay,Obs_time_steps)
+[num_transitions_matrix,theta_plus_matrix,theta_minus_matrix,R_matrix,D_omega_matrix,D_theta_matrix,theta_0_matrix]= main(Date,nth_take,delta_t_matrix,T_matrix,v_0_matrix,dt,intrinsic_delay,Obs_time_steps);
 %% Running parameters
 Bifurcation_Diagram='yes'
 
@@ -99,7 +121,11 @@ time_duration=Obs_time_steps.*dt+delta_t_matrix;
 
 % this (uncorrected) transition rate is completely calculated with Kramer's theory
 tranistion_rate_uncorrected=2*sqrt(2)./(pi*theta_0_matrix.*delta_t_matrix).*(theta_0_matrix-1).*exp(-3*(theta_0_matrix-1).^2./(4*D./R_matrix.^2.*delta_t_matrix));
-     
+% this (today,2021.1.19) transition is an alternative rate suggested by Viktor for my
+% 2-D simulation, which is very close to corrected rate and was inspired by
+% D_theta/(D/R^2)~2
+transition_rate_today=2*sqrt(2)./(pi*theta_0_matrix.*delta_t_matrix).*(theta_0_matrix-1).*exp(-3*(theta_0_matrix-1).^2./(2*D./R_matrix.^2.*theta_0_matrix.^2.*delta_t_matrix));
+
 % these corrected transition rates use the effective diffusion
 switch notation
     case 'omega'
@@ -184,44 +210,47 @@ end
     figure(7);clf;hold on;
     plot(theta_0_matrix,tranistion_rate_uncorrected,'-')
     plot(theta_0_matrix,transition_rate_theory,'-')
+    plot(theta_0_matrix,transition_rate_today,'-')
     plot(theta_0_matrix,trans_rate_matrix,'x')
     title('Full range of \theta_0')
     xlabel('\omega_0 \delta t')
     ylabel('Transition Rates (1/s)')
-    legend('uncorrected','corrected','simulation')
-    set(gca,'YScale','log')
+    legend('uncorrected','corrected','today','simulation')
+%     set(gca,'YScale','log')
 
     figure(8);clf;hold on;
     flag=(theta_0_matrix>1.);
     plot(theta_0_matrix(flag),tranistion_rate_uncorrected(flag),'-')
     plot(theta_0_matrix(flag),transition_rate_theory(flag),'-')
-
+    plot(theta_0_matrix(flag),transition_rate_today(flag),'-')
     plot(theta_0_matrix(flag),trans_rate_matrix(flag),'x')
     title('\theta_0>1')
     xlabel('\omega_0 \delta t')
     ylabel('Transition Rates (1/s)')
-    legend('uncorrected','corrected','simulation')
-%     set(gca,'YScale','log')
+    legend('uncorrected','corrected','today','simulation')
+
     %% Plotting inverse transition rate
     figure(11);clf;hold on;
     plot(theta_0_matrix,1./(tranistion_rate_uncorrected),'-')
     plot(theta_0_matrix,1./transition_rate_theory,'-')
+    plot(theta_0_matrix,1./transition_rate_today,'-')
     plot(theta_0_matrix,1./(trans_rate_matrix),'x')
     title('Full range of \theta_0')
     xlabel('\omega_0 \delta t')
     ylabel('1/Transition Rates (s)')
-    legend('uncorrected','corrected','simulation')
+    legend('uncorrected','corrected','today','simulation')
     
 
     figure(12);clf;hold on;
     flag=(theta_0_matrix>1 );
     plot(theta_0_matrix(flag),1./tranistion_rate_uncorrected(flag),'-')
     plot(theta_0_matrix(flag),1./transition_rate_theory(flag),'-')
+    plot(theta_0_matrix(flag),1./transition_rate_today(flag),'-')
     plot(theta_0_matrix(flag),1./(trans_rate_matrix(flag)),'x')
     title('\theta_0>1')
     xlabel('\omega_0 \delta t')
     ylabel('1/Transition Rates (s)')
-    legend('uncorrected','corrected','simulation')
+    legend('uncorrected','corrected','today','simulation')
 %     set(gca,'YScale','log')
 %% Comparing between 1-D and 2-D % It's the same, so just for check actually
 % figure(13);clf;hold on;
