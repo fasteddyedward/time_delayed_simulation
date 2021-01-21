@@ -3,25 +3,35 @@ close all
 clear;
 
 %%
+
 % Date='2021.1.15' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
 % nth_take=1 % for a=5, particle 1 fixed
-% delta_t_matrix=[0.5:0.5:4.0]
-% % delta_t_matrix=[10]
+% delta_t_matrix=[1.8:0.1:4.0]
 % T_matrix=[1]
 % v_0_matrix=5
 % dt=10^-2
 % intrinsic_delay=0.0 % Intrinsic delay
-% Obs_time_steps=10^6
+% Obs_time_steps=10^5
 
-Date='2021.1.6'
-nth_take=100
-delta_t_matrix=2
+Date='2021.1.15' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
+nth_take=1 % for a=5, particle 1 fixed
+delta_t_matrix=[0.5:0.5:4.0]
+% delta_t_matrix=[10]
 T_matrix=[1]
-% v_0_matrix=[0.5:0.5:14]
-v_0_matrix=[5:0.5:8]
-dt=10^-1
+v_0_matrix=5
+dt=10^-2
 intrinsic_delay=0.0 % Intrinsic delay
-Obs_time_steps=10^5
+Obs_time_steps=10^6
+
+% Date='2021.1.6'
+% nth_take=100
+% delta_t_matrix=2
+% T_matrix=[1]
+% % v_0_matrix=[0.5:0.5:14]
+% v_0_matrix=[5:0.5:8]
+% dt=10^-1
+% intrinsic_delay=0.0 % Intrinsic delay
+% Obs_time_steps=10^5
 
 % Date='2021.1.18' % Note that the transition rates will be much higher than theoretical values because this is before bifurcation point
 % nth_take=1 % for a=5, particle 1 fixed
@@ -53,12 +63,13 @@ Obs_time_steps=10^5
 % dt=10^-2
 % intrinsic_delay=0.0 % Intrinsic delay
 % Obs_time_steps=10^8
-
+%%
+D_0=1;
 %% File_name
 save_file_name=['Date=',Date,', delta_t=',num2str(min(delta_t_matrix)),':',num2str(max(delta_t_matrix)),', v_0=',num2str(min(v_0_matrix)),':',num2str(max(v_0_matrix)),', dt=',num2str(dt),', time=',num2str(Obs_time_steps),'.mat']
 load(save_file_name)
 %% Running main.m
-[num_transitions_matrix,theta_plus_matrix,theta_minus_matrix,R_matrix,D_omega_matrix,D_theta_matrix,theta_0_matrix]= main(Date,nth_take,delta_t_matrix,T_matrix,v_0_matrix,dt,intrinsic_delay,Obs_time_steps);
+[num_transitions_matrix,theta_plus_matrix,theta_minus_matrix,R_matrix,D_omega_matrix,D_theta_matrix,theta_0_matrix]= main(Date,nth_take,delta_t_matrix,T_matrix,v_0_matrix,dt,intrinsic_delay,Obs_time_steps,D_0);
 %% Running parameters
 Bifurcation_Diagram='yes'
 
@@ -114,17 +125,17 @@ switch Bifurcation_Diagram
 end
 
 %% Transition Rates
-D=1;
+
 notation='theta'
 omega_0_matrix=v_0_matrix./R_matrix;
 time_duration=Obs_time_steps.*dt+delta_t_matrix;
 
 % this (uncorrected) transition rate is completely calculated with Kramer's theory
-tranistion_rate_uncorrected=2*sqrt(2)./(pi*theta_0_matrix.*delta_t_matrix).*(theta_0_matrix-1).*exp(-3*(theta_0_matrix-1).^2./(4*D./R_matrix.^2.*delta_t_matrix));
+tranistion_rate_uncorrected=2*sqrt(2)./(pi*theta_0_matrix.*delta_t_matrix).*(theta_0_matrix-1).*exp(-3*(theta_0_matrix-1).^2./(4*D_0./R_matrix.^2.*delta_t_matrix));
 % this (today,2021.1.19) transition is an alternative rate suggested by Viktor for my
 % 2-D simulation, which is very close to corrected rate and was inspired by
 % D_theta/(D/R^2)~2
-transition_rate_today=2*sqrt(2)./(pi*theta_0_matrix.*delta_t_matrix).*(theta_0_matrix-1).*exp(-3*(theta_0_matrix-1).^2./(2*D./R_matrix.^2.*theta_0_matrix.^2.*delta_t_matrix));
+transition_rate_today=2*sqrt(2)./(pi*theta_0_matrix.*delta_t_matrix).*(theta_0_matrix-1).*exp(-3*(theta_0_matrix-1).^2./(2*D_0./R_matrix.^2.*theta_0_matrix.^2.*delta_t_matrix));
 
 % these corrected transition rates use the effective diffusion
 switch notation
@@ -229,7 +240,7 @@ end
     ylabel('Transition Rates (1/s)')
     legend('uncorrected','corrected','today','simulation')
 
-    %% Plotting inverse transition rate
+    %% Plotting inverse transition rate of uncorrected and corrected together
     figure(11);clf;hold on;
     plot(theta_0_matrix,1./(tranistion_rate_uncorrected),'-')
     plot(theta_0_matrix,1./transition_rate_theory,'-')
@@ -310,7 +321,7 @@ ylabel('D_{eff}')
 %% Plotting D_omega v.s D/R^2
 figure(23);clf;hold on
 title('D_{\omega} v.s. D_0')
-plot(theta_0_matrix,D_omega_matrix./(D./R_matrix.^2))
+plot(theta_0_matrix,D_omega_matrix./(D_0./R_matrix.^2))
 legend('D_{\omega}/(D_0/R^2)','Location','northwest')
 xlabel('\omega_0 \delta t')
 axis([-inf inf 0 inf])
@@ -319,7 +330,7 @@ axis([-inf inf 0 inf])
 %% Plotting D_theta v.s 4D/(theta_0^2 R^2)
 figure(24);clf;hold on
 title('D_{\theta} v.s. D_0')
-plot(theta_0_matrix,D_theta_matrix./(4*D./(theta_0_matrix.^2.*R_matrix.^2)))
+plot(theta_0_matrix,D_theta_matrix./(4*D_0./(theta_0_matrix.^2.*R_matrix.^2)))
 legend('D_{\theta}/(4 D_0/(\theta_0^2 R^2))','Location','northwest')
 xlabel('\omega_0 \delta t')
 axis([-inf inf 0 inf])
@@ -327,4 +338,88 @@ axis([-inf inf 0 inf])
 %% Saving mat file 
 % save_file_name=['Date=',Date,', delta_t=',num2str(min(delta_t_matrix)),':',num2str(max(delta_t_matrix)),', v_0=',num2str(min(v_0_matrix)),':',num2str(max(v_0_matrix)),', dt=',num2str(dt),', time=',num2str(Obs_time_steps),'.mat']
 save(save_file_name)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%% 2021.1.21 test to see if the transitioin rates agree with viktor's prediction
+ %% Plotting on checking Viktor's D_eff to be 4D/theta_0^2R^2
+ close all
+ num_transitions_full_matrix=num_transitions_matrix
+    trans_rate_matrix_full=num_transitions_full_matrix./time_duration;
+    D=D_0./R_matrix.^2
+    transition_rate_theta_pc=2*sqrt(2)./(pi*theta_0_matrix.*delta_t_matrix).*(theta_0_matrix-1).*exp(-3*(theta_0_matrix-1).^2./((2*D).*theta_0_matrix.^2.*delta_t_matrix));
+    transition_rate_theta=1*sqrt(2)./(pi*theta_0_matrix.*delta_t_matrix).*(theta_0_matrix-1).*exp(-3*(theta_0_matrix-1).^2./((4*D./theta_0_matrix.^2).*theta_0_matrix.^2.*delta_t_matrix));
+    
+    figure(7);clf;hold on;
+    plot(theta_0_matrix,transition_rate_theta_pc,'-r')
+    plot(theta_0_matrix,trans_rate_matrix_full,'xr')
+%     plot(theta_0_matrix,transition_rate_full_double,'-r')
+    title('Full range of \theta_0')
+    xlabel('\omega_0 \delta t')
+    ylabel('Transition Rates (1/s)')
+%     set(gca,'XScale','log')
+%     set(gca,'YScale','log')
+    
+    figure(8);clf;hold on;
+    flag=(theta_0_matrix>1.);
+    plot(theta_0_matrix(flag),transition_rate_theta_pc(flag),'r-')
+    plot(theta_0_matrix(flag),trans_rate_matrix_full(flag),'xr')
+%     plot(theta_0_matrix(flag),transition_rate_full_double(flag),'r-')
+    title('\theta_0>1')
+    xlabel('\omega_0 \delta t')
+    ylabel('Transition Rates (1/s)')
+
+    set(gca,'XScale','log')
+    set(gca,'YScale','log')
+    
+    %% Plotting inverse
+
+    figure(9);clf;hold on;
+    plot(theta_0_matrix,1./transition_rate_theta_pc,'-r')
+    plot(theta_0_matrix,1./trans_rate_matrix_full,'xr')
+%     plot(theta_0_matrix,transition_rate_full_double,'-r')
+    title('Full range of \theta_0')
+    xlabel('\omega_0 \delta t')
+    ylabel('1/Transition Rates (s)')
+%     set(gca,'XScale','log')
+%     set(gca,'YScale','log')
+    
+    figure(10);clf;hold on;
+    flag=(theta_0_matrix>1.);
+    plot(theta_0_matrix(flag),1./transition_rate_theta_pc(flag),'r-')
+    plot(theta_0_matrix(flag),1./trans_rate_matrix_full(flag),'xr')
+%     plot(theta_0_matrix(flag),transition_rate_full_double(flag),'r-')
+    title('\theta_0>1')
+    xlabel('\omega_0 \delta t')
+    ylabel('1/Transition Rates (s)')
+
+    set(gca,'XScale','log')
+    set(gca,'YScale','log')
 

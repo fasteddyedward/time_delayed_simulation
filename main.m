@@ -1,4 +1,4 @@
-function [num_transitions_matrix,theta_plus_matrix,theta_minus_matrix,R_matrix,D_omega_matrix,D_theta_matrix,theta_0_matrix]= main(Date,nth_take,delta_t_matrix,T_matrix,v_0_matrix,dt,intrinsic_delay,Obs_time_steps)
+function [num_transitions_matrix,theta_plus_matrix,theta_minus_matrix,R_matrix,D_omega_matrix,D_theta_matrix,theta_0_matrix]= main(Date,nth_take,delta_t_matrix,T_matrix,v_0_matrix,dt,intrinsic_delay,Obs_time_steps,D_0)
 % Date,nth_take,delta_t_matrix,T_matrix,v_0_matrix,dt,intrinsic_delay,Obs_time_steps
 % function main(testparameter1,testparameter2)
 %% This file simulates the time-delayed interaction of active brownian particles, plots the movies, and analyzes the rotation
@@ -71,7 +71,7 @@ gamma=1;
 k_B=1;
 % gamma=6*pi*1.0016*10^-3*10^-6; % Stoke's drag, gamma=6*pi*eta*a
 % k_B=10^-23; % Boltzmann constant
-D=k_B*T/gamma; % Diffusitivity
+% D_0=k_B*T/gamma; % Diffusitivity
 
 %% Warning for Program Setup
 if partition_time_steps>Obs_time_steps
@@ -114,7 +114,7 @@ y_init(3)=2*10^1;
 time_simulation_start=tic;
 % movie_x_max=0;movie_x_min=0;movie_y_max=0;movie_y_min=0; %% Boundary
 % for the movie
-[x,y,v_x,v_y,movie_x_min,movie_x_max,movie_y_min,movie_y_max,x_final,y_final]=simulation(movie_name,Obs_time_steps,partition_time_steps,0,0,0,0,N,delta_t,dt,v_0,T,gamma,k_B,D,x_init,y_init,hard_collision,a,b,intrinsic_delay,fixed_flag,save_file);
+[x,y,v_x,v_y,movie_x_min,movie_x_max,movie_y_min,movie_y_max,x_final,y_final]=simulation(movie_name,Obs_time_steps,partition_time_steps,0,0,0,0,N,delta_t,dt,v_0,T,gamma,k_B,D_0,x_init,y_init,hard_collision,a,b,intrinsic_delay,fixed_flag,save_file);
 time_simulation=toc(time_simulation_start)
 
 %% Putting all the partitioned files into one folder
@@ -245,7 +245,10 @@ end
 % theta_0
 % theta_plus
 [omega_stable,k_trans_omega,omega_plus,omega_minus,num_transitions_omega]=find_omega_plus(omega,theta_0);
-
+theta_plus
+theta_minus
+omega_plus
+omega_minus
 %% Appending Matrices
 theta_0
 num_transitions_theta

@@ -9,38 +9,72 @@ if theta_0<0.9
     theta_minus=0;
     num_transitions_theta=0;
 else
-    h=histogram(theta);
-    Values=h.Values;
-    Bins=h.BinEdges(1:end-1)+0.5*h.BinWidth;
-%     theta_plus_index=find(Values==max(Values(end/2:end))); % end/2+2 instead of end/2 to avoid theta=0;
-%     theta_minus_index=find(Values==max(Values(1:end/2)));  % end/2-2 instead of end/2 to avoid theta=0;
-    if sum(Bins>0)==0
+        %% 2021.1.21 Modification
+%     h=histogram(theta);
+% %     Values=h.Values;
+%     Bins=h.BinEdges(1:end-1)+0.5*h.BinWidth;
+%     Values_reverted=flip(h.Values);
+%     Values=(h.Values+Values_reverted)/2;
+% %     plot(Bins,Values)
+% %     1
+        %% 2021.1.21 Mod 2nd
+        theta_symmetric=[theta -theta];
+        h=histogram(theta_symmetric);
+        Bins=h.BinEdges(1:end-1)+0.5*h.BinWidth;
+        Values=h.Values;
+    %% This will not work with 2021.1.21 Mod 2nd because the index for ind(Values==max(Values(Bins>0))) will be wrong for Bins>0
+%     if sum(Bins>0)==0
+%         theta_plus=0;
+%     else
+%         %         theta_plus_index=find(Values==max(Values(Bins>0))); % end/2+2 instead of end/2 to avoid theta=0;
+%         theta_plus_index=find(Values(Bins>0)==max(Values(Bins>0))); % end/2+2 instead of end/2 to avoid theta=0;
+%         if length(theta_plus_index)==1
+%             theta_plus=Bins(theta_plus_index);
+%         elseif isempty(theta_plus_index)
+%             theta_plus=0;
+%         else
+%             theta_plus=mean(Bins(theta_plus_index));
+%             warning('There is more than one maximum for theta_plus')
+%         end
+%     end
+%     
+%     if sum(Bins<0)==0
+%         theta_minus=0;
+%     else
+%         %         theta_minus_index=find(Values==max(Values(Bins<0)));  % end/2-2 instead of end/2 to avoid theta=0;
+%         theta_minus_index=find(Values(Bins<0)==max(Values(Bins<0)));  % end/2-2 instead of end/2 to avoid theta=0;
+%         if  length(theta_minus_index)==1
+%             theta_minus=Bins(theta_minus_index);
+%         elseif isempty(theta_minus_index)
+%             theta_minus=0;
+%         else
+%             theta_minus=mean(Bins(theta_minus_index));
+%             warning('There is more than one maximum for theta_minus')
+%         end
+%     end
+%% 2021.1.21 Modified
+
+    Bins_plus=Bins(length(Bins)/2:end);
+    Values_plus=Values(length(Values)/2:end);
+    if sum(Bins_plus>0)==0
         theta_plus=0;
     else
-        theta_plus_index=find(Values==max(Values(Bins>0))); % end/2+2 instead of end/2 to avoid theta=0;
+        %         theta_plus_index=find(Values==max(Values(Bins>0))); % end/2+2 instead of end/2 to avoid theta=0;
+        theta_plus_index=find(Values_plus==max(Values_plus)); % end/2+2 instead of end/2 to avoid theta=0;
         if length(theta_plus_index)==1
-            theta_plus=Bins(theta_plus_index);
+            theta_plus=Bins_plus(theta_plus_index);
         elseif isempty(theta_plus_index)
             theta_plus=0;
         else
-            theta_plus=mean(Bins(theta_plus_index));
+            theta_plus=mean(Bins_plus(theta_plus_index));
             warning('There is more than one maximum for theta_plus')
         end
     end
     
-    if sum(Bins<0)==0
-        theta_minus=0;
-    else
-        theta_minus_index=find(Values==max(Values(Bins<0)));  % end/2-2 instead of end/2 to avoid theta=0;
-        if  length(theta_minus_index)==1
-            theta_minus=Bins(theta_minus_index);
-        elseif isempty(theta_minus_index)
-            theta_minus=0;
-        else
-            theta_minus=mean(Bins(theta_minus_index));
-            warning('There is more than one maximum for theta_minus')
-        end
-    end
+%     theta_plus
+    theta_minus=-theta_plus;
+
+%     1
     %% Start Calculating Transition Rates
     sign_old=0; % Initial 'order parameter' for the orbit. +1 for stable orbit with theta_plus, -1 for stable orbit with theta_miunus
     sign_current=0;
