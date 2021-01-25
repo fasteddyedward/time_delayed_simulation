@@ -1,3 +1,5 @@
+%% This file calculates the sine full 1-D model with several set of parameters, and this should be the most clean code.
+%% The other developing features are written in simlation_1D_matrix_compare_with_Viktor.m
 clear;
 close all
 

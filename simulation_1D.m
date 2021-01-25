@@ -1,3 +1,4 @@
+%% This file simulates the sine full 1-D model for one set of parameters (basically useless)
 clear;
 close all
 N=10^7;

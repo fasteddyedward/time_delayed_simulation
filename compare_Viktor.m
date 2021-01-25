@@ -1,12 +1,14 @@
-%% Same as average_rate_and _decay_time_delay_angle, only modified to look like Pin-Chuan's codes
-clear all
-close all
+%% Same as modified_average_rate_and_decay_time_delay_angle.m. Functionalized to compare the transition rate with Pin_Chuan's in 
+%% Compare_1D_2D_pc_Vik.m
 
+function compare_Viktor(D_0)
+close all
 rng('shuffle')
 
-% dt = 0.001;
-dt=0.1
-tV = 0:dt:500000;
+dt = 0.001;
+% dt=0.1
+tV = 0:dt:50000;
+% tV = 0:dt:500000;
 % tV = 0:dt:1000;
 runs = 1;
 
@@ -28,7 +30,8 @@ for iAv = 1:1:length(Av)
     fprintf('Omega tau %i/%i\n\n',iAv,length(Av));
     
     p1 = Av(iAv); %V0*tau/2R
-    p2 = 0.01; %D*tau^2/4R^2 % But Viktor says it's actually D_0/(r^2), I think r is 2R
+    %     p2 = 0.01; %D*tau^2/4R^2 % But Viktor says it's actually D_0/(r^2), I think r is 2R
+    p2=D_0/10^2;
     tau = 1;
      
     for iruns = 1:runs
@@ -249,9 +252,9 @@ end
 
 clear Vim Vavr Vdichotomic tV transitionTimes PtT
 
-nameSave = ['rate_p2_',num2str(p2),'_tau_',num2str(tau),'.mat'];
+% nameSave = ['rate_p2_',num2str(p2),'_tau_',num2str(tau),'.mat'];
 
-save(nameSave)
+% save(nameSave)
 
 %% process data
 iF = @(x) (sign(x)+1)./(sign(x)+1);
@@ -363,71 +366,18 @@ if ~isempty(find(isnan(AratesV), 1))
     rateA_plot = rateA(1:1:iAmax);
     rateAeff_plot = rateAeff(1:1:iAmax);
 else
+%     AvN_plot = Av;
     AvN_plot = Av;
+    AratesV_plot = AratesV;
+    rateN_plot = rateN;
+    rateA_plot = rateA;
+    rateAeff_plot = rateAeff;
 end
 
 
- %% Plotting figures
-figure(2);clf;
-% subplot(1,2,1)
-% hold on
-% plot(Av, ArelaxV)
-% plot(Av,real(1./((-3.*Av+sqrt(3)*sqrt(-Av.*(-8+5.*Av)))./(2.*Av)))...
-%     .*iF(real(((-3.*Av+sqrt(3)*sqrt(-Av.*(-8+5.*Av)))./(2.*Av)))))
-% plot(Av,real(1./((-3.*Av+sqrt(3).*sqrt(Av.*(-16+19.*Av)))./(2.*Av)))...
-%     .*iF(real(((-3.*Av+sqrt(3)*sqrt(Av.*(-16+19.*Av)))./(2*Av)))))
-% xlabel('$\omega\delta t$','Interpreter','latex');
-% ylabel('$\tau$','Interpreter','latex');
-% subplot(1,2,2)
-
-hold on
-plot(AvN_plot, AratesV_plot,'x','DisplayName','simulation')
-plot(AvN_plot,1./(1*rateN_plot).*iF((-1 + AvN_plot)),'r','LineStyle','--','DisplayName','numerics')
-plot(AvN_plot,1./(1*rateA_plot).*iF((-1 + AvN_plot)),'g','LineStyle','-.','DisplayName','Kramers')
-plot(AvN_plot,1./(1*rateAeff_plot).*iF((-1 + AvN_plot)),'b','LineStyle',':','DisplayName','KramersEff')
-plot(AvN_plot,1./(2*rateN_plot).*iF((-1 + AvN_plot)),'r','LineStyle','--','DisplayName','numerics2')
-plot(AvN_plot,1./(2*rateA_plot).*iF((-1 + AvN_plot)),'g','LineStyle','-.','DisplayName','Kramers2')
-plot(AvN_plot,1./(2*rateAeff_plot).*iF((-1 + AvN_plot)),'b','LineStyle',':','DisplayName','KramersEff2')
-%plot(Av, 35.18*exp(((3.*(-1 + Av).^2)./(2.*p2))).*iF((-1 + Av)))
-legend('simulation','numerics','Kramers','KramersEff')
-xlabel('$\omega\delta t$','Interpreter','latex');
-ylabel('$1/k$','Interpreter','latex');
-set(gca,'YScale','log')
-set(gca,'Xscale','log')
-
-
-figure(21);clf;
-hold on
-plot(AvN_plot, 1./AratesV_plot,'x','DisplayName','simulation')
-plot(AvN_plot,(1*rateN_plot).*iF((-1 + AvN_plot)),'r','LineStyle','--','DisplayName','numerics')
-plot(AvN_plot,(1*rateA_plot).*iF((-1 + AvN_plot)),'g','LineStyle','-.','DisplayName','Kramers')
-plot(AvN_plot,(1*rateAeff_plot).*iF((-1 + AvN_plot)),'b','LineStyle',':','DisplayName','KramersEff')
-plot(AvN_plot,(2*rateN_plot).*iF((-1 + AvN_plot)),'r','LineStyle','--','DisplayName','numerics2')
-plot(AvN_plot,(2*rateA_plot).*iF((-1 + AvN_plot)),'g','LineStyle','-.','DisplayName','Kramers2')
-plot(AvN_plot,(2*rateAeff_plot).*iF((-1 + AvN_plot)),'b','LineStyle',':','DisplayName','KramersEff2')
-%plot(Av, 35.18*exp(((3.*(-1 + Av).^2)./(2.*p2))).*iF((-1 + Av)))
-legend('simulation','numerics','Kramers','KramersEff')
-xlabel('$\omega\delta t$','Interpreter','latex');
-ylabel('$1/k$','Interpreter','latex');
-set(gca,'YScale','log')
-set(gca,'Xscale','log')
-%%
-% figure(3)
-% subplot(1,4,1)
-% hold on
-% plot(Av, TeffV/p2)
-% subplot(1,4,2)
-% hold on
-% plot(Av, DeffV/p2)
-% subplot(1,4,3)
-% hold on
-% plot(Av, gammaEff)
-% plot(Av, Av/2)
-% subplot(1,4,4)
-% hold on
-% plot(Av, sigma2V)
-%
-
 
 %% 
-save('2021.1.25_compare_vik.mat')
+% save('2021.1.25_compare_vik.mat')
+% save(['2021.1.25_compare_vik,D_0=',num2str(D_0),'.mat'])
+save(['2021.1.25_compare_vik,D_0=',num2str(D_0),'.mat'],'AvN_plot','AratesV_plot','rateA_plot','rateAeff_plot','rateN_plot','iF')
+end

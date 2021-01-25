@@ -1,9 +1,12 @@
 %% Extension of simulation_1D_matrix, with all other kinds of D_eff and predicted trans_rate calculated, meant to compare with Viktor's codes at first
+%% Updated on 2021.1.22 Basically the simulation are the same as Viktors; the transition rates calculated in find_theta_plus have been modified 
+%% and now the transition rates are the same as Viktor's (check again if have time)
+
+%% Updated on 2021.1.25: Now the theoretical predictions and the simulation datas are really close to Viktor's. This code here basically can be discarded.
 clear;
 close all
 
 
-%% This setup doesn't give a good match (the scale plot neither), but still D_theta=2D_0/R^2
 
 %% This setup starts from theta_0>1
 nth_take=1 % for a=5, particle 1 fixed
@@ -12,7 +15,7 @@ T_matrix=[1]
 
 theta_0_matrix=linspace(1.1,1.6,15);
 
-dt=10^-2
+dt=10^-1
 intrinsic_delay=0.0 % Intrinsic delay
 Obs_time_steps=10^7
 R_mean=1;
@@ -208,36 +211,34 @@ clear domega_dt omega omega_full omega_full_3 phi r_phi r_theta_sim theta_approx
 %% Start analyzing the data:
 time_duration=Obs_time_steps.*dt+delta_t_matrix;
 transition_rate_approx=1*sqrt(2)./(pi*theta_0_matrix.*delta_t_matrix).*(theta_0_matrix-1).*exp(-3*(theta_0_matrix-1).^2./(4*D_0./R_matrix.^2.*delta_t_matrix));
+% transition_rate_full=1*sqrt(2)./(pi*theta_0_matrix.*delta_t_matrix).*(theta_0_matrix-1).*exp(-3*(theta_0_matrix-1).^2./(D_theta_full_matrix.*delta_t_matrix.*theta_0_matrix.^2));
+transition_rate_full=1*sqrt(2)./(pi*theta_0_matrix.*delta_t_matrix).*(theta_0_matrix-1).*exp(-3*(theta_0_matrix-1).^2./(2*D_0./R_matrix.^2.*delta_t_matrix.*theta_0_matrix.^2));
 
-transition_rate_full=1*sqrt(2)./(pi*theta_0_matrix.*delta_t_matrix).*(theta_0_matrix-1).*exp(-3*(theta_0_matrix-1).^2./(D_theta_full_matrix.*delta_t_matrix.*theta_0_matrix.^2));
-% D_good_guess=2*D_0./R_matrix.^2; transition_rate_full=1*sqrt(2)./(pi*theta_0_matrix.*delta_t_matrix).*(theta_0_matrix-1).*exp(-3*(theta_0_matrix-1).^2./(D_good_guess.*delta_t_matrix.*theta_0_matrix.^2));
-% transition_rate_today=1*sqrt(2)./(pi*theta_0_matrix.*delta_t_matrix).*(theta_0_matrix-1).*exp(-3*(theta_0_matrix-1).^2./(2*D_0./R_matrix.^2.*theta_0_matrix.^2.*delta_t_matrix));
 
 
 tranistion_rate_approx_double=2*transition_rate_approx;
-% transition_rate_theory_double=2*sqrt(2)./(pi*theta_0_matrix.*delta_t_matrix).*(theta_0_matrix-1).*exp(-3*(theta_0_matrix-1).^2./(D_theta_full_matrix.*delta_t_matrix.*theta_0_matrix.^2));
 transition_rate_full_double=2*transition_rate_full;
-% transition_rate_today_double=2transition_rate_today;
-
 %% 2021.1.20 Something wrong with the transition rates? Delete this afterwards.
-close all;
-figure;hold on
-trans_rate_matrix_full=num_transitions_full_matrix./time_duration;
-D_eff_matrix=4*D./theta_0_matrix.^2;
-% D_eff_matrix(1:length(theta_0_matrix))=2*D;
-transition_rate_theory=2*sqrt(2)./(pi*theta_0_matrix.*delta_t_matrix).*(theta_0_matrix-1).*exp(-3*(theta_0_matrix-1).^2./((D_eff_matrix.*theta_0_matrix.^2.*delta_t_matrix)));
-
-plot(theta_0_matrix,trans_rate_matrix_full,'xr')
-plot(theta_0_matrix,transition_rate_theory)
-    set(gca,'XScale','log')
-    set(gca,'YScale','log')
-
-figure;hold on
-plot(theta_0_matrix,1./trans_rate_matrix_full,'xr')
-plot(theta_0_matrix,1./transition_rate_theory)
+% close all;
+% figure;hold on
+% trans_rate_matrix_full=num_transitions_full_matrix./time_duration;
+% D_eff_matrix=4*D./theta_0_matrix.^2;
+% % D_eff_matrix(1:length(theta_0_matrix))=2*D;
+% transition_rate_theory=2*sqrt(2)./(pi*theta_0_matrix.*delta_t_matrix).*(theta_0_matrix-1).*exp(-3*(theta_0_matrix-1).^2./((D_eff_matrix.*theta_0_matrix.^2.*delta_t_matrix)));
+% 
+% plot(theta_0_matrix,trans_rate_matrix_full,'xr')
+% plot(theta_0_matrix,transition_rate_theory)
+%     set(gca,'XScale','log')
+%     set(gca,'YScale','log')
+%     
+% 
+% figure;hold on
+% plot(theta_0_matrix,1./trans_rate_matrix_full,'xr')
+% plot(theta_0_matrix,1./transition_rate_theory)
 %% 2021.1.18 Plotting Transition Rates of uncorrected and corrected together
     trans_rate_matrix_full=num_transitions_full_matrix./time_duration;
-    trans_rate_matrix_approx=num_transitions_approx_matrix./time_duration;
+    %     trans_rate_matrix_approx=num_transitions_approx_matrix./time_duration;
+    trans_rate_matrix_approx=zeros(size(trans_rate_matrix_full));
     figure(7);clf;hold on;
     plot(theta_0_matrix,transition_rate_approx,'-b')
     plot(theta_0_matrix,transition_rate_full,'-r')
@@ -272,7 +273,7 @@ legend('approximated 1D (D_{eff}=4D_0/(\theta_0^2 R^2))','full 1D (D_{eff}=2D_0/
 
     set(gca,'XScale','log')
     set(gca,'YScale','log')
-    
+%     axis([1.1 1.43 10^-7 10^-1])
     %% Plotting inverse transition rate of uncorrected and corrected together
     figure(11);clf;hold on;
     plot(theta_0_matrix,1./(transition_rate_approx),'b-')
@@ -310,6 +311,13 @@ legend('approximated 1D (D_{eff}=4D_0/(\theta_0^2 R^2))','full 1D (D_{eff}=2D_0/
 
     set(gca,'XScale','log')
     set(gca,'YScale','log')
+    axis([1.1 1.43 10^1 10^7])
+    
+    %%
+    close(figure(7))
+    close(figure(11))
+    figure(8)
+    figure(12)
     
     %% Plotting D_eff with 2D/R^2 and 4D/(R^2 theta_0^2)
     figure(13);clf;hold on;
