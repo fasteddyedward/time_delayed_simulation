@@ -10,7 +10,7 @@ delta_t_matrix=1
 T_matrix=[1]
 % v_0_matrix=[5:0.2:8]*2
 v_0_matrix=[11:0.5:20]
-dt=10^-3
+dt=10^-2
 intrinsic_delay=0.0 % Intrinsic delay
 Obs_time_steps=10^6
 

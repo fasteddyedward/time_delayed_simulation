@@ -14,11 +14,11 @@ delta_t_matrix=1
 T_matrix=[1]
 
 theta_0_matrix=linspace(1.1,1.6,15);
-
-dt=10^-1
+D_0=20
+dt=10^-2
 intrinsic_delay=0.0 % Intrinsic delay
-Obs_time_steps=10^7
-R_mean=1;
+Obs_time_steps=50000/dt
+R_mean=10;
 v_0_matrix=theta_0_matrix*R_mean/delta_t_matrix;
 
 %%
@@ -43,7 +43,7 @@ for delta_t_index=1:length(delta_t_matrix)
             if 1
                 delta_t=delta_t_matrix(delta_t_index);
                 v_0= v_0_matrix(v_0_index);
-                D_0=0.01
+
                 
                 D=D_0/R_mean^2;
                 omega_0=v_0/R_mean;

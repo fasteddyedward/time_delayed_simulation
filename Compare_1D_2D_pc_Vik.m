@@ -4,7 +4,7 @@ close all
    
 %% Running the compare functions
 
-D_0=20
+D_0=50
 %% Running the subfunctions
 compare_Viktor(D_0)
 compare_PC(D_0)
@@ -25,8 +25,7 @@ plot(AvN_plot,1./(2*rateA_plot).*iF((-1 + AvN_plot)),'g','LineStyle','-.','Displ
 plot(AvN_plot,1./(2*rateAeff_plot).*iF((-1 + AvN_plot)),'b','LineStyle',':','DisplayName','KramersEff2')
 xlabel('$\omega\delta t$','Interpreter','latex');
 ylabel('$1/k$','Interpreter','latex');
-set(gca,'YScale','log')
-set(gca,'Xscale','log')
+
 
 
 figure(1);clf;
@@ -39,9 +38,8 @@ plot(AvN_plot,(2*rateN_plot).*iF((-1 + AvN_plot)),'r','LineStyle','--','DisplayN
 plot(AvN_plot,(2*rateA_plot).*iF((-1 + AvN_plot)),'g','LineStyle','-.','DisplayName','Kramers2')
 plot(AvN_plot,(2*rateAeff_plot).*iF((-1 + AvN_plot)),'b','LineStyle',':','DisplayName','KramersEff2')
 xlabel('$\omega\delta t$','Interpreter','latex');
-ylabel('$1/k$','Interpreter','latex');
-set(gca,'YScale','log')
-set(gca,'Xscale','log')
+ylabel('$k$','Interpreter','latex');
+
 
 
 
@@ -62,7 +60,7 @@ transition_rate_measured=1*sqrt(2)./(pi*theta_0_matrix.*delta_t_matrix).*(theta_
 figure(2)
 plot(theta_0_matrix,1./transition_rate_measured,'m--')
 plot(theta_0_matrix,1./(2*transition_rate_measured),'m--')
-legend('simulation','numerics','Kramers','KramersEff','2-D simulation','Location','northwest')
+% legend('simulation','numerics','Kramers','KramersEff','2-D simulation','Location','northwest')
 
 figure(1)
 plot(theta_0_matrix,transition_rate_measured,'m--')
@@ -70,64 +68,79 @@ plot(theta_0_matrix,2*transition_rate_measured,'m--')
 
 %% Legending
 figure(2)
-legend('simulation','numerics','Kramers','KramersEff','2-D simulation','Location','northwest')
+axis([1 inf -inf inf])
+set(gca,'YScale','log')
+set(gca,'Xscale','log')
+%     set(gca,'XScale','linear')
+%     set(gca,'YScale','linear')
+legend('simulation','numerics','Kramers','KramersEff','numerics*2','Kramers*2','KramersEff*2','2-D simulation','Kramers Deff measured','Kramers Deff measured*2','Location','northwest')
+
 figure(1)
-legend('simulation','numerics','Kramers','KramersEff','2-D simulation','Location','southwest')
+axis([1 inf -inf inf])
+set(gca,'YScale','log')
+set(gca,'Xscale','log')
+%     set(gca,'XScale','linear')
+%     set(gca,'YScale','linear')
+legend('simulation','numerics','Kramers','KramersEff','numerics*2','Kramers*2','KramersEff*2','2-D simulation','Kramers Deff measured','Kramers Deff measured*2','Location','southwest')
 %% Saving Data 
 
 save(['Compare_D_0=',num2str(D_0),'.mat'])
-%% Part 3, determine if Viktor and I had the same simulations.
-% clear all;
-% load('2021.1.25_compare_pc.mat')
-% %% 2021.1.18 Plotting Transition Rates of uncorrected and corrected together
-%     trans_rate_matrix_full=num_transitions_full_matrix./time_duration;
-%     %     trans_rate_matrix_approx=num_transitions_approx_matrix./time_duration;
-%     trans_rate_matrix_approx=zeros(size(trans_rate_matrix_full));
+
+%% Part 4, Plotting D_eff measured and 2*D_0/R^2
+figure(3)
+plot(D_theta_matrix./(2*D_0./R_matrix.^2))
+axis([-inf inf 0 inf])
+ylabel('$D_{eff}/(2D_0/R^2)$','Interpreter','latex');
+% ylabel('k')
+
+
+
+
+%% Part 5, determine if Viktor and I had the same simulations for 1-D
 % 
+% load('2021.1.21_compare_pc_1D.mat')
+% %% 2021.1.18 Plotting Transition Rates of uncorrected and corrected together
+% transition_rate_approx=1*sqrt(2)./(pi*theta_0_matrix.*delta_t_matrix).*(theta_0_matrix-1).*exp(-3*(theta_0_matrix-1).^2./(4*D_0./R_matrix.^2.*delta_t_matrix));
+% % transition_rate_full=1*sqrt(2)./(pi*theta_0_matrix.*delta_t_matrix).*(theta_0_matrix-1).*exp(-3*(theta_0_matrix-1).^2./(D_theta_full_matrix.*delta_t_matrix.*theta_0_matrix.^2));
+% transition_rate_full=1*sqrt(2)./(pi*theta_0_matrix.*delta_t_matrix).*(theta_0_matrix-1).*exp(-3*(theta_0_matrix-1).^2./(2*D_0./R_matrix.^2.*delta_t_matrix.*theta_0_matrix.^2));
+% 
+% 
+% tranistion_rate_approx_double=2*transition_rate_approx;
+% transition_rate_full_double=2*transition_rate_full;
+% %%
 %     figure(1);hold on;
 %     flag=(theta_0_matrix>1.);
-%     plot(theta_0_matrix(flag),transition_rate_approx(flag),'b.')
-%     plot(theta_0_matrix(flag),transition_rate_full(flag),'r.')
-% %     plot(theta_0_matrix(flag),transition_rate_today(flag),'g-')
-%     plot(theta_0_matrix(flag),trans_rate_matrix_full(flag),'xr')
-%     plot(theta_0_matrix(flag),trans_rate_matrix_approx(flag),'ob')
-%     plot(theta_0_matrix(flag),tranistion_rate_approx_double(flag),'b.')
-%     plot(theta_0_matrix(flag),transition_rate_full_double(flag),'r.')
-% %     plot(theta_0_matrix(flag),transition_rate_today_double(flag),'g-')
+% 
+% %     plot(theta_0_matrix(flag),trans_rate_matrix_full(flag),'xr')
+%     plot(theta_0_matrix,transition_rate_full,'.k')
+%     plot(theta_0_matrix,2*transition_rate_full,'.k')
+%     plot(theta_0_matrix,transition_rate_approx,'.b')
+%     plot(theta_0_matrix,2*transition_rate_approx,'.b')
 %     title('\theta_0>1')
 %     xlabel('\omega_0 \delta t')
 %     ylabel('Transition Rates (1/s)')
-% %     legend('uncorrected','corrected','today','full 1D simulation','approximated 1D simulation')
-% legend('approximated 1D (D_{eff}=4D_0/(\theta_0^2 R^2))','full 1D (D_{eff}=2D_0/R^2)','full 1D simulation','approximated 1D simulation')
 % 
 %     set(gca,'XScale','log')
 %     set(gca,'YScale','log')
-% %     axis([1.1 1.43 10^-7 10^-1])
+%     
+%     set(gca,'XScale','linear')
+%     set(gca,'YScale','linear')
 %     %% Plotting inverse transition rate of uncorrected and corrected together
 %     
 %     figure(2);hold on;
 %     flag=(theta_0_matrix>1 );
-%     plot(theta_0_matrix(flag),1./transition_rate_approx(flag),'.b')
-%     plot(theta_0_matrix(flag),1./transition_rate_full(flag),'.r')
-% %     plot(theta_0_matrix(flag),1./transition_rate_today(flag),'-g')
 %     plot(theta_0_matrix(flag),1./(trans_rate_matrix_full(flag)),'xr')
-%     plot(theta_0_matrix(flag),1./(trans_rate_matrix_approx(flag)),'bo')
-%     plot(theta_0_matrix(flag),1./tranistion_rate_approx_double(flag),'b.')
-%     plot(theta_0_matrix(flag),1./transition_rate_full_double(flag),'.r')
-% %     plot(theta_0_matrix(flag),1./transition_rate_today_double(flag),'g-')
+%     plot(theta_0_matrix,1./transition_rate_full,'.k')
+%     plot(theta_0_matrix,1./(2*transition_rate_full),'.k')
+%     plot(theta_0_matrix,1./transition_rate_approx,'.b')
+%     plot(theta_0_matrix,1./(2*transition_rate_approx),'.b')
 %     title('\theta_0>1')
 %     xlabel('\omega_0 \delta t')
 %     ylabel('1/Transition Rates (s)')
-% %     legend('uncorrected','corrected','today','full 1D simulation','approximated 1D simulation')
-% legend('approximated 1D (D_{eff}=4D_0/(\theta_0^2 R^2))','full 1D (D_{eff}=2D_0/R^2)','full 1D simulation','approximated 1D simulation')
 % 
 %     set(gca,'XScale','log')
 %     set(gca,'YScale','log')
-%     axis([1.1 1.43 10^1 10^7])
 %     
-
-
-
-
-
+%     set(gca,'XScale','linear')
+%     set(gca,'YScale','linear')
 

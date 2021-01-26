@@ -5,7 +5,7 @@ function compare_Viktor(D_0)
 close all
 rng('shuffle')
 
-dt = 0.001;
+dt = 0.01;
 % dt=0.1
 tV = 0:dt:50000;
 % tV = 0:dt:500000;
