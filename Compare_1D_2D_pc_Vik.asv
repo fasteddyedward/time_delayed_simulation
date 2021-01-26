@@ -1,12 +1,12 @@
 %% Today let's put all the data together: 2-D, 1-D, numerics...etc
 clear 
 close all
-   
+
 %% Running the compare functions
 
 D_0=20
 %% Running the subfunctions
-compare_Viktor(D_0)
+compare_Viktor(D _0)
 compare_PC(D_0)
 %% Part 1, from modified_average_rate... from Viktor
 
