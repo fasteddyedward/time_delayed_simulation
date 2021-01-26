@@ -1,4 +1,4 @@
-function [num_transitions_matrix,theta_plus_matrix,theta_minus_matrix,R_matrix,D_omega_matrix,D_theta_matrix,theta_0_matrix]= main(Date,nth_take,delta_t_matrix,T_matrix,v_0_matrix,dt,intrinsic_delay,Obs_time_steps,D_0)
+function [num_transitions_matrix,theta_plus_matrix,theta_minus_matrix,R_matrix,D_omega_matrix,D_theta_matrix,theta_0_matrix,R_recip_matrix]= main(Date,nth_take,delta_t_matrix,T_matrix,v_0_matrix,dt,intrinsic_delay,Obs_time_steps,D_0)
 % Date,nth_take,delta_t_matrix,T_matrix,v_0_matrix,dt,intrinsic_delay,Obs_time_steps
 % function main(testparameter1,testparameter2)
 %% This file simulates the time-delayed interaction of active brownian particles, plots the movies, and analyzes the rotation
@@ -32,7 +32,7 @@ R_matrix=[];
 D_omega_matrix=[];
 D_theta_matrix=[];
 theta_0_matrix=[];
-
+R_recip_matrix=[];
 %%
 for delta_t_index=1:length(delta_t_matrix)
     for T_index=1:length(T_matrix)
@@ -240,7 +240,7 @@ switch save_file
 end
 
 %% Start analyzing theta and omega for one-fixed-one-mobile-particle system
-[theta,omega,R_mean,D_theta,D_omega2,theta_0]= get_D_eff(x,y,v_x(2,:),v_y(2,:),Obs_time_steps,delta_t,dt,v_0);
+[theta,omega,R_mean,D_theta,D_omega2,theta_0,R_recip]= get_D_eff(x,y,v_x(2,:),v_y(2,:),Obs_time_steps,delta_t,dt,v_0);
 [theta_stable,k_trans_theta,theta_plus,theta_minus,num_transitions_theta]=find_theta_plus(theta,theta_0);
 % theta_0
 % theta_plus
@@ -260,7 +260,7 @@ R_matrix=[R_matrix R_mean];
 D_omega_matrix=[D_omega_matrix D_omega2];
 D_theta_matrix=[D_theta_matrix D_theta];
 theta_0_matrix=[theta_0_matrix theta_0];
-
+R_recip_matrix=[R_recip_matrix R_recip];
 %% Clearing Unwanted Timing Variables
 clear Analyze_rot combine_data_partitions_start making_movies time_simulation_start
 

@@ -1,16 +1,17 @@
 %% Same as modified_average_rate_and_decay_time_delay_angle.m. Functionalized to compare the transition rate with Pin_Chuan's in 
 %% Compare_1D_2D_pc_Vik.m
 
-function compare_Viktor(D_0)
+function compare_Viktor(D_0,dt,tV_max,Av,tau_matrix,runs)
 close all
 rng('shuffle')
 
-dt = 0.01;
+% dt = 0.01;
 % dt=0.1
-tV = 0:dt:50000;
+tV=0:dt:tV_max;
+% tV = 0:dt:50000;
 % tV = 0:dt:500000;
 % tV = 0:dt:1000;
-runs = 1;
+% runs = 1;
 
 dDtT = 0.1;
 transitionDTimes = 0:dDtT:1000;
@@ -18,7 +19,7 @@ dtT = 1;
 transitionTimes = 0:dtT:length(tV);
 
 % Av = linspace(1.001,1.2,15);
-Av = linspace(1.1,1.6,15);
+% Av = linspace(1.1,1.6,15);
 AratesV = zeros(1,length(Av));
 ArelaxV = zeros(1,length(Av));
 sigma2V = zeros(1,length(Av));
@@ -32,8 +33,12 @@ for iAv = 1:1:length(Av)
     p1 = Av(iAv); %V0*tau/2R
     %     p2 = 0.01; %D*tau^2/4R^2 % But Viktor says it's actually D_0/(r^2), I think r is 2R
     p2=D_0/10^2;
-    tau = 1;
-     
+    %     tau = 1;
+    if length(tau_matrix)>1
+        tau=tau_matrix(iAv);
+    else
+        tau=tau_matrix;
+    end
     for iruns = 1:runs
         
         PtDT = zeros(1,length(transitionDTimes));

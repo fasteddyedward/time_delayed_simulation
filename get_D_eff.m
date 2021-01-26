@@ -1,4 +1,4 @@
-function [theta,omega,R_mean,D_theta,D_omega2,theta_0]= get_D_eff(x,y,v_x,v_y,Obs_time_steps,delta_t,dt,v_0)
+function [theta,omega,R_mean,D_theta,D_omega2,theta_0,R_recip]= get_D_eff(x,y,v_x,v_y,Obs_time_steps,delta_t,dt,v_0)
 %% This file analyzes the x y raw data, gives omega and theta, and analyzes the D_eff (D_theta and D_omega2) 
 % modified from test_simulation
 
@@ -71,4 +71,5 @@ D_omega2=sigma_omega2^2*dt/(2);
 %             D_eff_ratio_matrix_omega2=[D_eff_ratio_matrix_omega2 D_omega2/(D/mean(R)^2)];
 %%
 R_mean=mean(R);
+R_recip=mean(1./R);
 end

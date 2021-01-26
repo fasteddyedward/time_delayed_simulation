@@ -1,18 +1,18 @@
 %% Same as test.m. Functionalized to compare the transition rate with Viktor's in Compare_1D_2D_pc_Vik.m
-function compare_PC(D_0)
+function compare_PC(D_0,dt,delta_t_matrix,v_0_matrix,Obs_time_steps)
 close all
 
 
 
 Date='2021.1.25'
 nth_take=1
-delta_t_matrix=1
+% delta_t_matrix=1
 T_matrix=[1]
-% v_0_matrix=[5:0.2:8]*2
-v_0_matrix=[11:0.5:20]
-dt=10^-2
+
+% v_0_matrix=[11:0.5:20]
+% dt=10^-2
 intrinsic_delay=0.0 % Intrinsic delay
-Obs_time_steps=10^6
+% Obs_time_steps=10^6
 
 
 %%
@@ -22,7 +22,7 @@ save_file_name=['Date=',Date,', delta_t=',num2str(min(delta_t_matrix)),':',num2s
 % pause
 % load(save_file_name)
 %% Running main.m
-[num_transitions_matrix,theta_plus_matrix,theta_minus_matrix,R_matrix,D_omega_matrix,D_theta_matrix,theta_0_matrix]= main(Date,nth_take,delta_t_matrix,T_matrix,v_0_matrix,dt,intrinsic_delay,Obs_time_steps,D_0);
+[num_transitions_matrix,theta_plus_matrix,theta_minus_matrix,R_matrix,D_omega_matrix,D_theta_matrix,theta_0_matrix,R_recip_matrix]= main(Date,nth_take,delta_t_matrix,T_matrix,v_0_matrix,dt,intrinsic_delay,Obs_time_steps,D_0);
 %% Running parameters
 Bifurcation_Diagram='no'
 
