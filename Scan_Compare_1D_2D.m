@@ -19,7 +19,7 @@ Scan_compare_Viktor(D_0,dt,50000,linspace(1.1,1.6,15),delta_t_matrix,1)
 % compare_PC(D_0,dt,delta_t_matrix,v_0_matrix,Obs_time_steps)
 % compare_PC(D_0,dt,tau_matrix,[11:0.5:20],10^4)
 % compare_PC(D_0,dt,[2:0.2:4],5,10^6)
-% Scan_compare_PC(D_0,dt,delta_t_matrix,v_0_matrix,10^3)
+Scan_compare_PC(D_0,dt,delta_t_matrix,v_0_matrix,10^3)
 %%
 % load(['2021.1.25_compare_PC,D_0=',num2str(D_0),'.mat'])
 
