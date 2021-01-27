@@ -5,14 +5,14 @@ clear
 %% Running the compare functions
 dt=0.01
 D_0=1
-tau_matrix=0.1
+
 %% Running the subfunctions
 % compare_Viktor(D_0,dt,tV_max,theta_0_matrix,tau_matrix,runs)
-compare_Viktor(D_0,dt,50000,linspace(1.1,1.6,15),tau_matrix,1)
+% compare_Viktor(D_0,dt,50000,linspace(1.1,1.6,15),1,1)
 % compare_Viktor(D_0,dt,50000,linspace(1.1,1.6,15),[1.8:0.1:4],1)
 
 % compare_PC(D_0,dt,delta_t_matrix,v_0_matrix,Obs_time_steps)
-compare_PC(D_0,dt,tau_matrix,[11:0.5:20],10^6)
+% compare_PC(D_0,dt,tau_matrix,[11:0.5:20],10^4)
 % compare_PC(D_0,dt,[2:0.2:4],5,10^6)
 %% Part 1, from modified_average_rate... from Viktor
 
