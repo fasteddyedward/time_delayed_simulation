@@ -1,7 +1,7 @@
 %% Same as modified_average_rate_and_decay_time_delay_angle.m. Functionalized to compare the transition rate with Pin_Chuan's in 
 %% Compare_1D_2D_pc_Vik.m
 
-function Scan_compare_Viktor(D_0,dt,tV_max,Av,tau_matrix,runs)
+function Scan_compare_Viktor(D_0,dt,tV_max,Av,tau_matrix,runs,file_name_vik)
 close all
 rng('shuffle')
 
@@ -396,5 +396,5 @@ end
 
 
 %% 
-save(['2021.1.25_compare_vik,D_0=',num2str(D_0),'.mat'],'AvN_plot','AratesV_plot','rateA_plot','rateAeff_plot','rateN_plot','iF')
+save([file_name_vik,'.mat'],'AvN_plot','AratesV_plot','rateA_plot','rateAeff_plot','rateN_plot','iF')
 end
