@@ -8,8 +8,10 @@ clear
 dt=0.01
 D_0=1
 delta_t_matrix=[0.1 0.2 0.5 1 2 5]
-% theta_0_1D_matrix=linspace(1.1,1.6,15);
-theta_0_1D_matrix=linspace(1,1.5,15);
+
+% theta_0_1D_matrix=linspace(1,1.5,15);
+
+theta_0_1D_matrix=linspace(1,3,15);
 %%
 file_name_pc=['2021.1.28_scan_pc_D_0=',num2str(D_0)];
 file_name_vik=['2021.1.28_scan_vik_D_0=',num2str(D_0)];
