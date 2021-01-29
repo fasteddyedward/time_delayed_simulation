@@ -4,10 +4,10 @@ close all
 
 
 
-Date='2021.1.25'
-nth_take=1
+Date='2021.1.25';
+nth_take=1;
 % delta_t_matrix=1
-T_matrix=[1]
+T_matrix=[1];
 
 % v_0_matrix=[11:0.5:20]
 % dt=10^-2

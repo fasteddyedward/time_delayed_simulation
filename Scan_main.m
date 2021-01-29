@@ -103,7 +103,7 @@ figure;
 % plot(theta)
 theta_0
 num_transitions_theta
-1
+
 num_transitions_matrix(delta_t_index,theta_0_index)=num_transitions_theta;
 theta_plus_matrix(delta_t_index,theta_0_index)=theta_plus;
 theta_minus_matrix(delta_t_index,theta_0_index)=theta_minus;
@@ -114,16 +114,17 @@ theta_0_matrix(delta_t_index,theta_0_index)=theta_0;
 R_recip_matrix(delta_t_index,theta_0_index)=R_recip;
 v_0_matrix(delta_t_index,theta_0_index)=v_0;
 
+nth_take=nth_take+1
 
 %% Clearing Unwanted Timing Variables
 clear Analyze_rot combine_data_partitions_start making_movies time_simulation_start
 
             end
-            nth_take=nth_take+1
+%             nth_take=nth_take+1
         end
-        nth_take=nth_take+1
+%         nth_take=nth_take+1
     end
-    nth_take=nth_take+1
+%     nth_take=nth_take+1
 end
 
 end
