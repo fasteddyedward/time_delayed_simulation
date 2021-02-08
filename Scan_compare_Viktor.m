@@ -1,8 +1,8 @@
 %% Same as modified_average_rate_and_decay_time_delay_angle.m. Functionalized to compare the transition rate with Pin_Chuan's in 
 %% Compare_1D_2D_pc_Vik.m
 
-function Scan_compare_Viktor(D_0,dt,tV_max,Av,tau_matrix,runs)
-close all
+function Scan_compare_Viktor(D_0,dt,tV_max,Av,tau_matrix,runs,file_name_vik)
+% close all
 rng('shuffle')
 
 % dt = 0.01;
@@ -71,7 +71,7 @@ for itau=1:length(tau_matrix)
 
             Vavr = xV(ntau + 1:end) - xV(1:end-ntau); % this looks like phi(t+delta_t)-phi(t)=theta(t)
 
-            figure(1)
+            figure(1);
             subplot(1,2,1)
             VH = histogram(Vim);
             dOmegaH = (VH.BinEdges(2) - VH.BinEdges(1))/2;
@@ -275,11 +275,13 @@ rateN = zeros(length(tau_matrix), length(Av));
 
 
 %% I guess this is for solving the formula analytically
-for it=1:length(tau_matrix)
+%% The tau is not changed for solving  the FPE!
+for itau=1:length(tau_matrix)
     for ia = 1:1:length(Av)
 
         % parameters
         % tau = 1;
+        tau=tau_matrix(itau);
         p1 = Av(ia);
         %p2 = 0.005;
 
@@ -361,9 +363,9 @@ for it=1:length(tau_matrix)
         rateAnal = sqrt(2)/pi*abs(p1-1)/(tau*p1)*exp(-3/4*(p1-1)^2/(p2*tau));    
         rateAnalEff = sqrt(2)/pi*abs(p1-1)/(tau*p1)*exp(-3*(p1-1)^2./(2*p2*p1^2*tau)); %% in p.c.'s 2-D simulation, the D_eff is about 2*D/R^2=2*p2
 
-        rateN(it,ia) = - jstatFPSS;
-        rateA(it,ia) = rateAnal;
-        rateAeff(it,ia) = rateAnalEff;
+        rateN(itau,ia) = - jstatFPSS;
+        rateA(itau,ia) = rateAnal;
+        rateAeff(itau,ia) = rateAnalEff;
 
     end
 end
@@ -396,5 +398,8 @@ end
 
 
 %% 
-save(['2021.1.25_compare_vik,D_0=',num2str(D_0),'.mat'],'AvN_plot','AratesV_plot','rateA_plot','rateAeff_plot','rateN_plot','iF')
+% clear iL iX iY LM OmegaH PtDT transitionDTimes V xV
+% close all
+% save([file_name_vik,'.mat'])
+save([file_name_vik,'.mat'],'AvN_plot','AratesV_plot','rateA_plot','rateAeff_plot','rateN_plot','iF')
 end
