@@ -21,6 +21,7 @@ y(2,1+round(delta_t/dt):Obs_time_steps+round(delta_t/dt))-y(2,1:Obs_time_steps);
 zeros(1,Obs_time_steps)];
 %             R1_cross_diff_x=cross(R1,diff_x);
 R1_cross_diff_x_sign=sign( R1(1,:).*diff_x(2,:)-diff_x(1,:).*R1(2,:));
+
 theta=R1_cross_diff_x_sign.*acos(dot(R1,R2,1)./(vecnorm(R1,2,1).*vecnorm(R2,2,1)));
 R=vecnorm(R1,2,1);
 %% Calculating omega

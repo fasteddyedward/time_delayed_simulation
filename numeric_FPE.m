@@ -16,17 +16,14 @@ for itau=1:length(tau_matrix)
     for ia = 1:1:size(theta_0_matrix,2)
         
         % parameters
-        % tau = 1;
         tau=tau_matrix(itau);
         %         p1 = Av(ia);
-        p1=Av(itau,ia);
-        %         p2 = 0.005;
-        %         p2=D_theta_matrix(itau,ia);
-        p2=D_0/R_matrix(itau,ia)^2;
+        p1=Av(itau,ia); % theta_0
+        p2=D_0/R_matrix(itau,ia)^2; % D=D_0/R^2
 
         % potential
         thp2 = 6*(p1-1)/p1;
-        Dx = 4*p2/p1^2;
+        Dx = 4*p2/p1^2; % D_theta = 4*D/theta_0^2 = 4*D_0/(R^2 theta_0^2) as in the general Kramer's formula
         
         % rate from FPE
         
@@ -116,13 +113,9 @@ for itau=1:length(tau_matrix)
     for ia = 1:1:size(theta_0_matrix,2)
         
         % parameters
-        % tau = 1;
         tau=tau_matrix(itau);
-        %         p1 = Av(ia);
         p1=Av(itau,ia);
-        %         p2 = 0.005;
-        %         p2=D_theta_matrix(itau,ia);
-        p2=D_0/R_matrix(itau,ia)^2;
+        p2=D_0/R_matrix(itau,ia)^2; % D_theta = 2*D = 2*D_0/R^2 as in the general Kramer's formula
 
         % potential
         thp2 = 6*(p1-1)/p1;
@@ -214,19 +207,15 @@ for itau=1:length(tau_matrix)
     for ia = 1:1:size(theta_0_matrix,2)
         
         % parameters
-        % tau = 1;
         tau=tau_matrix(itau);
-        %         p1 = Av(ia);
         p1=Av(itau,ia);
-        %         p2 = 0.005;
-        %         p2=D_theta_matrix(itau,ia);
-        %         p2=D_0/R_matrix(itau,ia)^2;
-        p2=D_theta_matrix(itau,ia);
+%         p2=D_theta_matrix(itau,ia);
 
         % potential
         thp2 = 6*(p1-1)/p1;
-%         Dx = 4*p2/p1^2;
-        Dx = p2;
+
+%         Dx = p2; 
+Dx = D_theta_matrix(itau,ia); % D_theta = D_eff, measured with the sigma_theta^2 
         % rate from FPE
         
         a = -1*sqrt(thp2)/2;

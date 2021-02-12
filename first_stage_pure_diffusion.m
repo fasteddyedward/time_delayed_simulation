@@ -1,10 +1,13 @@
 %% 1st stage subfunction of simulation.m
 
-function [x,y,v_x,v_y,time]=first_stage_pure_diffusion(N,delta_t,dt,T,x_init,y_init,gamma,k_B,D,hard_collision,a,b,fixed_flag)
+function [x,y,v_x,v_y,time]=first_stage_pure_diffusion(N,delta_t,dt,T,x_init,y_init,gamma,k_B,D,hard_collision,a,b,fixed_flag,int_delay)
 epsilon=0.0001*a;
+Delta_t_total=delta_t+int_delay;
 %% Start solving equation of motion
-x(1:N,1:delta_t/dt+1)=0;
-y(1:N,1:delta_t/dt+1)=0;
+% x(1:N,1:Delta_t_total/dt+1)=0;
+% y(1:N,1:Delta_t_total/dt+1)=0;
+x(1:N,1:Delta_t_total/dt+2)=0;
+y(1:N,1:Delta_t_total/dt+2)=0;
 for i=1:N
     x(i,1)=x_init(i);
     y(i,1)=y_init(i);
@@ -15,7 +18,7 @@ unit_vec = @(x,y) ([x,y]/norm([x,y]));
 % F_x(1:N)=0;
 % F_y(1:N)=0;
 % for k=1:1+delta_t/dt
-for k=1:delta_t/dt    
+for k=1:Delta_t_total/dt    
     %% Diffusion Process
     for i=1:N
 %         if fixed_flag(i)==1 %% particle is fixed
@@ -262,7 +265,7 @@ end
 %% Calculating the velocities at each timestep (from t=0+delta_t ~ Obs_time+delta_t)
 v_x=diff(x,1,2)/dt;
 v_y=diff(y,1,2)/dt;
-time=(1:delta_t/dt)*dt;
+time=(1:Delta_t_total/dt)*dt;
 end
     
     

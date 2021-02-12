@@ -2,13 +2,13 @@
 function [theta_stable,k_trans_theta,theta_plus,theta_minus,num_transitions_theta]=find_theta_plus(theta,theta_0)
 % theta_stable is theta_+-
 theta_stable(1:length(theta))=0;
-if theta_0<0.9
+
     theta_stable(1:length(theta))=0;
     k_trans_theta=[];
     theta_plus=0;
     theta_minus=0;
     num_transitions_theta=0;
-else
+
         %% 2021.1.21 Modification
 %     h=histogram(theta);
 % %     Values=h.Values;
@@ -80,28 +80,31 @@ else
     sign_current=0;
     num_transitions_theta=0;
     k_trans_theta=[];
-    for k=1:length(theta)
-        if theta(k)>theta_plus
-            sign_current=1;
-            %             theta_stable(k)=theta_plus;
-        elseif theta(k)<theta_minus
-            sign_current=-1;
-            %             theta_stable(k)=theta_minus;
+    %% 2020.2.8 Update: Calculating transitions only after bifurcation; threshold still needs to be specified
+    if theta_plus>0.3
+        for k=1:length(theta)
+            if theta(k)>theta_plus
+                sign_current=1;
+                %             theta_stable(k)=theta_plus;
+            elseif theta(k)<theta_minus
+                sign_current=-1;
+                %             theta_stable(k)=theta_minus;
+            end
+            % Updating sign: sign_old -> sign_current
+            if sign_current*sign_old==-1
+                num_transitions_theta=num_transitions_theta+1;
+                k_trans_theta=[k_trans_theta k];
+            end
+            
+            if sign_current==1
+                theta_stable(k)=theta_plus;
+            elseif sign_current==-1
+                theta_stable(k)=theta_minus;
+            end
+            
+            sign_old=sign_current;
         end
-        % Updating sign: sign_old -> sign_current
-        if sign_current*sign_old==-1
-            num_transitions_theta=num_transitions_theta+1;
-            k_trans_theta=[k_trans_theta k];
-        end
-        
-        if sign_current==1
-            theta_stable(k)=theta_plus;
-        elseif sign_current==-1
-            theta_stable(k)=theta_minus;
-        end
-        
-        sign_old=sign_current;
     end
     
-end
+
 end

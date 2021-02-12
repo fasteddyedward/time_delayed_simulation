@@ -67,8 +67,13 @@ for k=1:partition_time_steps
                 delta_x(i)=F_x(i)*dt+normrnd(0,sqrt(2*D*dt));
                 delta_y(i)=F_y(i)*dt+normrnd(0,sqrt(2*D*dt));
                 %% Updating particle position with Particle Interaction and Diffusion
-                x(i,1+(k-1)+round(delta_t/dt))=x(i,(k-1)+round(delta_t/dt))+delta_x(i);
-                y(i,1+(k-1)+round(delta_t/dt))=y(i,(k-1)+round(delta_t/dt))+delta_y(i);
+                %                 x(i,1+(k-1)+round(delta_t/dt))=x(i,(k-1)+round(delta_t/dt))+delta_x(i);
+                %                 y(i,1+(k-1)+round(delta_t/dt))=y(i,(k-1)+round(delta_t/dt))+delta_y(i);
+                
+%                 x(i,1+(k)+round(delta_t/dt))=x(i,(k)+round(delta_t/dt))+delta_x(i);
+%                 y(i,1+(k)+round(delta_t/dt))=y(i,(k)+round(delta_t/dt))+delta_y(i);
+                x(i,1+(k)+round((int_delay+delta_t)/dt))=x(i,(k)+round((int_delay+delta_t)/dt))+delta_x(i);
+                y(i,1+(k)+round((int_delay+delta_t)/dt))=y(i,(k)+round((int_delay+delta_t)/dt))+delta_y(i);
                 %% Including hard core interaction
                 switch hard_collision
                     case 'method_1'
@@ -144,9 +149,12 @@ for k=1:partition_time_steps
                             end
                         end
                 end
+                %% Restoring fixed particle's position
                 if fixed_flag(i)==1 %% particle is fixed, overwrite the updated x(i,1+(k-1)+round(delta_t/dt)) with x(i,(k-1)+round(delta_t/dt))
-                    x(i,1+(k-1)+round(delta_t/dt))=x(i,(k-1)+round(delta_t/dt));
-                    y(i,1+(k-1)+round(delta_t/dt))=y(i,(k-1)+round(delta_t/dt));
+%                     x(i,1+(k-1)+round(delta_t/dt))=x(i,(k-1)+round(delta_t/dt));
+%                     y(i,1+(k-1)+round(delta_t/dt))=y(i,(k-1)+round(delta_t/dt));
+                    x(i,1+(k)+round(delta_t/dt))=x(i,(k)+round(delta_t/dt));
+                    y(i,1+(k)+round(delta_t/dt))=y(i,(k)+round(delta_t/dt));
                 end
         end
         switch hard_collision
@@ -266,25 +274,25 @@ for k=1:partition_time_steps
                     check_relax(1:N,1:N)=0;
                     for i=1:N
                         for j=1:N
-                            if j~=i % both i and j have been updated to (k-1)+1+round(delta_t/dt), now updating i to (k-1)+1+round(delta_t/dt)
-                                diff_x=x(j,(k-1)+1+round(delta_t/dt))-x(i,(k-1)+1+round(delta_t/dt));
-                                diff_y=y(j,(k-1)+1+round(delta_t/dt))-y(i,(k-1)+1+round(delta_t/dt));
+                            if j~=i % both i and j have been updated to (k)+1+round(delta_t/dt), now updating i to (k)+1+round(delta_t/dt)
+                                diff_x=x(j,(k)+1+round(delta_t/dt))-x(i,(k)+1+round(delta_t/dt));
+                                diff_y=y(j,(k)+1+round(delta_t/dt))-y(i,(k)+1+round(delta_t/dt));
                                 diff_r_sqr=diff_x^2+diff_y^2;
                                 if diff_r_sqr < (2*a-epsilon)^2 % The epsilon is an allowed error for the particles to overlap; if we don't set this, (2*a-sqrt(diff_r_sqr)) will be too increasingly small and the simulation will get stuck at some k.
 %                                     %% Note that here we comment out the fixed_flag(i)==0 condition or else the calculations will take forever.
                                     if fixed_flag(i)==0
-                                        x(i,(k-1)+1+round(delta_t/dt))=x(i,(k-1)+1+round(delta_t/dt))-b*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the ith particle at (k-1)+1+round(delta_t/dt) (hitting j) goes backwards half its way
-                                        y(i,(k-1)+1+round(delta_t/dt))=y(i,(k-1)+1+round(delta_t/dt))-b*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
+                                        x(i,(k)+1+round(delta_t/dt))=x(i,(k)+1+round(delta_t/dt))-b*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the ith particle at (k)+1+round(delta_t/dt) (hitting j) goes backwards half its way
+                                        y(i,(k)+1+round(delta_t/dt))=y(i,(k)+1+round(delta_t/dt))-b*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
                                     elseif fixed_flag(i)==1
-                                        x(i,1+(k-1)+round(delta_t/dt))=x(i,(k-1)+round(delta_t/dt));
-                                        y(i,1+(k-1)+round(delta_t/dt))=y(i,(k-1)+round(delta_t/dt));
+                                        x(i,1+(k)+round(delta_t/dt))=x(i,(k)+round(delta_t/dt));
+                                        y(i,1+(k)+round(delta_t/dt))=y(i,(k)+round(delta_t/dt));
                                     end
                                     if fixed_flag(j)==0
-                                        x(j,(k-1)+1+round(delta_t/dt))=x(j,(k-1)+1+round(delta_t/dt))+b*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the jth particle at (k-1)+1+round(delta_t/dt) (being hitted by i) goes forward half i's way
-                                        y(j,(k-1)+1+round(delta_t/dt))=y(j,(k-1)+1+round(delta_t/dt))+b*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
+                                        x(j,(k)+1+round(delta_t/dt))=x(j,(k)+1+round(delta_t/dt))+b*diff_x/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr)); % the jth particle at (k)+1+round(delta_t/dt) (being hitted by i) goes forward half i's way
+                                        y(j,(k)+1+round(delta_t/dt))=y(j,(k)+1+round(delta_t/dt))+b*diff_y/sqrt(diff_r_sqr)*(2*a-sqrt(diff_r_sqr));
                                     elseif fixed_flag(j)==1
-                                        x(j,1+(k-1)+round(delta_t/dt))=x(j,(k-1)+round(delta_t/dt));
-                                        y(j,1+(k-1)+round(delta_t/dt))=y(j,(k-1)+round(delta_t/dt));
+                                        x(j,1+(k)+round(delta_t/dt))=x(j,(k)+round(delta_t/dt));
+                                        y(j,1+(k)+round(delta_t/dt))=y(j,(k)+round(delta_t/dt));
                                     end
                                 else
                                     check_relax(i,j)=1;
@@ -295,9 +303,9 @@ for k=1:partition_time_steps
                     
                     if sum(sum(check_relax,2))==(N^2-N) % All particles have inter distance larger than 2a
                         for i=1:N
-                            if fixed_flag(i)==1 %% particle is fixed, overwrite the updated x(i,1+(k-1)+round(delta_t/dt)) with x(i,(k-1)+round(delta_t/dt))
-                                x(i,1+(k-1)+round(delta_t/dt))=x(i,(k-1)+round(delta_t/dt));
-                                y(i,1+(k-1)+round(delta_t/dt))=y(i,(k-1)+round(delta_t/dt));
+                            if fixed_flag(i)==1 %% particle is fixed, overwrite the updated x(i,1+(k)+round(delta_t/dt)) with x(i,(k)+round(delta_t/dt))
+                                x(i,1+(k)+round(delta_t/dt))=x(i,(k)+round(delta_t/dt));
+                                y(i,1+(k)+round(delta_t/dt))=y(i,(k)+round(delta_t/dt));
                             end
                         end
                         break
