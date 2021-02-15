@@ -5,7 +5,7 @@ clear
 close all
 
 dt=0.01
-D_0=20
+D_0=1
 %% Without Intrinsic Delay: Running the compare functions
 
 intrinsic_delay=0.
@@ -13,7 +13,7 @@ delta_t_matrix_vik= [0.1 0.2 0.5 1 2 5 10]'  %% Make 1-D simulation
 delta_t_matrix    = [0.1 0.2 0.5 1 2 5 10]' %% for 2-D simulation
 theta_0_1D_matrix=(logspace(log10(1),log10(3),30));
 
-file_name_pc=['2021.2.9_scan_pc_D_0=',num2str(D_0)];
+file_name_pc=['2021.2.12_scan_pc_D_0=',num2str(D_0)];
 file_name_vik=['2021.2.9_scan_vik_D_0=',num2str(D_0)];
 
     %% Intrinsic delay: Parameters for Frank

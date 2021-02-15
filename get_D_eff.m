@@ -42,9 +42,11 @@ Bins_theta=h_theta.BinEdges(1:end-1)+0.5*h_theta.BinWidth;
 
 theta_0=v_0*delta_t/mean(R);
 
-[fitresult,gof]=fit_Gaussian(Bins_theta,Values_theta,plot_hist_fit_T_eff);
-mu_theta=fitresult.b1;
-sigma_theta=fitresult.c1/sqrt(2);
+%% 2020.2.12 Update sigma without fitting Gaussian
+% [fitresult,gof]=fit_Gaussian(Bins_theta,Values_theta,plot_hist_fit_T_eff);
+% mu_theta=fitresult.b1;
+% sigma_theta=fitresult.c1/sqrt(2);
+sigma_theta=std(diff(theta(~isnan(diff(theta)))));
 
 %% 2021.1.12 hist(omega-\pm omega_+)
 %% 2021.1.15 hist(omega-omega_0*sin(theta)
@@ -61,10 +63,11 @@ h_omega2=histogram(omega2);
 Values_omega2=h_omega2.Values;
 Bins_omega2=h_omega2.BinEdges(1:end-1)+0.5*h_omega2.BinWidth;
 
-[fitresult,gof]=fit_Gaussian(Bins_omega2,Values_omega2,plot_hist_fit_T_eff);
-
-mu_omega2=fitresult.b1;
-sigma_omega2=fitresult.c1/sqrt(2);
+%% 2020.2.12 Update sigma without fitting Gaussian
+% [fitresult,gof]=fit_Gaussian(Bins_omega2,Values_omega2,plot_hist_fit_T_eff);
+% mu_omega2=fitresult.b1;
+% sigma_omega2=fitresult.c1/sqrt(2);
+sigma_omega2=std(omega2(~isnan(omega2)));
 %% Calculating the D_eff and T_eff
 D_theta=sigma_theta^2/(2*dt);
 D_omega2=sigma_omega2^2*dt/(2);
