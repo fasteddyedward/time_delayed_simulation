@@ -35,10 +35,10 @@ f=figure(80);clf;
 switch plot_hist_fit_T_eff
     case 'no'
         f.Visible='off';
-end
-h_theta=histogram(diff(theta));
-Values_theta=h_theta.Values;
-Bins_theta=h_theta.BinEdges(1:end-1)+0.5*h_theta.BinWidth;
+% end
+% h_theta=histogram(diff(theta));
+% Values_theta=h_theta.Values;
+% Bins_theta=h_theta.BinEdges(1:end-1)+0.5*h_theta.BinWidth;
 
 theta_0=v_0*delta_t/mean(R);
 
@@ -59,9 +59,9 @@ end
 omega_0=v_0/mean(R);
 omega2=omega-omega_0*sin(theta);
 
-h_omega2=histogram(omega2);
-Values_omega2=h_omega2.Values;
-Bins_omega2=h_omega2.BinEdges(1:end-1)+0.5*h_omega2.BinWidth;
+% h_omega2=histogram(omega2);
+% Values_omega2=h_omega2.Values;
+% Bins_omega2=h_omega2.BinEdges(1:end-1)+0.5*h_omega2.BinWidth;
 
 %% 2020.2.12 Update sigma without fitting Gaussian
 % [fitresult,gof]=fit_Gaussian(Bins_omega2,Values_omega2,plot_hist_fit_T_eff);

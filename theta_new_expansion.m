@@ -98,7 +98,7 @@ for delta_t_index=1:length(delta_t_matrix)
                 
                 
                 %% Testing for transition rates
-                [~,~,theta_plus,theta_minus,num_transitions_theta]=find_theta_plus(theta,theta_0)
+                [V_parameters,~,~,theta_plus,theta_minus,num_transitions_theta]=find_theta_plus(theta,theta_0)
                 [~,~,theta_new_plus,theta_new_minus,num_transitions_theta_new]=find_theta_plus(theta_new,theta_0)
                 %% testing for theta_new
 %                 close all

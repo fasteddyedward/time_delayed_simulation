@@ -5,7 +5,7 @@ clear
 close all
 
 dt=0.01
-D_0=1
+D_0=2
 %% Without Intrinsic Delay: Running the compare functions
 
 intrinsic_delay=0.
@@ -13,8 +13,12 @@ delta_t_matrix_vik= [0.1 0.2 0.5 1 2 5 10]'  %% Make 1-D simulation
 delta_t_matrix    = [0.1 0.2 0.5 1 2 5 10]' %% for 2-D simulation
 theta_0_1D_matrix=(logspace(log10(1),log10(3),30));
 
-file_name_pc=['2021.2.12_scan_pc_D_0=',num2str(D_0)];
-file_name_vik=['2021.2.9_scan_vik_D_0=',num2str(D_0)];
+
+delta_t_matrix=5
+theta_0_1D_matrix=1.2
+
+file_name_pc=['2021.2.18_scan_pc_D_0=',num2str(D_0)];
+file_name_vik=['2021.2.18_scan_vik_D_0=',num2str(D_0)];
 
     %% Intrinsic delay: Parameters for Frank
 % % 
@@ -52,6 +56,8 @@ file_name_vik=['2021.2.9_scan_vik_D_0=',num2str(D_0)];
     % compare_Viktor(D_0,dt,500,linspace(1.1,1.6,15),tau_matrix,1)
     % compare_Viktor(D_0,dt,50000,linspace(1.1,1.6,15),[1.8:0.1:4],1)
 
+    Scan_compare_Viktor(10,dt,5000,1.1,2,10,file_name_vik)
+    1
 % Scan_compare_Viktor(D_0,dt,50000,linspace(1.1,1.6,15),delta_t_matrix_vik,1,file_name_vik)
 
 
@@ -66,6 +72,7 @@ file_name_vik=['2021.2.9_scan_vik_D_0=',num2str(D_0)];
 %% 
 %     clearvars -except D_0 file_name_pc file_name_vik
     load([file_name_vik,'.mat'])
+
     %% 3D plot for all parameter space
     figure(1);clf;hold on;title(['1-D Simulation vs Kramer Escape Rate, D_0=',num2str(D_0)])
 
@@ -147,7 +154,7 @@ file_name_vik=['2021.2.9_scan_vik_D_0=',num2str(D_0)];
 %     set(gca,'YScale','log')
     
     %% 2D plot for all single plots
-    close all;
+%     close all;
     for i=1:length(delta_t_matrix_vik)
         %         subplot(2,4,i);hold on
         figure(10+i); clf;hold on;

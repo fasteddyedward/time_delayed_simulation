@@ -109,7 +109,7 @@ for delta_t_index=1:length(delta_t_matrix)
 %                 theta_approx;
                 %%
                 
-                [theta_stable,k_trans_theta,theta_plus,theta_minus,num_transitions_theta]=find_theta_plus(theta_full,theta_0);
+                [V_parameters,theta_stable,k_trans_theta,theta_plus,theta_minus,num_transitions_theta]=find_theta_plus(theta_full,theta_0);
                 [theta_approx_stable,k_trans_theta_approx,theta_plus_approx,theta_minus_approx,num_transitions_theta_approx]=find_theta_plus(theta_approx,theta_0);
                 %% Finding the sigma of the theta (full 1D)
                 % [theta_stable,k_trans_theta,theta_plus,theta_minus,num_transitions_theta]=find_theta_plus(theta,theta_0)

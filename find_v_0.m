@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 clear
 %% This file tries to find the range of v_0_matrix for Scan_Compare_1D_2D.m
 Date='1';
@@ -82,5 +82,5 @@ yline(1)
 %% The v_0_min are about inverse to delta_t
 
 % D_0=10
->>>>>>> 992dca8ae78f8bfbca72d119dca9d39eec4765a6
+
 % 1 ; 12; 52

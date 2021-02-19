@@ -28,9 +28,16 @@ sigma2V = zeros(length(tau_matrix),length(Av));
 TeffV = zeros(length(tau_matrix),length(Av));
 DeffV = zeros(length(tau_matrix),length(Av));
 num_transitions_matrix=zeros(length(tau_matrix),length(Av));
+
+p0_matrix = zeros(length(tau_matrix),length(Av));
+p2_matrix = zeros(length(tau_matrix),length(Av));
+p4_matrix = zeros(length(tau_matrix),length(Av));
+p6_matrix = zeros(length(tau_matrix),length(Av));
+p8_matrix = zeros(length(tau_matrix),length(Av));
+theta_plus = zeros(length(tau_matrix),length(Av));
 for itau=1:length(tau_matrix)
     for iAv = 1:1:length(Av)
-
+        theta=[];
         fprintf('Omega tau %i/%i\n\n',iAv,length(Av));
 
         p1 = Av(iAv); %V0*tau/2R % This is just theta_0
@@ -67,12 +74,19 @@ for itau=1:length(tau_matrix)
                 xV(it+1) = xV(it) + p1/tau*sin(xV(it) - xd)*dt + sqrt(2*p2*dt)*randn;
 
             end
-
+           
             Vim = (xV(2:end)-xV(1:end-1))/dt; % this looks like omega=diff(phi)/dt
 
             Vavr = xV(ntau + 1:end) - xV(1:end-ntau); % this looks like phi(t+delta_t)-phi(t)=theta(t)
+            %% 2021.2.19 Update: Trying to get the entire theta for fitting the potential
+            theta=[theta Vavr];
+            %             [V,V_prime_prime,theta_stable,k_trans_theta,theta_plus,theta_minus,num_transitions_theta]=find_theta_plus(theta,NaN);
+            %             rate_measured(itau,iAv)=p2/(2*pi)*sqrt(-V_prime_prime(0)*V_prime_prime(theta_plus))*exp(-(V(0)-V(theta_plus)));
 
-            figure(1);
+            %%
+%             l=getframe(gcf)
+%             set(0,'DefaultFigureWindowStyle','docked');
+            figure(1).Visible='off';
             subplot(1,2,1)
             VH = histogram(Vim);
             dOmegaH = (VH.BinEdges(2) - VH.BinEdges(1))/2;
@@ -243,7 +257,18 @@ for itau=1:length(tau_matrix)
             end
 
         end
-
+        %% 2021.2.19 Update: Trying to get the entire theta for fitting the potential
+        [V_parameters,~,~,theta_plus(itau,iAv),~,~]=find_theta_plus(theta,NaN);
+        p0_matrix(itau,iAv)=V_parameters.p0;
+        p2_matrix(itau,iAv)=V_parameters.p2;
+        p4_matrix(itau,iAv)=V_parameters.p4;
+        p6_matrix(itau,iAv)=V_parameters.p6;
+        p8_matrix(itau,iAv)=V_parameters.p8;
+%         V=@(x) V_parameters.p0 + V_parameters.p2.*x.^2 + V_parameters.p4.*x.^4 + V_parameters.p6.*x.^6 + V_parameters.p8.*x.^8; % V(theta) = U(theta)/(k_B T)
+%         V_prime_prime = @(x) 2*V_parameters.p2 + 12*V_parameters.p4.*x.^2 + 30*V_parameters.p6.*x.^4 + 56*V_parameters.p8.*x.^6; % V''(theta)=U''(theta)/(k_B T)
+%         rateA_potential_plot(itau,iAv)=p2/(2*pi)*sqrt(-V_prime_prime(0)*V_prime_prime(theta_plus(itau,iAv)))*exp(-(V(0)-V(theta_plus(itau,iAv))));
+%%
+        
         PtDT = PtDT/sum(PtDT)/dDtT;
         PtT = PtT/sum(PtT)/dtT;
 
@@ -464,6 +489,113 @@ for itau=1:length(tau_matrix)
 %         rateA(itau,ia) = rateAnal;
 %         rateAeff(itau,ia) = rateAnalEff;
 
+
+    end
+end
+
+%% 2020.2.19 Update: Numerical FPE with the real potential (from -ln(p))
+%% 2020.2.10 Update: NFP with D_theta = 2*D (=2*D_0/R^2)
+for itau=1:length(tau_matrix)
+    for ia = 1:1:length(Av)
+
+        % parameters
+        % tau = 1;
+        tau=tau_matrix(itau);
+        p1 = Av(ia);
+        %p2 = 0.005;
+
+        % potential
+        %         thp2 = 6*(p1-1)/p1; % this seems like theta_plus
+        %         Dx = 4*p2/p1^2;
+        
+        thp2 = theta_plus(itau,ia);
+        Dx=2*p2;
+
+        % rate from FPE
+
+        a = -1*sqrt(thp2)/2;
+        N = 500;
+        b = 3;
+        xV = linspace(a,b,N + 1);
+        Delta = xV(2) - xV(1);
+        iX = zeros(1, (length(xV) - 2)*3 + 4);
+        iY = zeros(1, (length(xV) - 2)*3 + 4);
+        iL = zeros(1, (length(xV) - 2)*3 + 4);
+
+        %% Here include the real actual potential 
+%         U = @(x) (x^3 - 2*x*thp2)*x/(12*tau);
+        V=@(x) p0_matrix(itau,ia) + p2_matrix(itau,ia).*x.^2 + p4_matrix(itau,ia).*x.^4 + p6_matrix(itau,ia).*x.^6 + p8_matrix(itau,ia).*x.^8; % V(theta) = U(theta)/(k_B T)
+        U=@(x) Dx*V(x); % p2 = D = D*gamma = k_B*T
+%         U = @(x) p2*(p0_matrix(itau,ia) + p2_matrix(itau,ia).*x.^2 + p4_matrix(itau,ia).*x.^4 + p6_matrix(itau,ia).*x.^6 + p8_matrix(itau,ia).*x.^8); % V(theta) = U(theta)/(k_B T))
+        V_prime_prime = @(x) 2*p2_matrix(itau,ia) + 12*p4_matrix(itau,ia).*x.^2 + 30*p6_matrix(itau,ia).*x.^4 + 56*p8_matrix(itau,ia).*x.^6; % V''(theta)=U''(theta)/(k_B T)
+
+        % rate matrix
+        nux = Dx/Delta^2;
+        Bx = 1/Dx;
+
+        % left boundary (left jump allowed)
+        x = a;
+        Ui = U(x);
+        UiL = U(x - Delta);
+        UiR = U(x + Delta);
+        rL = nux*exp(- Bx*(UiL - Ui)/2);
+        rR = nux*exp(- Bx*(UiR - Ui)/2);
+        iX(1) = 1;
+        iY(1) = 1;
+        iL(1) = -(rL + rR);
+        rR = nux*exp(Bx*(UiR - Ui)/2);
+        iX(2) = 1;
+        iY(2) = 2;
+        iL(2) = rR;
+
+        % right boundary (right jump forbidden)
+        x = xV(N+1);
+        Ui = U(x);
+        UiL = U(x - Delta);
+        rL = nux*exp(- Bx*(UiL - Ui)/2);
+        iX(length(iX)) = N + 1;
+        iY(length(iX)) = N + 1;
+        iL(length(iX)) = - rL;
+        rL = nux*exp(Bx*(UiL - Ui)/2);
+        iX(length(iX) - 1) = N + 1;
+        iY(length(iX) - 1) = N;
+        iL(length(iX) - 1) = rL;
+
+        % all the rest
+        for ix = 2:1:N
+            middleC = 1 + (ix - 1)*3;
+            x = xV(ix);
+            Ui = U(x);
+            UiL = U(x - Delta);
+            UiR = U(x + Delta);
+            rL = nux*exp(- Bx*(UiL - Ui)/2);
+            rR = nux*exp(- Bx*(UiR - Ui)/2);
+            iX(middleC) = ix;
+            iY(middleC) = ix;
+            iL(middleC) = -(rL + rR);
+            rL = nux*exp(Bx*(UiL - Ui)/2);
+            rR = nux*exp(Bx*(UiR - Ui)/2);
+            iX(middleC - 1) = ix;
+            iY(middleC - 1) = ix - 1;
+            iL(middleC - 1) = rL;
+            iX(middleC + 1) = ix;
+            iY(middleC + 1) = ix + 1;
+            iL(middleC + 1) = rR;
+        end
+
+        LM = sparse(iX,iY,iL);
+        [~,e]=eigs(LM,1,0);
+        jstatFPSS = e;
+        
+        %         rateAnal = sqrt(2)/pi*abs(p1-1)/(tau*p1)*exp(-3/4*(p1-1)^2/(p2*tau));
+        %         rateAnalEff = sqrt(2)/pi*abs(p1-1)/(tau*p1)*exp(-3*(p1-1)^2./(2*p2*p1^2*tau)); %% in p.c.'s 2-D simulation, the D_eff is about 2*D/R^2=2*p2
+        
+%                 rateNeff(itau,ia) = - jstatFPSS;
+        %         rateA(itau,ia) = rateAnal;
+        %         rateAeff(itau,ia) = rateAnalEff;
+        rateA_potential_plot(itau,ia) = p2/(2*pi)*sqrt(-V_prime_prime(0)*V_prime_prime(theta_plus(itau,ia)))*exp(-(V(0)-V(theta_plus(itau,ia))));
+        rateN_potential_plot(itau,ia) = - jstatFPSS;
+
     end
 end
 
@@ -503,7 +635,8 @@ end
 % clear iL iX iY LM OmegaH PtDT transitionDTimes V xV
 % close all
 % save([file_name_vik,'.mat'])
-save([file_name_vik,'.mat'],'AvN_plot','AratesV_plot','rateA_plot','rateAeff_plot','rateN_plot','iF','rateNeff_plot','tV_max')
+close all
+save([file_name_vik,'.mat'],'AvN_plot','AratesV_plot','rateA_plot','rateAeff_plot','rateN_plot','iF','rateNeff_plot','tV_max','tau_matrix','theta','rateA_potential_plot','rateN_potential_plot')
 end
 
 

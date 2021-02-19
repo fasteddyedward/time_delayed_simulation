@@ -241,7 +241,7 @@ end
 
 %% Start analyzing theta and omega for one-fixed-one-mobile-particle system
 [theta,omega,R_mean,D_theta,D_omega2,theta_0,R_recip]= get_D_eff(x,y,v_x(2,:),v_y(2,:),Obs_time_steps,delta_t,dt,v_0);
-[theta_stable,k_trans_theta,theta_plus,theta_minus,num_transitions_theta]=find_theta_plus(theta,theta_0);
+[V_parameters,theta_stable,k_trans_theta,theta_plus,theta_minus,num_transitions_theta]=find_theta_plus(theta,theta_0);
 % theta_0
 % theta_plus
 [omega_stable,k_trans_omega,omega_plus,omega_minus,num_transitions_omega]=find_omega_plus(omega,theta_0);
